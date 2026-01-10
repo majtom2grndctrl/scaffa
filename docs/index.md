@@ -22,6 +22,8 @@ Scaffa is **not** a code generator that replaces engineering. It is an editor th
 - preserves control over output code
 - always provides an escape hatch to source
 
+Scaffa’s UI cannot (and should not) cover every aspect of code. Like game engines, it can surface a large, composable subset of structure and configuration, but complex logic will continue to live in code files.
+
 ---
 
 ## 2. Architectural Pillars
