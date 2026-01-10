@@ -1,8 +1,10 @@
 import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
-import { RouterDevtools } from '@tanstack/router-devtools';
+import { TanStackRouterDevtools } from '@tanstack/router-devtools';
 import type { PropsWithChildren } from 'react';
 
 export const AppShell = ({ children }: PropsWithChildren) => {
+  const showDevtools = import.meta.env.DEV;
+
   return (
     <div className="min-h-screen bg-surface-0 text-fg">
       <header className="border-b border-subtle px-6 py-4">
@@ -12,8 +14,8 @@ export const AppShell = ({ children }: PropsWithChildren) => {
         </p>
       </header>
       <main className="px-6 py-6">{children}</main>
-      <ReactQueryDevtools initialIsOpen={false} />
-      <RouterDevtools />
+      {showDevtools ? <ReactQueryDevtools initialIsOpen={false} /> : null}
+      {showDevtools ? <TanStackRouterDevtools /> : null}
     </div>
   );
 };
