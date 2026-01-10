@@ -4,6 +4,17 @@ import { fileURLToPath } from 'node:url';
 
 const __dirname = fileURLToPath(new URL('.', import.meta.url));
 
+const shouldDisableHardwareAcceleration =
+  process.env.SCAFFA_DISABLE_GPU === '1' ||
+  (process.env.VITE_DEV_SERVER_URL &&
+    process.env.SCAFFA_DISABLE_GPU !== '0');
+
+if (shouldDisableHardwareAcceleration) {
+  // Avoid noisy EGL driver errors on some Linux setups during dev.
+  app.disableHardwareAcceleration();
+  app.commandLine.appendSwitch('disable-gpu-compositing');
+}
+
 const createMainWindow = () => {
   const window = new BrowserWindow({
     width: 1400,
