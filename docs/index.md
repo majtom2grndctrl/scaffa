@@ -5,6 +5,17 @@
 
 ---
 
+**Architecture contract docs (v0):**
+- v0 scope + first journey: [Scaffa v0 Scope + First User Journey](./scaffa_v0_scope_and_user_journey.md)
+- Runtime adapters: [Scaffa Runtime Adapter Contract](./scaffa_runtime_adapter_contract.md)
+- Component registries: [Scaffa Component Registry Schema](./scaffa_component_registry_schema.md)
+- Inspector semantics: [Scaffa Inspector UX Rules & Semantics](./scaffa_inspector_ux_semantics.md)
+- Preview sessions: [Scaffa Preview Session Protocol](./scaffa_preview_session_protocol.md)
+- Override model + persistence: [Scaffa Override Model + Persistence](./scaffa_override_model.md)
+- Project graph + patch protocol: [Scaffa Project Graph Schema + Patch Protocol](./scaffa_project_graph_schema.md)
+- IPC boundaries + sequence diagrams: [IPC Boundaries + Key Sequence Diagrams](./scaffa_ipc_boundaries_and_sequences.md)
+- (Deferred) Iteration Deck sketch: [Iteration Deck Integration Sketch](./scaffa_iteration_deck_integration.md)
+
 ## 1. Product Definition
 
 > **CLI note:** Use `pnpm` for all applicable commands (install, dev server, builds).
@@ -78,6 +89,8 @@ This enables:
 
 Scaffa is a **multi-process Electron application**.
 
+See also: [IPC Boundaries + Key Sequence Diagrams](./scaffa_ipc_boundaries_and_sequences.md)
+
 ### 3.1 Main Process (Host)
 
 Responsibilities:
@@ -123,6 +136,8 @@ Modules may be imperative, but are boxed.
 
 Scaffa maintains a **framework-agnostic Project Graph** as canonical truth.
 
+See also: [Scaffa Project Graph Schema + Patch Protocol](./scaffa_project_graph_schema.md)
+
 Includes:
 - Routes
 - Component types
@@ -138,6 +153,8 @@ Preview is modeled as sessions:
 - `component` – harnessed component instance
 - (future) `variant` – Iteration Deck
 
+See also: [Scaffa Preview Session Protocol](./scaffa_preview_session_protocol.md)
+
 This abstraction is required from day one.
 
 ### 4.3 Inspector
@@ -150,6 +167,11 @@ Inspector behavior:
   - inspect-only props
   - opaque props with source links
 
+See also:
+- [Scaffa Inspector UX Rules & Semantics](./scaffa_inspector_ux_semantics.md)
+- [Scaffa Component Registry Schema](./scaffa_component_registry_schema.md)
+- [Scaffa Override Model + Persistence](./scaffa_override_model.md)
+
 All edits are **non-destructive overrides** applied to preview sessions.
 
 ---
@@ -159,6 +181,8 @@ All edits are **non-destructive overrides** applied to preview sessions.
 ### 5.1 Component Registries
 
 Modules may contribute registries describing component libraries.
+
+See also: [Scaffa Component Registry Schema](./scaffa_component_registry_schema.md)
 
 Example:
 - Shadcn module maps Shadcn components to:
@@ -179,6 +203,8 @@ Framework-specific runtime adapters handle:
 - instance identification
 - click-to-select
 - applying prop overrides
+
+See also: [Scaffa Runtime Adapter Contract](./scaffa_runtime_adapter_contract.md)
 
 Adapters are separate from registries.
 
@@ -262,6 +288,8 @@ State domains:
 - Untrusted module sandboxing UI
 - Type-level component authoring UI
 - Full runtime tree introspection
+
+See also: [Iteration Deck Integration Sketch](./scaffa_iteration_deck_integration.md)
 
 These are architectural considerations, not v0 deliverables.
 
