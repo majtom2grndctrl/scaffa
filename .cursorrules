@@ -1,0 +1,2 @@
+Please consult docs/index.md for Scaffa's architecture plan and approved tech stack before making changes.
+Ensure any additions align with the multi-process Electron model and renderer stack described there.
