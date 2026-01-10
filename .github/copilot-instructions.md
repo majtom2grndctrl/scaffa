@@ -15,7 +15,7 @@
 4. **PUSH TO REMOTE** - This is MANDATORY:
    ```bash
    git pull --rebase
-   bd sync
+   bd sync  # persists `.beads/issues.jsonl` on the beads sync branch (do not include in code commits)
    git push
    git status  # MUST show "up to date with origin"
    ```
@@ -25,6 +25,7 @@
 
 **CRITICAL RULES:**
 - Work is NOT complete until `git push` succeeds
+- NEVER include `.beads/issues.jsonl` in code commits (main or feature branches); persist it via `bd sync` instead
 - NEVER stop before pushing - that leaves work stranded locally
 - NEVER say "ready to push when you are" - YOU must push
 - If push fails, resolve and retry until it succeeds
