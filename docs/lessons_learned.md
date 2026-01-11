@@ -160,10 +160,12 @@ Extension authors hit friction when constructing graph snapshots:
 - Not clear to extension authors when/why casting is needed
 - Could be improved with helper constructors
 
-### Recommendation
-- Provide helper functions for constructing common graph nodes/edges
-- Document branded type usage in extension authoring guide
-- Consider whether branded types are worth the friction for extension API
+### ✅ RESOLVED (2026-01-11)
+- Added graph construction helpers to `src/extension-host/graph-helpers.ts`
+- Exported from extension SDK: `createRouteNode()`, `createComponentTypeNode()`, `createRouteUsesComponentTypeEdge()`, etc.
+- Updated sample-graph-producer to demonstrate zero-cast usage
+- Documented helper usage in extension authoring guide (section 4)
+- Extension authors can now construct graph data without any `as any` casts
 
 ---
 
@@ -302,10 +304,10 @@ But implementations must return `GraphSnapshot`.
 - Type is stubbed as `unknown` with a TODO comment
 - Causes TypeScript errors or requires casting
 
-### Recommendation
-- Update `extension-context.ts` to use proper `GraphSnapshot` type
-- Remove TODO comment
-- Ensure all extension-facing types are fully specified
+### ✅ RESOLVED (2026-01-11)
+- Updated `src/extension-host/extension-context.ts` to properly type `initialize()` as `Promise<GraphSnapshot>`
+- Removed TODO comment
+- Extension authors can now implement `GraphProducer` without type casts or errors
 
 ---
 
