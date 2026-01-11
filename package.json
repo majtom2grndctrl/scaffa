@@ -6,6 +6,7 @@
   "main": "dist/main/main.js",
   "scripts": {
     "dev": "node scripts/dev-electron.mjs",
+    "dev:demo": "concurrently \"pnpm dev\" \"pnpm -C demo/app run dev:local\"",
     "dev:renderer": "vite",
     "build": "pnpm build:electron && pnpm build:renderer",
     "build:renderer": "vite build",

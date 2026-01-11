@@ -28,9 +28,23 @@ pnpm build:electron
 pnpm build:renderer
 ```
 
-### Running the Demo Workspace (Two Terminals)
+### Running the Demo Workspace
 
-The v0 demo workflow uses two independent processes:
+The v0 demo workflow uses two independent processes: the demo app dev server (preview target) and Scaffa (the editor).
+
+#### Option 1: Single Command (Recommended for Local Development)
+
+```bash
+# One-time setup: Install demo app dependencies
+pnpm -C demo/app run install:local
+
+# Start both Scaffa and demo app together
+pnpm dev:demo
+```
+
+This uses `concurrently` to run both processes. Exit with Ctrl+C to stop both cleanly.
+
+#### Option 2: Two Terminals (Explicit Control)
 
 1) **Demo app dev server** (preview target)
 
@@ -48,7 +62,9 @@ This prints a URL like `http://localhost:5173`. Scaffa attaches to this URL for 
 pnpm dev
 ```
 
-v0 intentionally does not auto-start framework dev servers; preview targets are treated as external HTTP runtimes.
+#### Notes
+
+v0 intentionally does not auto-start framework dev servers; preview targets are treated as external HTTP runtimes. The `dev:demo` convenience script simply launches both processes in parallel.
 
 ### Hot Reload Behavior
 
