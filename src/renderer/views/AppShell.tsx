@@ -2,15 +2,18 @@ import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
 import { TanStackRouterDevtools } from '@tanstack/router-devtools';
 import { useEffect, type PropsWithChildren } from 'react';
 import { useGraphStore } from '../state/graphStore';
+import { useInspectorStore } from '../state/inspectorStore';
 
 export const AppShell = ({ children }: PropsWithChildren) => {
   const showDevtools = import.meta.env.DEV;
   const initializeGraph = useGraphStore((state) => state.initialize);
+  const initializeInspector = useInspectorStore((state) => state.initialize);
 
-  // Initialize graph store on mount
+  // Initialize stores on mount
   useEffect(() => {
     initializeGraph();
-  }, [initializeGraph]);
+    initializeInspector();
+  }, [initializeGraph, initializeInspector]);
 
   return (
     <div className="min-h-screen bg-surface-0 text-fg">
