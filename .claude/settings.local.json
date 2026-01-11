@@ -1,0 +1,21 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(bd show:*)",
+      "Bash(bd update:*)",
+      "Bash(bd close:*)",
+      "Bash(pnpm exec tsc:*)",
+      "Bash(pnpm build:*)",
+      "Bash(git add:*)",
+      "Bash(git commit:*)",
+      "Bash(bd ready:*)",
+      "Bash(pnpm run)",
+      "Bash(pnpm build:electron:*)",
+      "Bash(bd sync:*)",
+      "Bash(bd list:*)",
+      "Bash(pnpm --filter @scaffa/demo-app build:*)",
+      "Bash(pnpm typecheck:*)",
+      "Bash(pnpm test:*)"
+    ]
+  }
+}

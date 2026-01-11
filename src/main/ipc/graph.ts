@@ -8,11 +8,11 @@ import {
   type GraphPatch,
 } from '../../shared/index.js';
 import { validated, validateEvent } from './validation.js';
+import { projectGraphStore } from '../graph/graph-store.js';
 
 // ─────────────────────────────────────────────────────────────────────────────
-// Project Graph IPC Handlers (v0 Stub)
+// Project Graph IPC Handlers (v0)
 // ─────────────────────────────────────────────────────────────────────────────
-// Full implementation will come in epic 7iq.8
 
 /**
  * Register project graph IPC handlers.
@@ -27,17 +27,22 @@ export function registerGraphHandlers() {
         _event,
         _request: GetGraphSnapshotRequest
       ): Promise<GetGraphSnapshotResponse> => {
-        // Stub: Full implementation in 7iq.8
         console.log('[IPC] graph:getSnapshot');
-        return {
-          schemaVersion: 'v0',
-          revision: 0,
-          nodes: [],
-          edges: [],
-        };
+        return projectGraphStore.getSnapshot();
       }
     )
   );
+}
+
+/**
+ * Apply a graph patch to the store and broadcast to all renderers.
+ * This is called by producers (e.g., workspace scanner, runtime adapters).
+ */
+export function applyGraphPatch(patch: GraphPatch): void {
+  const applied = projectGraphStore.applyPatch(patch);
+  if (applied) {
+    broadcastGraphPatch(patch);
+  }
 }
 
 /**

@@ -1,0 +1,7 @@
+{
+  "name": "@scaffa/sample-graph-producer",
+  "version": "0.1.0",
+  "type": "module",
+  "main": "index.ts",
+  "description": "Sample graph producer module for Scaffa v0 development"
+}

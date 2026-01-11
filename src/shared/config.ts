@@ -9,10 +9,11 @@ import { ComponentTypeIdSchema } from './preview-session.js';
 
 /**
  * Module instance contributed to the project.
- * Modules are opaque at the config layer - they're instantiated by module code.
+ * v0: Simple path-based loading. Future: factory functions + npm packages.
  */
 export const ScaffaModuleSchema = z.object({
-  name: z.string(),
+  id: z.string(),
+  path: z.string().optional(),
   // Module contributions are resolved at runtime by the extension host
   contributions: z.unknown().optional(),
 });

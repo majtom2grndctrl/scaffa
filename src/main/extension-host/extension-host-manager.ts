@@ -16,6 +16,7 @@ import type {
 import type { ComponentRegistry } from '../../shared/index.js';
 import type { ScaffaConfig } from '../../shared/config.js';
 import { registryManager } from '../registry/registry-manager.js';
+import { applyGraphPatch } from '../ipc/graph.js';
 
 const __dirname = fileURLToPath(new URL('.', import.meta.url));
 
@@ -192,15 +193,18 @@ export class ExtensionHostManager {
    */
   private handleGraphSnapshot(message: GraphSnapshotMessage): void {
     console.log(`[ExtHostManager] Received graph snapshot from producer: ${message.producerId}`);
-    // TODO: Store snapshot and broadcast to renderer
+    // v0: Snapshots are handled by initial patch with revision 1
+    // Future: Support full snapshot replacement
   }
 
   /**
    * Handle graph patch from extension host.
    */
   private handleGraphPatch(message: GraphPatchMessage): void {
-    console.log(`[ExtHostManager] Received graph patch from producer: ${message.producerId}`);
-    // TODO: Apply patch and broadcast to renderer
+    console.log(
+      `[ExtHostManager] Received graph patch from producer: ${message.producerId} (revision: ${message.patch.revision})`
+    );
+    applyGraphPatch(message.patch);
   }
 
   /**

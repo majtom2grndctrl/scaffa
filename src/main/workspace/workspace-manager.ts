@@ -4,6 +4,7 @@ import * as path from 'node:path';
 import type { WorkspaceInfo } from '../../shared/index.js';
 import { configManager } from '../config/config-manager.js';
 import { overrideStore } from '../overrides/override-store.js';
+import { projectGraphStore } from '../graph/graph-store.js';
 
 // ─────────────────────────────────────────────────────────────────────────────
 // Workspace Manager (v0)
@@ -44,6 +45,9 @@ class WorkspaceManager {
 
     // Initialize override store for the current workspace
     await overrideStore.init(this.currentWorkspace?.path ?? null);
+
+    // Reset project graph for the workspace
+    projectGraphStore.reset();
   }
 
   /**
@@ -76,6 +80,9 @@ class WorkspaceManager {
 
     // Initialize override store for the new workspace
     await overrideStore.init(workspace?.path ?? null);
+
+    // Reset project graph for the new workspace
+    projectGraphStore.reset();
   }
 
   /**
