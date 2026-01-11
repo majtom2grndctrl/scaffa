@@ -67,7 +67,26 @@ sequenceDiagram
 
 ---
 
-## 4. Apply Override (Inspector Edit → Preview Update)
+## 4. Active Route Highlight (Router State → Routes Panel)
+
+When a router integration is present, the preview runtime can emit “active route” state so the Workbench can highlight the currently displayed route without guessing.
+
+```mermaid
+sequenceDiagram
+  participant RT as Preview Runtime (Router Integration)
+  participant Main as Main Process (Host)
+  participant PL as Preload (scaffa.*)
+  participant UI as Renderer (Routes Panel)
+
+  RT-->>Main: runtime.routerStateChanged({sessionId, pathname, matches})
+  Main-->>PL: IPC router.stateChanged({sessionId, pathname, matches})
+  PL-->>UI: window.scaffa.onRouterState(cb)
+  UI->>UI: highlight active route id(s)
+```
+
+---
+
+## 5. Apply Override (Inspector Edit → Preview Update)
 
 ```mermaid
 sequenceDiagram
@@ -88,7 +107,7 @@ sequenceDiagram
 
 ---
 
-## 5. Graph Patch Propagation (Adapter → Consumers)
+## 6. Graph Patch Propagation (Adapter → Consumers)
 
 ```mermaid
 sequenceDiagram
@@ -106,7 +125,7 @@ sequenceDiagram
 
 ---
 
-## 6. MCP Observability (External AI Tool ↔ Host State)
+## 7. MCP Observability (External AI Tool ↔ Host State)
 
 MCP clients are northbound consumers of the same canonical state as the renderer UI.
 
@@ -134,7 +153,7 @@ sequenceDiagram
 
 ---
 
-## 7. Notes / Alignment Constraints
+## 8. Notes / Alignment Constraints
 
 - Renderer never talks directly to extension host or preview runtime; it uses preload APIs.
 - Main is the broker/authority for sessions and cross-boundary routing.

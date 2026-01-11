@@ -95,6 +95,16 @@ Notes:
 
 In practice, `ComponentTypeId` is the join key that lets a selected runtime instance map to Inspector metadata.
 
+### 3.2 Route IDs
+
+`RouteId` SHOULD be stable enough to join:
+- the Routes panel selection/highlighting
+- any runtime-emitted “active route” state (e.g. matched route ids)
+
+For router integrations that support explicit route ids (e.g. React Router data-router route objects), prefer using the router’s explicit `id` as the `RouteId`.
+
+If explicit ids are unavailable, a deterministic fallback MAY be derived from the full path (with clear limitations for index routes and dynamic composition).
+
 ### 3.2 Instance IDs
 
 `InstanceId` is only guaranteed stable within a session; stability across reloads is adapter-dependent.

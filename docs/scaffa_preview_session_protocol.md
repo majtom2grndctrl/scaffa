@@ -123,6 +123,23 @@ The renderer MUST treat selection as **session-scoped**.
 
 ---
 
+## 5.3 Active Route State (Optional, Router-Specific)
+
+Some preview sessions will have a router integration (e.g. via a bundled “react-router” extension).
+
+When available, Scaffa MAY consume a router-specific runtime stream describing the **active navigation state**, so the UI can highlight “what route is currently displaying” without guessing from `window.location` alone.
+
+Recommended minimum signal:
+- `sessionId`
+- current `pathname`
+- matched route ids (preferred) that join against `RouteId` in the Project Graph
+
+This is intentionally separate from canonical route discovery:
+- the canonical route list is derived statically from code and represented in the Project Graph
+- the active route is derived from runtime state and may vary by environment/user/flags
+
+---
+
 ## 6. Override Flow (Inspector Edit → Preview Update)
 
 ### 6.1 Authoritative Storage
