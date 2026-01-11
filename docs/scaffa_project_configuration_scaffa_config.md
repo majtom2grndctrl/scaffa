@@ -158,8 +158,10 @@ These constraints are enforced by core services.
 ## 9. Validation and Error Surfacing (v0)
 
 `scaffa.config.ts` is validated with a schema (Zod). In v0:
-- validation errors are logged to the developer console (no dedicated UI yet)
-- module load failures should log an error (a failed module may appear as “not activated”)
+- Config validation errors are surfaced in the **ConfigHealthBanner** (visible below the header)
+- Module activation failures are displayed in the banner with actionable error messages
+- Detailed diagnostics are also logged to the developer console for debugging
+- The app remains usable even when config validation fails (falls back to default config)
 
 ---
 
