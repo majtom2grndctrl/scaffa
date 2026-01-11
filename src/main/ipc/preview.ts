@@ -15,11 +15,11 @@ import {
 } from '../../shared/index.js';
 import { validated, validateEvent } from './validation.js';
 import { z } from 'zod';
+import { previewSessionManager } from '../preview/preview-session-manager.js';
 
 // ─────────────────────────────────────────────────────────────────────────────
-// Preview Session IPC Handlers (v0 Stub)
+// Preview Session IPC Handlers (v0)
 // ─────────────────────────────────────────────────────────────────────────────
-// Full implementation will come in epic 7iq.4
 
 /**
  * Register preview session IPC handlers.
@@ -31,11 +31,9 @@ export function registerPreviewHandlers() {
       StartSessionRequestSchema,
       StartSessionResponseSchema,
       async (_event, request: StartSessionRequest): Promise<StartSessionResponse> => {
-        // Stub: Full implementation in 7iq.4
         console.log('[IPC] preview:startSession', request);
-        return {
-          sessionId: `session-${Date.now()}` as any,
-        };
+        const sessionId = await previewSessionManager.startSession(request.target);
+        return { sessionId };
       }
     )
   );
@@ -46,8 +44,8 @@ export function registerPreviewHandlers() {
       StopSessionRequestSchema,
       z.void(),
       async (_event, request: StopSessionRequest): Promise<void> => {
-        // Stub: Full implementation in 7iq.4
         console.log('[IPC] preview:stopSession', request);
+        await previewSessionManager.stopSession(request.sessionId);
       }
     )
   );

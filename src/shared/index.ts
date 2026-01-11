@@ -5,6 +5,7 @@
 
 export * from './common.js';
 export * from './preview-session.js';
+export * from './runtime-adapter.js';
 export * from './override.js';
 export * from './project-graph.js';
 export * from './workspace.js';
