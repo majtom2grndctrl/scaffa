@@ -1,0 +1,289 @@
+// ─────────────────────────────────────────────────────────────────────────────
+// Module Loader (v0)
+// ─────────────────────────────────────────────────────────────────────────────
+// Loads and activates extension modules from scaffa.config.ts.
+
+import { pathToFileURL } from 'node:url';
+import path from 'node:path';
+import type { ScaffaConfig, ScaffaModule } from '../shared/config.js';
+import type { ComponentRegistry } from '../shared/index.js';
+import type { GraphPatch } from '../shared/project-graph.js';
+import type {
+  ExtensionContext,
+  ExtensionModule,
+  Disposable,
+  RegistryAPI,
+  GraphAPI,
+  GraphProducer,
+} from './extension-context.js';
+import type { ExtHostToMainMessage } from './ipc-protocol.js';
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Module State
+// ─────────────────────────────────────────────────────────────────────────────
+
+interface LoadedModule {
+  id: string;
+  module: ExtensionModule;
+  context: ExtensionContext;
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Module Loader
+// ─────────────────────────────────────────────────────────────────────────────
+
+export class ModuleLoader {
+  private workspacePath: string | null;
+  private config: ScaffaConfig;
+  private loadedModules: Map<string, LoadedModule> = new Map();
+  private registryContributions: ComponentRegistry[] = [];
+  private graphProducers: Map<string, GraphProducer> = new Map();
+
+  constructor(workspacePath: string | null, config: ScaffaConfig) {
+    this.workspacePath = workspacePath;
+    this.config = config;
+  }
+
+  /**
+   * Load and activate all modules from config.
+   */
+  async loadAndActivateModules(): Promise<void> {
+    const modules = this.config.modules ?? [];
+
+    if (modules.length === 0) {
+      console.log('[ModuleLoader] No modules to load');
+      this.sendRegistryContributions();
+      return;
+    }
+
+    console.log(`[ModuleLoader] Loading ${modules.length} module(s)...`);
+
+    for (const moduleConfig of modules) {
+      try {
+        await this.loadModule(moduleConfig);
+      } catch (error) {
+        console.error(`[ModuleLoader] Failed to load module ${moduleConfig.id}:`, error);
+        // Continue loading other modules
+      }
+    }
+
+    console.log(`[ModuleLoader] Loaded ${this.loadedModules.size} module(s)`);
+
+    // Send registry contributions to main
+    this.sendRegistryContributions();
+  }
+
+  /**
+   * Load and activate a single module.
+   */
+  private async loadModule(moduleConfig: ScaffaModule): Promise<void> {
+    const moduleId = moduleConfig.id;
+
+    if (this.loadedModules.has(moduleId)) {
+      console.warn(`[ModuleLoader] Module ${moduleId} already loaded, skipping`);
+      return;
+    }
+
+    console.log(`[ModuleLoader] Loading module: ${moduleId}`);
+
+    // Resolve module path
+    const modulePath = this.resolveModulePath(moduleConfig);
+    if (!modulePath) {
+      throw new Error(`Cannot resolve module path for: ${moduleConfig.id}`);
+    }
+
+    // Import module
+    const moduleExports = await this.importModule(modulePath);
+    if (!moduleExports.activate) {
+      throw new Error(`Module ${moduleId} does not export an activate function`);
+    }
+
+    // Create extension context
+    const context = this.createExtensionContext(moduleId);
+
+    // Store loaded module
+    this.loadedModules.set(moduleId, {
+      id: moduleId,
+      module: moduleExports,
+      context,
+    });
+
+    // Activate module
+    console.log(`[ModuleLoader] Activating module: ${moduleId}`);
+    await moduleExports.activate(context);
+    console.log(`[ModuleLoader] Module activated: ${moduleId}`);
+  }
+
+  /**
+   * Resolve module path from config.
+   */
+  private resolveModulePath(moduleConfig: ScaffaModule): string | null {
+    // v0: Simple path resolution
+    // Future: Support npm packages, relative paths, etc.
+
+    if (moduleConfig.path) {
+      // Relative to workspace
+      if (this.workspacePath) {
+        return path.join(this.workspacePath, moduleConfig.path);
+      }
+      return moduleConfig.path;
+    }
+
+    // Try node_modules
+    if (this.workspacePath) {
+      return path.join(this.workspacePath, 'node_modules', moduleConfig.id);
+    }
+
+    return null;
+  }
+
+  /**
+   * Import module dynamically.
+   */
+  private async importModule(modulePath: string): Promise<ExtensionModule> {
+    const fileUrl = pathToFileURL(modulePath).href;
+    const module = await import(fileUrl);
+    return module as ExtensionModule;
+  }
+
+  /**
+   * Create extension context for a module.
+   */
+  private createExtensionContext(moduleId: string): ExtensionContext {
+    const subscriptions: Disposable[] = [];
+
+    const registryAPI: RegistryAPI = {
+      contributeRegistry: (registry: ComponentRegistry) => {
+        this.registryContributions.push(registry);
+        console.log(`[ModuleLoader] Module ${moduleId} contributed registry`);
+
+        // Return disposable to remove contribution
+        return {
+          dispose: () => {
+            const index = this.registryContributions.indexOf(registry);
+            if (index !== -1) {
+              this.registryContributions.splice(index, 1);
+            }
+          },
+        };
+      },
+    };
+
+    const graphAPI: GraphAPI = {
+      registerProducer: (producer: GraphProducer) => {
+        this.graphProducers.set(producer.id, producer);
+        console.log(`[ModuleLoader] Module ${moduleId} registered graph producer: ${producer.id}`);
+
+        // Initialize and start producer
+        void this.startGraphProducer(producer);
+
+        // Return disposable to unregister
+        return {
+          dispose: () => {
+            this.graphProducers.delete(producer.id);
+          },
+        };
+      },
+    };
+
+    return {
+      apiVersion: 'v0',
+      extensionId: moduleId,
+      workspaceRoot: this.workspacePath,
+      registry: registryAPI,
+      graph: graphAPI,
+      subscriptions,
+    };
+  }
+
+  /**
+   * Start a graph producer.
+   */
+  private async startGraphProducer(producer: GraphProducer): Promise<void> {
+    try {
+      // Initialize and get snapshot
+      const snapshot = await producer.initialize();
+      this.sendToMain({
+        type: 'graph-snapshot',
+        producerId: producer.id,
+        snapshot,
+      });
+
+      // Start producing patches
+      producer.start((patch: GraphPatch) => {
+        this.sendToMain({
+          type: 'graph-patch',
+          producerId: producer.id,
+          patch,
+        });
+      });
+    } catch (error) {
+      console.error(`[ModuleLoader] Failed to start graph producer ${producer.id}:`, error);
+    }
+  }
+
+  /**
+   * Send registry contributions to main process.
+   */
+  private sendRegistryContributions(): void {
+    this.sendToMain({
+      type: 'registry-contribution',
+      registries: this.registryContributions,
+    });
+  }
+
+  /**
+   * Send message to main process.
+   */
+  private sendToMain(message: ExtHostToMainMessage): void {
+    if (!process.send) {
+      console.error('[ModuleLoader] Cannot send message: process.send is not available');
+      return;
+    }
+    process.send(message);
+  }
+
+  /**
+   * Reload modules with new config.
+   */
+  async reload(newConfig: ScaffaConfig): Promise<void> {
+    // Deactivate all current modules
+    await this.deactivateAll();
+
+    // Clear state
+    this.loadedModules.clear();
+    this.registryContributions = [];
+    this.graphProducers.clear();
+
+    // Update config
+    this.config = newConfig;
+
+    // Load new modules
+    await this.loadAndActivateModules();
+  }
+
+  /**
+   * Deactivate all modules.
+   */
+  async deactivateAll(): Promise<void> {
+    console.log('[ModuleLoader] Deactivating all modules...');
+
+    for (const [moduleId, loaded] of this.loadedModules) {
+      try {
+        // Call deactivate if present
+        if (loaded.module.deactivate) {
+          await loaded.module.deactivate();
+        }
+
+        // Dispose all subscriptions
+        for (const disposable of loaded.context.subscriptions) {
+          await disposable.dispose();
+        }
+
+        console.log(`[ModuleLoader] Module deactivated: ${moduleId}`);
+      } catch (error) {
+        console.error(`[ModuleLoader] Failed to deactivate module ${moduleId}:`, error);
+      }
+    }
+  }
+}

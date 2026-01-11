@@ -3,6 +3,8 @@ import { join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { registerAllIpcHandlers } from './ipc/index.js';
 import { workspaceManager } from './workspace/workspace-manager.js';
+import { configManager } from './config/config-manager.js';
+import { extensionHostManager } from './extension-host/extension-host-manager.js';
 
 const __dirname = fileURLToPath(new URL('.', import.meta.url));
 
@@ -36,19 +38,22 @@ const createMainWindow = () => {
   }
 };
 
-const launchExtensionHost = () => {
-  // Placeholder: spawn a dedicated extension host process here.
+const launchExtensionHost = async () => {
+  const workspace = workspaceManager.getCurrentWorkspace();
+  const config = configManager.getCurrentConfig();
+
+  await extensionHostManager.start(workspace?.path ?? null, config);
 };
 
 app.whenReady().then(async () => {
-  // Load persisted workspace state
+  // Load persisted workspace state (also loads config)
   await workspaceManager.load();
 
   // Register all IPC handlers before creating windows
   registerAllIpcHandlers();
 
   createMainWindow();
-  launchExtensionHost();
+  await launchExtensionHost();
 
   app.on('activate', () => {
     if (BrowserWindow.getAllWindows().length === 0) {
@@ -61,4 +66,9 @@ app.on('window-all-closed', () => {
   if (process.platform !== 'darwin') {
     app.quit();
   }
+});
+
+app.on('before-quit', async () => {
+  // Stop extension host gracefully
+  await extensionHostManager.stop();
 });

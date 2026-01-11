@@ -7,6 +7,9 @@ import { registryManager } from '../registry/registry-manager.js';
 // ─────────────────────────────────────────────────────────────────────────────
 // Manages the current project configuration.
 
+// Avoid circular dependency: extension host manager will be imported lazily
+let extensionHostManager: typeof import('../extension-host/extension-host-manager.js').extensionHostManager | null = null;
+
 class ConfigManager {
   private currentConfig: ScaffaConfig = getDefaultConfig();
   private loadResult: ConfigLoadResult | null = null;
@@ -28,6 +31,9 @@ class ConfigManager {
       // Update registry with empty config
       registryManager.recomposeWithConfig(this.currentConfig);
 
+      // Notify extension host (if available)
+      this.notifyExtensionHost();
+
       return this.loadResult;
     }
 
@@ -44,10 +50,28 @@ class ConfigManager {
     }
 
     // Update registry with new config
-    // Note: In v0, we don't have module registries yet, so this will use empty modules
+    // Note: Registry will be updated by extension host contributions
     registryManager.recomposeWithConfig(this.currentConfig);
 
+    // Notify extension host
+    this.notifyExtensionHost();
+
     return this.loadResult;
+  }
+
+  /**
+   * Notify extension host of config change.
+   */
+  private notifyExtensionHost(): void {
+    // Lazy load extension host manager to avoid circular dependency
+    if (!extensionHostManager) {
+      void import('../extension-host/extension-host-manager.js').then((module) => {
+        extensionHostManager = module.extensionHostManager;
+        extensionHostManager?.updateConfig(this.currentConfig);
+      });
+    } else {
+      extensionHostManager.updateConfig(this.currentConfig);
+    }
   }
 
   /**

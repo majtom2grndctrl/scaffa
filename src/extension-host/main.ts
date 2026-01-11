@@ -1,0 +1,170 @@
+#!/usr/bin/env node
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Extension Host Process Entry Point (v0)
+// ─────────────────────────────────────────────────────────────────────────────
+// This process runs all extension modules in isolation from the main process.
+
+import type {
+  MainToExtHostMessage,
+  ExtHostToMainMessage,
+  InitMessage,
+  ConfigChangedMessage,
+} from './ipc-protocol.js';
+import { ModuleLoader } from './module-loader.js';
+import type { ScaffaConfig } from '../shared/config.js';
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Extension Host State
+// ─────────────────────────────────────────────────────────────────────────────
+
+let moduleLoader: ModuleLoader | null = null;
+let isInitialized = false;
+
+// ─────────────────────────────────────────────────────────────────────────────
+// IPC Communication
+// ─────────────────────────────────────────────────────────────────────────────
+
+/**
+ * Send message to main process.
+ */
+function sendToMain(message: ExtHostToMainMessage): void {
+  if (!process.send) {
+    console.error('[ExtHost] Cannot send message: process.send is not available');
+    return;
+  }
+  process.send(message);
+}
+
+/**
+ * Handle incoming message from main process.
+ */
+function handleMessage(message: MainToExtHostMessage): void {
+  switch (message.type) {
+    case 'init':
+      handleInit(message);
+      break;
+
+    case 'config-changed':
+      handleConfigChanged(message);
+      break;
+
+    case 'shutdown':
+      handleShutdown();
+      break;
+
+    default:
+      console.warn('[ExtHost] Unknown message type:', (message as any).type);
+  }
+}
+
+/**
+ * Initialize the extension host with workspace and config.
+ */
+async function handleInit(message: InitMessage): Promise<void> {
+  if (isInitialized) {
+    console.warn('[ExtHost] Already initialized, ignoring init message');
+    return;
+  }
+
+  try {
+    console.log('[ExtHost] Initializing...');
+    console.log('[ExtHost] Workspace:', message.workspacePath ?? '(none)');
+    console.log('[ExtHost] Modules:', message.config.modules?.length ?? 0);
+
+    moduleLoader = new ModuleLoader(message.workspacePath, message.config);
+    await moduleLoader.loadAndActivateModules();
+
+    isInitialized = true;
+    sendToMain({ type: 'ready' });
+    console.log('[ExtHost] Ready');
+  } catch (error) {
+    console.error('[ExtHost] Initialization failed:', error);
+    sendToMain({
+      type: 'error',
+      error: {
+        code: 'INIT_FAILED',
+        message: error instanceof Error ? error.message : String(error),
+        stack: error instanceof Error ? error.stack : undefined,
+      },
+    });
+  }
+}
+
+/**
+ * Handle config change.
+ */
+async function handleConfigChanged(message: ConfigChangedMessage): Promise<void> {
+  if (!isInitialized || !moduleLoader) {
+    console.warn('[ExtHost] Not initialized, ignoring config-changed message');
+    return;
+  }
+
+  try {
+    console.log('[ExtHost] Config changed, reloading modules...');
+    await moduleLoader.reload(message.config);
+    console.log('[ExtHost] Modules reloaded');
+  } catch (error) {
+    console.error('[ExtHost] Config reload failed:', error);
+    sendToMain({
+      type: 'error',
+      error: {
+        code: 'CONFIG_RELOAD_FAILED',
+        message: error instanceof Error ? error.message : String(error),
+        stack: error instanceof Error ? error.stack : undefined,
+      },
+    });
+  }
+}
+
+/**
+ * Shutdown the extension host gracefully.
+ */
+async function handleShutdown(): Promise<void> {
+  console.log('[ExtHost] Shutting down...');
+
+  if (moduleLoader) {
+    await moduleLoader.deactivateAll();
+    moduleLoader = null;
+  }
+
+  isInitialized = false;
+  process.exit(0);
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Process Lifecycle
+// ─────────────────────────────────────────────────────────────────────────────
+
+// Listen for messages from main process
+process.on('message', (message: MainToExtHostMessage) => {
+  handleMessage(message);
+});
+
+// Handle errors
+process.on('uncaughtException', (error) => {
+  console.error('[ExtHost] Uncaught exception:', error);
+  sendToMain({
+    type: 'error',
+    error: {
+      code: 'UNCAUGHT_EXCEPTION',
+      message: error.message,
+      stack: error.stack,
+    },
+  });
+});
+
+process.on('unhandledRejection', (reason) => {
+  console.error('[ExtHost] Unhandled rejection:', reason);
+  sendToMain({
+    type: 'error',
+    error: {
+      code: 'UNHANDLED_REJECTION',
+      message: reason instanceof Error ? reason.message : String(reason),
+      stack: reason instanceof Error ? reason.stack : undefined,
+    },
+  });
+});
+
+// Notify main that we're alive and waiting for init
+console.log('[ExtHost] Process started, waiting for init...');
