@@ -133,6 +133,44 @@ Responsibilities:
 
 Modules may be imperative, but are boxed.
 
+### 3.5 Source Code Organization
+
+The source code is organized by process boundary:
+
+```
+src/
+├── main/                    # Main process (Electron host)
+│   ├── main.ts             # Entry point
+│   ├── config/             # Config loading + validation
+│   ├── extension-host/     # Extension host management
+│   ├── graph/              # Project graph store
+│   ├── overrides/          # Override store + persistence
+│   ├── registry/           # Registry composition
+│   ├── workspace/          # Workspace management
+│   └── ipc/                # IPC handlers (validation + routing)
+├── renderer/                # Renderer process (Workbench UI)
+│   ├── main.tsx            # Entry point
+│   ├── router.tsx          # TanStack Router config
+│   ├── components/         # UI components (Inspector, Graph, etc.)
+│   ├── state/              # Zustand stores
+│   └── views/              # Top-level views (AppShell, Workbench)
+├── extension-host/          # Extension host process
+│   ├── main.ts             # Entry point
+│   ├── extension-context.ts # Extension API surface
+│   └── module-loader.ts    # Module loading + activation
+├── preload/                 # Preload scripts (capability gateway)
+│   └── preload.ts          # Main window preload
+└── shared/                  # Cross-boundary protocol types
+    ├── index.ts            # Re-exports for convenience
+    ├── ipc.ts              # IPC schemas
+    ├── registry.ts         # Component registry types
+    ├── project-graph.ts    # Graph types
+    ├── override.ts         # Override types
+    └── preview-session.ts  # Preview session types
+```
+
+See `docs/scaffa_development_guide.md` for build output structure and development workflows.
+
 ---
 
 ## 4. Core Concepts
