@@ -282,7 +282,14 @@ State domains:
 
 ---
 
-## 8. Deferred (Explicitly Out of Scope for v0)
+## 8. Code Style & Accessibility (Canonical)
+
+- Prefer code that is clear and understandable over clever code.
+- Prefer accessible markup with semantic HTML.
+
+---
+
+## 9. Deferred (Explicitly Out of Scope for v0)
 
 - Public extension marketplace
 - Untrusted module sandboxing UI
@@ -295,6 +302,6 @@ These are architectural considerations, not v0 deliverables.
 
 ---
 
-## 9. Guiding Principle
+## 10. Guiding Principle
 
 **Scaffa edits what it can prove is safe to edit, displays what it cannot, and always provides an escape hatch to code.**
