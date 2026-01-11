@@ -122,7 +122,7 @@ demo/app/
 - TypeScript 5.6.3
 
 ### Internal Dependencies
-- `@scaffa/react-runtime-adapter` (workspace package)
+- `@scaffa/react-runtime-adapter` (local file dependency to `packages/react-runtime-adapter`)
 - Scaffa core types (`src/shared/`, `src/extension-host/`)
 
 ## Testing Instructions

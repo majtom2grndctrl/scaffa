@@ -5,11 +5,13 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
+    "dev:local": "pnpm --ignore-workspace run dev",
     "build": "vite build",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "install:local": "pnpm --ignore-workspace install"
   },
   "dependencies": {
-    "@scaffa/react-runtime-adapter": "workspace:*",
+    "@scaffa/react-runtime-adapter": "file:../../packages/react-runtime-adapter",
     "react": "^18.3.1",
     "react-dom": "^18.3.1"
   },
@@ -17,5 +19,10 @@
     "@vitejs/plugin-react": "^4.3.4",
     "typescript": "^5.6.3",
     "vite": "^5.4.10"
+  },
+  "pnpm": {
+    "onlyBuiltDependencies": [
+      "esbuild"
+    ]
   }
 }
