@@ -1,9 +1,179 @@
-import { contextBridge } from 'electron';
+import { contextBridge, ipcRenderer } from 'electron';
+import type {
+  StartSessionRequest,
+  StartSessionResponse,
+  StopSessionRequest,
+  SetOverrideRequest,
+  ClearOverrideRequest,
+  ClearInstanceOverridesRequest,
+  ClearAllOverridesRequest,
+  GetGraphSnapshotRequest,
+  GetGraphSnapshotResponse,
+  SessionReadyEvent,
+  SessionErrorEvent,
+  SessionStoppedEvent,
+  SelectionChangedEvent,
+  OverridesChangedEvent,
+  GraphPatch,
+} from '../shared/index.js';
 
-contextBridge.exposeInMainWorld('scaffa', {
+// ─────────────────────────────────────────────────────────────────────────────
+// Preload: Typed window.scaffa APIs (v0)
+// ─────────────────────────────────────────────────────────────────────────────
+// See: docs/scaffa_ipc_boundaries_and_sequences.md
+
+/**
+ * Typed callback handler for IPC events.
+ */
+type EventCallback<T> = (event: T) => void;
+
+/**
+ * Unsubscribe function returned by event listeners.
+ */
+type Unsubscribe = () => void;
+
+const scaffaApi = {
   versions: {
     node: process.versions.node,
     chrome: process.versions.chrome,
     electron: process.versions.electron,
   },
-});
+
+  // ───────────────────────────────────────────────────────────────────────────
+  // Preview APIs
+  // ───────────────────────────────────────────────────────────────────────────
+
+  preview: {
+    startSession: (request: StartSessionRequest): Promise<StartSessionResponse> => {
+      return ipcRenderer.invoke('preview:startSession', request);
+    },
+
+    stopSession: (request: StopSessionRequest): Promise<void> => {
+      return ipcRenderer.invoke('preview:stopSession', request);
+    },
+
+    onSessionReady: (callback: EventCallback<SessionReadyEvent>): Unsubscribe => {
+      const listener = (_event: Electron.IpcRendererEvent, data: SessionReadyEvent) => {
+        callback(data);
+      };
+      ipcRenderer.on('preview:sessionReady', listener);
+      return () => {
+        ipcRenderer.removeListener('preview:sessionReady', listener);
+      };
+    },
+
+    onSessionError: (callback: EventCallback<SessionErrorEvent>): Unsubscribe => {
+      const listener = (_event: Electron.IpcRendererEvent, data: SessionErrorEvent) => {
+        callback(data);
+      };
+      ipcRenderer.on('preview:sessionError', listener);
+      return () => {
+        ipcRenderer.removeListener('preview:sessionError', listener);
+      };
+    },
+
+    onSessionStopped: (callback: EventCallback<SessionStoppedEvent>): Unsubscribe => {
+      const listener = (_event: Electron.IpcRendererEvent, data: SessionStoppedEvent) => {
+        callback(data);
+      };
+      ipcRenderer.on('preview:sessionStopped', listener);
+      return () => {
+        ipcRenderer.removeListener('preview:sessionStopped', listener);
+      };
+    },
+  },
+
+  // ───────────────────────────────────────────────────────────────────────────
+  // Selection APIs
+  // ───────────────────────────────────────────────────────────────────────────
+
+  selection: {
+    onSelectionChanged: (
+      callback: EventCallback<SelectionChangedEvent>
+    ): Unsubscribe => {
+      const listener = (
+        _event: Electron.IpcRendererEvent,
+        data: SelectionChangedEvent
+      ) => {
+        callback(data);
+      };
+      ipcRenderer.on('selection:changed', listener);
+      return () => {
+        ipcRenderer.removeListener('selection:changed', listener);
+      };
+    },
+  },
+
+  // ───────────────────────────────────────────────────────────────────────────
+  // Override APIs
+  // ───────────────────────────────────────────────────────────────────────────
+
+  overrides: {
+    set: (request: SetOverrideRequest): Promise<void> => {
+      return ipcRenderer.invoke('overrides:set', request);
+    },
+
+    clear: (request: ClearOverrideRequest): Promise<void> => {
+      return ipcRenderer.invoke('overrides:clear', request);
+    },
+
+    clearInstance: (request: ClearInstanceOverridesRequest): Promise<void> => {
+      return ipcRenderer.invoke('overrides:clearInstance', request);
+    },
+
+    clearAll: (request: ClearAllOverridesRequest): Promise<void> => {
+      return ipcRenderer.invoke('overrides:clearAll', request);
+    },
+
+    onOverridesChanged: (
+      callback: EventCallback<OverridesChangedEvent>
+    ): Unsubscribe => {
+      const listener = (
+        _event: Electron.IpcRendererEvent,
+        data: OverridesChangedEvent
+      ) => {
+        callback(data);
+      };
+      ipcRenderer.on('overrides:changed', listener);
+      return () => {
+        ipcRenderer.removeListener('overrides:changed', listener);
+      };
+    },
+  },
+
+  // ───────────────────────────────────────────────────────────────────────────
+  // Graph APIs
+  // ───────────────────────────────────────────────────────────────────────────
+
+  graph: {
+    getSnapshot: (
+      request: GetGraphSnapshotRequest
+    ): Promise<GetGraphSnapshotResponse> => {
+      return ipcRenderer.invoke('graph:getSnapshot', request);
+    },
+
+    onPatch: (callback: EventCallback<GraphPatch>): Unsubscribe => {
+      const listener = (_event: Electron.IpcRendererEvent, data: GraphPatch) => {
+        callback(data);
+      };
+      ipcRenderer.on('graph:patch', listener);
+      return () => {
+        ipcRenderer.removeListener('graph:patch', listener);
+      };
+    },
+  },
+};
+
+contextBridge.exposeInMainWorld('scaffa', scaffaApi);
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Type Augmentation for window.scaffa
+// ─────────────────────────────────────────────────────────────────────────────
+
+export type ScaffaApi = typeof scaffaApi;
+
+declare global {
+  interface Window {
+    scaffa: ScaffaApi;
+  }
+}

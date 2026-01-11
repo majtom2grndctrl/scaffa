@@ -1,6 +1,7 @@
 import { app, BrowserWindow } from 'electron';
 import { join } from 'node:path';
 import { fileURLToPath } from 'node:url';
+import { registerAllIpcHandlers } from './ipc/index.js';
 
 const __dirname = fileURLToPath(new URL('.', import.meta.url));
 
@@ -39,6 +40,9 @@ const launchExtensionHost = () => {
 };
 
 app.whenReady().then(() => {
+  // Register all IPC handlers before creating windows
+  registerAllIpcHandlers();
+
   createMainWindow();
   launchExtensionHost();
 
