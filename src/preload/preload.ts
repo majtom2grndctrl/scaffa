@@ -15,7 +15,20 @@ import type {
   SelectionChangedEvent,
   OverridesChangedEvent,
   GraphPatch,
+  SelectWorkspaceRequest,
+  SelectWorkspaceResponse,
+  GetWorkspaceRequest,
+  GetWorkspaceResponse,
+  WorkspaceChangedEvent,
 } from '../shared/index.js';
+import type {
+  GetConfigRequest,
+  GetConfigResponse,
+} from '../main/ipc/config.js';
+import type {
+  GetRegistryRequest,
+  GetRegistryResponse,
+} from '../main/ipc/registry.js';
 
 // ─────────────────────────────────────────────────────────────────────────────
 // Preload: Typed window.scaffa APIs (v0)
@@ -37,6 +50,55 @@ const scaffaApi = {
     node: process.versions.node,
     chrome: process.versions.chrome,
     electron: process.versions.electron,
+  },
+
+  // ───────────────────────────────────────────────────────────────────────────
+  // Workspace APIs
+  // ───────────────────────────────────────────────────────────────────────────
+
+  workspace: {
+    select: (request: SelectWorkspaceRequest): Promise<SelectWorkspaceResponse> => {
+      return ipcRenderer.invoke('workspace:select', request);
+    },
+
+    get: (request: GetWorkspaceRequest): Promise<GetWorkspaceResponse> => {
+      return ipcRenderer.invoke('workspace:get', request);
+    },
+
+    onWorkspaceChanged: (
+      callback: EventCallback<WorkspaceChangedEvent>
+    ): Unsubscribe => {
+      const listener = (
+        _event: Electron.IpcRendererEvent,
+        data: WorkspaceChangedEvent
+      ) => {
+        callback(data);
+      };
+      ipcRenderer.on('workspace:changed', listener);
+      return () => {
+        ipcRenderer.removeListener('workspace:changed', listener);
+      };
+    },
+  },
+
+  // ───────────────────────────────────────────────────────────────────────────
+  // Config APIs
+  // ───────────────────────────────────────────────────────────────────────────
+
+  config: {
+    get: (request: GetConfigRequest): Promise<GetConfigResponse> => {
+      return ipcRenderer.invoke('config:get', request);
+    },
+  },
+
+  // ───────────────────────────────────────────────────────────────────────────
+  // Registry APIs
+  // ───────────────────────────────────────────────────────────────────────────
+
+  registry: {
+    get: (request: GetRegistryRequest): Promise<GetRegistryResponse> => {
+      return ipcRenderer.invoke('registry:get', request);
+    },
   },
 
   // ───────────────────────────────────────────────────────────────────────────

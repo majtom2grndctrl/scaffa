@@ -2,6 +2,7 @@ import { app, BrowserWindow } from 'electron';
 import { join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { registerAllIpcHandlers } from './ipc/index.js';
+import { workspaceManager } from './workspace/workspace-manager.js';
 
 const __dirname = fileURLToPath(new URL('.', import.meta.url));
 
@@ -39,7 +40,10 @@ const launchExtensionHost = () => {
   // Placeholder: spawn a dedicated extension host process here.
 };
 
-app.whenReady().then(() => {
+app.whenReady().then(async () => {
+  // Load persisted workspace state
+  await workspaceManager.load();
+
   // Register all IPC handlers before creating windows
   registerAllIpcHandlers();
 
