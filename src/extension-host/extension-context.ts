@@ -4,7 +4,7 @@
 // The sole entry point for extension modules to interact with Scaffa.
 
 import type { ComponentRegistry } from '../shared/index.js';
-import type { GraphPatch } from '../shared/project-graph.js';
+import type { GraphPatch, GraphSnapshot } from '../shared/project-graph.js';
 import type {
   PreviewLauncherDescriptor,
   PreviewLauncherOptions,
@@ -88,7 +88,7 @@ export interface GraphProducer {
   /**
    * Initialize the producer and return initial snapshot.
    */
-  initialize(): Promise<unknown>; // TODO: GraphSnapshot type
+  initialize(): Promise<GraphSnapshot>;
 
   /**
    * Start producing patches.
