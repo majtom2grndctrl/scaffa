@@ -108,3 +108,23 @@ export {
   PreviewSessionIdSchema,
   PreviewLauncherIdSchema,
 } from './src/shared/index.js';
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Graph Construction Helpers
+// ─────────────────────────────────────────────────────────────────────────────
+
+export {
+  createRouteId,
+  createComponentTypeId,
+  createRouteNode,
+  createComponentTypeNode,
+  createRouteUsesComponentTypeEdge,
+  createComponentTypeUsesComponentTypeEdge,
+} from './src/extension-host/graph-helpers.js';
+
+export type {
+  CreateRouteNodeOptions,
+  CreateComponentTypeNodeOptions,
+  CreateRouteUsesComponentTypeEdgeOptions,
+  CreateComponentTypeUsesComponentTypeEdgeOptions,
+} from './src/extension-host/graph-helpers.js';

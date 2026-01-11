@@ -10,6 +10,12 @@ import type {
   GraphPatch,
   GraphSnapshot,
 } from '../../extension-sdk.js';
+import {
+  createRouteNode,
+  createComponentTypeNode,
+  createRouteUsesComponentTypeEdge,
+  createComponentTypeUsesComponentTypeEdge,
+} from '../../extension-sdk.js';
 
 export function activate(context: ExtensionContext): void {
   console.log('[SampleGraphProducer] Activating...');
@@ -25,73 +31,52 @@ export function activate(context: ExtensionContext): void {
         schemaVersion: 'v0' as const,
         revision: 1,
         nodes: [
-          {
-            kind: 'route' as const,
-            id: 'route:/' as any,
+          createRouteNode({
             path: '/',
-            source: {
-              filePath: 'src/app/page.tsx',
-              line: 1,
-            },
-          },
-          {
-            kind: 'route' as const,
-            id: 'route:/about' as any,
+            filePath: 'src/app/page.tsx',
+            line: 1,
+          }),
+          createRouteNode({
             path: '/about',
-            source: {
-              filePath: 'src/app/about/page.tsx',
-              line: 1,
-            },
-          },
-          {
-            kind: 'componentType' as const,
-            id: 'ui.button' as any,
+            filePath: 'src/app/about/page.tsx',
+            line: 1,
+          }),
+          createComponentTypeNode({
+            id: 'ui.button',
             displayName: 'Button',
-            source: {
-              filePath: 'src/components/Button.tsx',
-              line: 5,
-            },
-          },
-          {
-            kind: 'componentType' as const,
-            id: 'ui.card' as any,
+            filePath: 'src/components/Button.tsx',
+            line: 5,
+          }),
+          createComponentTypeNode({
+            id: 'ui.card',
             displayName: 'Card',
-            source: {
-              filePath: 'src/components/Card.tsx',
-              line: 3,
-            },
-          },
-          {
-            kind: 'componentType' as const,
-            id: 'layout.header' as any,
+            filePath: 'src/components/Card.tsx',
+            line: 3,
+          }),
+          createComponentTypeNode({
+            id: 'layout.header',
             displayName: 'Header',
-            source: {
-              filePath: 'src/components/Header.tsx',
-              line: 1,
-            },
-          },
+            filePath: 'src/components/Header.tsx',
+            line: 1,
+          }),
         ],
         edges: [
-          {
-            kind: 'routeUsesComponentType' as const,
-            routeId: 'route:/' as any,
-            componentTypeId: 'ui.button' as any,
-          },
-          {
-            kind: 'routeUsesComponentType' as const,
-            routeId: 'route:/' as any,
-            componentTypeId: 'ui.card' as any,
-          },
-          {
-            kind: 'routeUsesComponentType' as const,
-            routeId: 'route:/about' as any,
-            componentTypeId: 'layout.header' as any,
-          },
-          {
-            kind: 'componentTypeUsesComponentType' as const,
-            from: 'layout.header' as any,
-            to: 'ui.button' as any,
-          },
+          createRouteUsesComponentTypeEdge({
+            routePath: '/',
+            componentTypeId: 'ui.button',
+          }),
+          createRouteUsesComponentTypeEdge({
+            routePath: '/',
+            componentTypeId: 'ui.card',
+          }),
+          createRouteUsesComponentTypeEdge({
+            routePath: '/about',
+            componentTypeId: 'layout.header',
+          }),
+          createComponentTypeUsesComponentTypeEdge({
+            from: 'layout.header',
+            to: 'ui.button',
+          }),
         ],
       };
     },
@@ -108,23 +93,18 @@ export function activate(context: ExtensionContext): void {
           ops: [
             {
               op: 'upsertNode' as const,
-              node: {
-                kind: 'route' as const,
-                id: 'route:/contact' as any,
+              node: createRouteNode({
                 path: '/contact',
-                source: {
-                  filePath: 'src/app/contact/page.tsx',
-                  line: 1,
-                },
-              },
+                filePath: 'src/app/contact/page.tsx',
+                line: 1,
+              }),
             },
             {
               op: 'upsertEdge' as const,
-              edge: {
-                kind: 'routeUsesComponentType' as const,
-                routeId: 'route:/contact' as any,
-                componentTypeId: 'ui.button' as any,
-              },
+              edge: createRouteUsesComponentTypeEdge({
+                routePath: '/contact',
+                componentTypeId: 'ui.button',
+              }),
             },
           ],
         });

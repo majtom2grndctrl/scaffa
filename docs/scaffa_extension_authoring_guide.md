@@ -84,19 +84,61 @@ Planned (not v0): a published package such as `@scaffa/extension-api` so extensi
 
 ---
 
-## 4. Branded Types (Zod) and Avoiding `as any`
+## 4. Branded Types (Zod) and Graph Construction Helpers
 
-Scaffa’s shared protocol uses Zod-branded identifiers for safety (e.g. `ComponentTypeId`).
+Scaffa's shared protocol uses Zod-branded identifiers for safety (e.g. `ComponentTypeId`, `RouteId`).
 
-If you need to construct values safely, prefer parsing with the exported schemas rather than casting:
+**RECOMMENDED**: Use the graph construction helpers provided by the Extension SDK to avoid `as any` casts:
 
 ```ts
-import { ComponentTypeIdSchema } from '../../../src/shared/index.js';
+import {
+  createRouteNode,
+  createComponentTypeNode,
+  createRouteUsesComponentTypeEdge,
+  createComponentTypeUsesComponentTypeEdge,
+} from '../../extension-sdk.js';
 
+// Create nodes without casts
+const nodes = [
+  createRouteNode({
+    path: '/',
+    filePath: 'src/app/page.tsx',
+    line: 1,
+  }),
+  createComponentTypeNode({
+    id: 'ui.button',
+    displayName: 'Button',
+    filePath: 'src/components/Button.tsx',
+    line: 5,
+  }),
+];
+
+// Create edges without casts
+const edges = [
+  createRouteUsesComponentTypeEdge({
+    routePath: '/',
+    componentTypeId: 'ui.button',
+  }),
+  createComponentTypeUsesComponentTypeEdge({
+    from: 'layout.header',
+    to: 'ui.button',
+  }),
+];
+```
+
+**Advanced**: If you need to construct branded IDs directly, use the schema parsing functions:
+
+```ts
+import { ComponentTypeIdSchema, createComponentTypeId } from '../../extension-sdk.js';
+
+// Using helper (recommended)
+const typeId = createComponentTypeId('demo.button');
+
+// Using schema directly (if you need custom validation)
 const typeId = ComponentTypeIdSchema.parse('demo.button');
 ```
 
-Use `as const` for discriminated unions to preserve literal types (e.g. graph node `kind` fields).
+**Important**: Use `as const` for discriminated unions to preserve literal types (e.g. `schemaVersion: 'v0' as const`).
 
 ---
 
@@ -125,7 +167,7 @@ Recommended workflow:
 
 ## 7. Common Failure Modes (v0)
 
-- **Module loads but “does nothing”**: check DevTools for activation errors and confirm the module path in `scaffa.config.ts`.
+- **Module loads but "does nothing"**: check DevTools for activation errors and confirm the module path in `scaffa.config.ts`.
 - **Registry contributed but Inspector shows raw props**: confirm `ComponentTypeId` matches registry ↔ graph ↔ runtime wrapper.
-- **TypeScript friction in producers**: prefer schema parsing for branded IDs, and use `as const` for node/edge discriminators.
+- **TypeScript friction in producers**: use the graph construction helpers (`createRouteNode`, `createComponentTypeNode`, etc.) from the Extension SDK to avoid `as any` casts. See section 4 for examples.
 
