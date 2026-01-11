@@ -1,0 +1,7 @@
+{
+  "name": "@scaffa/demo-module",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "Demo component registry module for Scaffa v0 walkthrough"
+}
