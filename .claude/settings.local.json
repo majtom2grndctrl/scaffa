@@ -15,7 +15,13 @@
       "Bash(bd list:*)",
       "Bash(pnpm --filter @scaffa/demo-app build:*)",
       "Bash(pnpm typecheck:*)",
-      "Bash(pnpm test:*)"
+      "Bash(pnpm test:*)",
+      "Bash(pnpm run typecheck:*)",
+      "Bash(pnpm build:renderer:*)",
+      "Bash(git push:*)",
+      "Bash(git log:*)",
+      "Bash(pnpm dev:*)",
+      "Bash(bd dep add:*)"
     ]
   }
 }
