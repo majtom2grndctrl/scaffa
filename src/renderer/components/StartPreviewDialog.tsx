@@ -59,7 +59,9 @@ export const StartPreviewDialog = ({
         try {
           new URL(url);
         } catch {
-          setError('Invalid URL. Please enter a valid HTTP(S) URL.');
+          setError(
+            'Invalid URL. Must include protocol (http:// or https://). Example: http://localhost:5173'
+          );
           setIsLoading(false);
           return;
         }
@@ -146,8 +148,8 @@ export const StartPreviewDialog = ({
             </div>
             <p className="mt-1 text-xs text-fg-subtle">
               {mode === 'attached'
-                ? 'Connect to an existing dev server'
-                : 'Let Scaffa start and manage the dev server'}
+                ? 'Attached (view mode): Connect to an existing dev server you started manually'
+                : 'Managed (edit mode): Let Scaffa start and manage the dev server for you'}
             </p>
           </div>
 
@@ -155,7 +157,7 @@ export const StartPreviewDialog = ({
           {mode === 'attached' && (
             <div>
               <label htmlFor="url" className="mb-2 block text-sm font-medium text-fg-muted">
-                Preview URL
+                Preview URL (Attached Mode)
               </label>
               <input
                 id="url"
@@ -167,7 +169,7 @@ export const StartPreviewDialog = ({
                 className="w-full rounded-md border border-subtle bg-surface-inset px-3 py-2 text-sm text-fg placeholder-fg-subtle focus:border-accent focus:outline-none focus:ring-1 focus:ring-accent disabled:cursor-not-allowed disabled:opacity-50"
               />
               <p className="mt-1 text-xs text-fg-subtle">
-                Enter the URL of your running dev server
+                Enter the URL of your running dev server (must include http:// or https://)
               </p>
             </div>
           )}
