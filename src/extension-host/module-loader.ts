@@ -64,8 +64,25 @@ export class ModuleLoader {
     for (const moduleConfig of modules) {
       try {
         await this.loadModule(moduleConfig);
+        // Report success
+        this.sendToMain({
+          type: 'module-activation-status',
+          moduleId: moduleConfig.id,
+          status: 'success',
+        });
       } catch (error) {
         console.error(`[ModuleLoader] Failed to load module ${moduleConfig.id}:`, error);
+        // Report failure
+        this.sendToMain({
+          type: 'module-activation-status',
+          moduleId: moduleConfig.id,
+          status: 'failed',
+          error: {
+            code: 'MODULE_LOAD_FAILED',
+            message: error instanceof Error ? error.message : String(error),
+            stack: error instanceof Error ? error.stack : undefined,
+          },
+        });
         // Continue loading other modules
       }
     }

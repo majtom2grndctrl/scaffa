@@ -17,6 +17,7 @@ import type {
   PreviewLauncherStoppedMessage,
   PreviewLauncherErrorMessage,
   PreviewLauncherLogMessage,
+  ModuleActivationStatusMessage,
 } from '../../extension-host/ipc-protocol.js';
 import type { ComponentRegistry } from '../../shared/index.js';
 import type { ScaffaConfig } from '../../shared/config.js';
@@ -25,6 +26,20 @@ import { applyGraphPatch } from '../ipc/graph.js';
 import { launcherRegistry } from '../preview/launcher-registry.js';
 
 const __dirname = fileURLToPath(new URL('.', import.meta.url));
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Module Activation Status
+// ─────────────────────────────────────────────────────────────────────────────
+
+export interface ModuleActivationStatus {
+  moduleId: string;
+  status: 'success' | 'failed';
+  error?: {
+    code: string;
+    message: string;
+    stack?: string;
+  };
+}
 
 // ─────────────────────────────────────────────────────────────────────────────
 // Extension Host Manager
@@ -38,6 +53,7 @@ export class ExtensionHostManager {
   private readonly maxRestarts = 5;
   private workspacePath: string | null = null;
   private config: ScaffaConfig | null = null;
+  private moduleActivationStatuses: Map<string, ModuleActivationStatus> = new Map();
 
   /**
    * Start the extension host process.
@@ -194,6 +210,10 @@ export class ExtensionHostManager {
         this.handlePreviewLauncherLog(message);
         break;
 
+      case 'module-activation-status':
+        this.handleModuleActivationStatus(message);
+        break;
+
       default:
         console.warn('[ExtHostManager] Unknown message type:', (message as any).type);
     }
@@ -281,6 +301,36 @@ export class ExtensionHostManager {
    */
   private handlePreviewLauncherLog(message: PreviewLauncherLogMessage): void {
     launcherRegistry.handleLauncherLog(message.launcherId, message.entry);
+  }
+
+  /**
+   * Handle module activation status from extension host.
+   */
+  private handleModuleActivationStatus(message: ModuleActivationStatusMessage): void {
+    const { moduleId, status, error } = message;
+
+    if (status === 'success') {
+      console.log(`[ExtHostManager] Module activated successfully: ${moduleId}`);
+    } else {
+      console.error(`[ExtHostManager] Module activation failed: ${moduleId}`, error);
+    }
+
+    // Store the status
+    this.moduleActivationStatuses.set(moduleId, { moduleId, status, error });
+  }
+
+  /**
+   * Get module activation statuses.
+   */
+  getModuleActivationStatuses(): ModuleActivationStatus[] {
+    return Array.from(this.moduleActivationStatuses.values());
+  }
+
+  /**
+   * Clear module activation statuses (when reloading config).
+   */
+  clearModuleActivationStatuses(): void {
+    this.moduleActivationStatuses.clear();
   }
 
   /**

@@ -4,6 +4,7 @@ import { Outlet } from '@tanstack/react-router';
 import { useEffect } from 'react';
 import { useGraphStore } from '../state/graphStore';
 import { useInspectorStore } from '../state/inspectorStore';
+import { ConfigHealthBanner } from '../components/ConfigHealthBanner';
 
 export const AppShell = () => {
   const showDevtools = import.meta.env.DEV;
@@ -24,6 +25,7 @@ export const AppShell = () => {
           Instance-first editing sandbox aligned to docs/index.md.
         </p>
       </header>
+      <ConfigHealthBanner />
       <main className="px-6 py-6">
         <Outlet />
       </main>

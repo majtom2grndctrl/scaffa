@@ -169,6 +169,21 @@ export interface PreviewLauncherLogMessage {
   entry: PreviewLogEntry;
 }
 
+/**
+ * Module activation status report.
+ * Sent after module loading completes (success or failure).
+ */
+export interface ModuleActivationStatusMessage {
+  type: 'module-activation-status';
+  moduleId: string;
+  status: 'success' | 'failed';
+  error?: {
+    code: string;
+    message: string;
+    stack?: string;
+  };
+}
+
 export type ExtHostToMainMessage =
   | ReadyMessage
   | RegistryContributionMessage
@@ -179,4 +194,5 @@ export type ExtHostToMainMessage =
   | PreviewLauncherStartedMessage
   | PreviewLauncherStoppedMessage
   | PreviewLauncherErrorMessage
-  | PreviewLauncherLogMessage;
+  | PreviewLauncherLogMessage
+  | ModuleActivationStatusMessage;

@@ -6,6 +6,7 @@ import {
 } from '../../shared/index.js';
 import { validated } from './validation.js';
 import { configManager } from '../config/config-manager.js';
+import { extensionHostManager } from '../extension-host/extension-host-manager.js';
 
 // ─────────────────────────────────────────────────────────────────────────────
 // Config IPC Handlers (v0)
@@ -28,6 +29,19 @@ export const GetConfigResponseSchema = z.object({
       message: z.string(),
     })
     .nullable(),
+  moduleActivationStatuses: z.array(
+    z.object({
+      moduleId: z.string(),
+      status: z.enum(['success', 'failed']),
+      error: z
+        .object({
+          code: z.string(),
+          message: z.string(),
+          stack: z.string().optional(),
+        })
+        .optional(),
+    })
+  ),
 });
 export type GetConfigResponse = z.infer<typeof GetConfigResponseSchema>;
 
@@ -45,6 +59,7 @@ export function registerConfigHandlers() {
 
         const config = configManager.getCurrentConfig();
         const loadResult = configManager.getLoadResult();
+        const moduleStatuses = extensionHostManager.getModuleActivationStatuses();
 
         return {
           config,
@@ -56,6 +71,7 @@ export function registerConfigHandlers() {
                   message: loadResult.error.message,
                 }
               : null,
+          moduleActivationStatuses: moduleStatuses,
         };
       }
     )
