@@ -3,29 +3,20 @@
 - Use docs/index.md as the architectural source of truth.
 - Keep the Electron multi-process model and renderer tech stack aligned with the plan.
 
-## Landing the Plane (Session Completion)
+## Working on Beads Tickets
 
-**When ending a work session**, you MUST complete ALL steps below. Work is NOT complete until `git push` succeeds.
+When asked to work on a beads ticket, use the `implement-ticket` skill.
 
-**MANDATORY WORKFLOW:**
+## General Work Guidance
 
-1. **File issues for remaining work** - Create issues for anything that needs follow-up
-2. **Run quality gates** (if code changed) - Tests, linters, builds
-3. **Update issue status** - Close finished work, update in-progress items
-4. **PUSH TO REMOTE** - This is MANDATORY:
-   ```bash
-   git pull --rebase
-   bd sync  # persists `.beads/issues.jsonl` on the beads sync branch (do not include in code commits)
-   git push
-   git status  # MUST show "up to date with origin"
-   ```
-5. **Clean up** - Clear stashes, prune remote branches
-6. **Verify** - All changes committed AND pushed
-7. **Hand off** - Provide context for next session
+For any significant code changes (ticket or not):
 
-**CRITICAL RULES:**
-- Work is NOT complete until `git push` succeeds
-- NEVER include `.beads/issues.jsonl` in code commits (main or feature branches); persist it via `bd sync` instead
-- NEVER stop before pushing - that leaves work stranded locally
-- NEVER say "ready to push when you are" - YOU must push
-- If push fails, resolve and retry until it succeeds
+1. **Ground on documentation first** - Review relevant docs before coding
+2. **Validate documentation after** - Check for and fix outdated/misleading docs
+3. **Complete landing protocol** - Always finish with:
+   - `git add` + `git commit`
+   - `bd sync`
+   - `git push`
+   - Verify `git status` shows "up to date"
+
+Work is NOT complete until pushed to remote.
