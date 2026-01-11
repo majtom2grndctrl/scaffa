@@ -23,5 +23,10 @@ export default defineScaffaConfig({
       id: 'demo-graph-producer',
       path: './extensions/demo-graph-producer/index.ts',
     },
+    // Vite+React preview launcher for managed dev server
+    {
+      id: 'vite-launcher',
+      path: './extensions/vite-launcher/index.ts',
+    },
   ],
 });
