@@ -49,24 +49,38 @@ Naming note:
 
 ---
 
-## 3. Type Import Conventions (Until an Extension SDK Exists)
+## 3. Type Import Conventions (Extension SDK)
 
-v0 extensions often live inside the Scaffa repo as workspace-local modules. Until there is a published “extension SDK” package, prefer these imports:
+v0 extensions should import from the **Extension SDK entrypoint** (`extension-sdk.ts`) for a stable API surface.
 
-- Extension context types: `src/extension-host/extension-context.js`
-- Shared protocol types (registries, graph, sessions, overrides): `src/shared/index.js`
+**Recommended (v0):**
 
-Example:
+```ts
+import type {
+  ExtensionContext,
+  ComponentRegistry,
+  GraphPatch,
+  GraphSnapshot,
+} from '../../extension-sdk.js';
+```
+
+The SDK entrypoint re-exports all extension-facing types:
+- Extension context types (ExtensionContext, GraphProducer, PreviewLauncher, etc.)
+- Shared protocol types (ComponentRegistry, GraphPatch, OverrideOp, etc.)
+- Zod schemas for runtime validation (ComponentTypeIdSchema, etc.)
+
+This avoids brittle deep imports into `src/` and provides a stable import surface for workspace-local extensions.
+
+**Legacy (still supported):**
+
+If you need to import from src/ directly (e.g., for types not yet exported by the SDK):
 
 ```ts
 import type { ExtensionContext } from '../../../src/extension-host/extension-context.js';
 import type { ComponentRegistry } from '../../../src/shared/index.js';
-import type { GraphPatch } from '../../../src/shared/index.js';
 ```
 
-This keeps imports stable as shared types are re-exported from `src/shared/index.ts`.
-
-Planned (not v0): a unified package such as `@scaffa/extension-api` so extensions do not import from `src/`.
+Planned (not v0): a published package such as `@scaffa/extension-api` so extensions do not need workspace-relative paths.
 
 ---
 

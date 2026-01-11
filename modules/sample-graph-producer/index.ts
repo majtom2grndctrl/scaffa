@@ -3,8 +3,13 @@
 // ─────────────────────────────────────────────────────────────────────────────
 // Demonstrates graph producer API by emitting sample routes and component types.
 
-import type { ExtensionContext, GraphProducer, Disposable } from '../../src/extension-host/extension-context.js';
-import type { GraphPatch, GraphSnapshot } from '../../src/shared/project-graph.js';
+import type {
+  ExtensionContext,
+  GraphProducer,
+  Disposable,
+  GraphPatch,
+  GraphSnapshot,
+} from '../../extension-sdk.js';
 
 export function activate(context: ExtensionContext): void {
   console.log('[SampleGraphProducer] Activating...');
