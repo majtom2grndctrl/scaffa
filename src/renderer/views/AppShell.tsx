@@ -1,10 +1,11 @@
 import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
 import { TanStackRouterDevtools } from '@tanstack/router-devtools';
-import { useEffect, type PropsWithChildren } from 'react';
+import { Outlet } from '@tanstack/react-router';
+import { useEffect } from 'react';
 import { useGraphStore } from '../state/graphStore';
 import { useInspectorStore } from '../state/inspectorStore';
 
-export const AppShell = ({ children }: PropsWithChildren) => {
+export const AppShell = () => {
   const showDevtools = import.meta.env.DEV;
   const initializeGraph = useGraphStore((state) => state.initialize);
   const initializeInspector = useInspectorStore((state) => state.initialize);
@@ -23,7 +24,9 @@ export const AppShell = ({ children }: PropsWithChildren) => {
           Instance-first editing sandbox aligned to docs/index.md.
         </p>
       </header>
-      <main className="px-6 py-6">{children}</main>
+      <main className="px-6 py-6">
+        <Outlet />
+      </main>
       {showDevtools ? <ReactQueryDevtools initialIsOpen={false} /> : null}
       {showDevtools ? <TanStackRouterDevtools /> : null}
     </div>

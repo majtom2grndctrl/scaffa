@@ -53,8 +53,8 @@ export class ExtensionHostManager {
    * Spawn the extension host process.
    */
   private async spawnProcess(): Promise<void> {
-    // Resolve extension host entry point
-    const extHostPath = join(__dirname, '../../extension-host/main.js');
+    // Resolve extension host entry point (relative to dist/main/)
+    const extHostPath = join(__dirname, '../extension-host/main.js');
 
     console.log('[ExtHostManager] Spawning extension host process...');
     console.log('[ExtHostManager] Entry point:', extHostPath);
