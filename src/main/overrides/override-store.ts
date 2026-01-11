@@ -280,6 +280,7 @@ export class OverrideStore {
     try {
       // Ensure .scaffa directory exists
       if (!existsSync(dirPath)) {
+        console.log(`[OverrideStore] Creating .scaffa directory: ${dirPath}`);
         await mkdir(dirPath, { recursive: true });
       }
 
@@ -337,7 +338,30 @@ export class OverrideStore {
 
       console.log('[OverrideStore] Persisted overrides to disk:', filePath);
     } catch (error) {
-      console.error('[OverrideStore] Failed to persist overrides:', error);
+      // Enhanced error logging with actionable diagnostics
+      const errorMessage = error instanceof Error ? error.message : String(error);
+      console.error('[OverrideStore] Failed to persist overrides:', errorMessage);
+      console.error('[OverrideStore] Workspace path:', this.workspacePath);
+      console.error('[OverrideStore] Target file:', filePath);
+      console.error('[OverrideStore] Target directory:', dirPath);
+
+      // Provide actionable guidance based on error type
+      if (errorMessage.includes('EACCES') || errorMessage.includes('EPERM')) {
+        console.error('[OverrideStore] → Permission denied. Check write permissions for:', dirPath);
+        console.error('[OverrideStore] → Try: chmod u+w', dirPath);
+      } else if (errorMessage.includes('ENOENT')) {
+        console.error('[OverrideStore] → Directory or path not found. Workspace path may be invalid.');
+      } else if (errorMessage.includes('ENOSPC')) {
+        console.error('[OverrideStore] → No space left on device. Free up disk space and retry.');
+      } else if (errorMessage.includes('EROFS')) {
+        console.error('[OverrideStore] → Read-only file system. Check mount options for:', this.workspacePath);
+      }
+
+      // Re-throw error so it surfaces to IPC handlers and UI
+      throw new Error(
+        `Failed to persist overrides to ${filePath}: ${errorMessage}. ` +
+        `Check console logs for diagnostics.`
+      );
     }
   }
 
