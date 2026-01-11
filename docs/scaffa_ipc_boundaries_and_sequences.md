@@ -10,6 +10,7 @@ Related:
 - [Scaffa Runtime Adapter Contract](./scaffa_runtime_adapter_contract.md)
 - [Scaffa Project Graph Schema + Patch Protocol](./scaffa_project_graph_schema.md)
 - [Scaffa Override Model + Persistence](./scaffa_override_model.md)
+- [Scaffa MCP Server Contract](./scaffa_mcp_server_contract.md)
 
 ---
 
@@ -105,7 +106,35 @@ sequenceDiagram
 
 ---
 
-## 6. Notes / Alignment Constraints
+## 6. MCP Observability (External AI Tool ↔ Host State)
+
+MCP clients are northbound consumers of the same canonical state as the renderer UI.
+
+```mermaid
+sequenceDiagram
+  participant Tool as MCP Client (Claude Code)
+  participant MCP as MCP Server (Main Process)
+  participant Ext as Extension Host (Graph Producer)
+  participant RT as Runtime Adapter (in Preview)
+
+  Tool->>MCP: connect (Streamable HTTP + bearer token)
+  Tool->>MCP: read selection.current
+  MCP-->>Tool: { sessionId, selected: InstanceDescriptor | null, registryMatch }
+
+  Tool->>MCP: read graph.snapshot
+  MCP-->>Tool: { revision, nodes, edges }
+
+  Tool->>MCP: subscribe graph.patches (from revision)
+  Ext-->>MCP: graph.patch({revision, ops})
+  MCP-->>Tool: graph.patch({revision, ops})
+
+  RT-->>MCP: runtime.selectionChanged({sessionId, selected})
+  MCP-->>Tool: preview.selectionChanged({sessionId, selected})
+```
+
+---
+
+## 7. Notes / Alignment Constraints
 
 - Renderer never talks directly to extension host or preview runtime; it uses preload APIs.
 - Main is the broker/authority for sessions and cross-boundary routing.

@@ -9,6 +9,7 @@ Related:
 - [Scaffa Runtime Adapter Contract](./scaffa_runtime_adapter_contract.md)
 - [Scaffa Override Model + Persistence](./scaffa_override_model.md)
 - [IPC Boundaries + Key Sequence Diagrams](./scaffa_ipc_boundaries_and_sequences.md)
+- [Scaffa MCP Server Contract](./scaffa_mcp_server_contract.md)
 
 ---
 
@@ -175,6 +176,11 @@ Required behavior:
 
 - Exposes typed APIs to the renderer (`window.scaffa.*`)
 - Enforces that renderer effects are mediated through host
+
+### MCP Clients (External AI Tools)
+
+- Consume session/selection/graph/registry/overrides context via the MCP server.
+- Never talk directly to preview runtime content or renderer internals.
 
 ### Main Process (Host)
 

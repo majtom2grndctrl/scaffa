@@ -14,6 +14,7 @@
 - Override model + persistence: [Scaffa Override Model + Persistence](./scaffa_override_model.md)
 - Project graph + patch protocol: [Scaffa Project Graph Schema + Patch Protocol](./scaffa_project_graph_schema.md)
 - IPC boundaries + sequence diagrams: [IPC Boundaries + Key Sequence Diagrams](./scaffa_ipc_boundaries_and_sequences.md)
+- MCP server: [Scaffa MCP Server Contract](./scaffa_mcp_server_contract.md)
 - (Deferred) Iteration Deck sketch: [Iteration Deck Integration Sketch](./scaffa_iteration_deck_integration.md)
 
 **Implementation guides (v0):**
