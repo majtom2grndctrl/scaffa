@@ -29,14 +29,18 @@ This file is **code**, not JSON, to allow reuse and composition.
 ## 3. Top‑Level Shape
 
 ```ts
-import { defineScaffaConfig } from '@scaffa/config'
-import { shadcnModule } from '@scaffa/module-shadcn'
-import { internalDSModule } from './scaffa/internal-ds'
+// v0 (in-repo development): import from Scaffa source
+import { defineScaffaConfig } from '../src/shared/config.js'
+
+// Planned (not v0): import from a published package
+// import { defineScaffaConfig } from '@scaffa/config'
 
 export default defineScaffaConfig({
   modules: [
-    shadcnModule(),
-    internalDSModule(),
+    {
+      id: 'demo-module',
+      path: './extensions/demo-module/index.ts',
+    },
   ],
 
   preview: {
@@ -46,8 +50,10 @@ export default defineScaffaConfig({
   components: {
     overrides: {
       'ui.button': {
-        controls: {
-          variant: { default: 'primary' },
+        props: {
+          variant: {
+            exposure: { uiDefaultValue: 'primary' },
+          },
         },
       },
     },
@@ -72,6 +78,20 @@ Modules may contribute:
 - preview adapters
 
 Order matters: later modules may override earlier ones.
+
+### 4.1 Module `path` Resolution (v0)
+
+In v0, modules are loaded from file paths.
+
+Rule:
+- A module `path` is resolved **relative to the directory containing `scaffa.config.ts`**.
+
+Example:
+- `demo/scaffa.config.ts` with `path: './extensions/demo-module/index.ts'` resolves to `demo/extensions/demo-module/index.ts`.
+
+Planned (not v0):
+- package-based modules (e.g. `@scaffa/module-*`)
+- workspace-relative import conveniences
 
 ---
 
@@ -135,7 +155,15 @@ These constraints are enforced by core services.
 
 ---
 
-## 9. Design Goals
+## 9. Validation and Error Surfacing (v0)
+
+`scaffa.config.ts` is validated with a schema (Zod). In v0:
+- validation errors are logged to the developer console (no dedicated UI yet)
+- module load failures should log an error (a failed module may appear as “not activated”)
+
+---
+
+## 10. Design Goals
 
 - Explicit, reviewable configuration
 - No hidden magic
@@ -144,7 +172,7 @@ These constraints are enforced by core services.
 
 ---
 
-## 10. Non‑Goals (v0)
+## 11. Non‑Goals (v0)
 
 - Runtime mutation of config
 - GUI editor for config
@@ -152,10 +180,9 @@ These constraints are enforced by core services.
 
 ---
 
-## 11. Migration Strategy
+## 12. Migration Strategy
 
 Future changes to config shape must:
 - be additive when possible
 - provide codemods when breaking
 - maintain backward compatibility for at least one minor version
-

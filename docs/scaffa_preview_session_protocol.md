@@ -25,6 +25,8 @@ Sessions exist so Scaffa can:
 - isolate state per preview
 - route selection and overrides to the correct runtime
 
+In v0, preview targets are treated as external runtimes (typically an HTTP server you start separately). Scaffa attaches to them via the session target.
+
 ---
 
 ## 2. Session Types (Canonical)
@@ -41,8 +43,19 @@ export type PreviewSessionTarget =
 ```
 
 Notes:
+- For `app` sessions, `url` MUST be a full URL including protocol (e.g. `http://localhost:5173`).
 - `component` sessions assume an adapter-provided harness that can render an isolated instance.
 - `variant` sessions are reserved to preserve Iteration Deck compatibility (see `docs/scaffa_iteration_deck_integration.md`).
+
+Examples:
+
+```ts
+// ✅ Correct
+{ type: "app", url: "http://localhost:5173" }
+
+// ❌ Wrong (missing protocol)
+{ type: "app", url: "localhost:5173" }
+```
 
 ---
 

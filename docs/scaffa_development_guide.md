@@ -28,6 +28,28 @@ pnpm build:electron
 pnpm build:renderer
 ```
 
+### Running the Demo Workspace (Two Terminals)
+
+The v0 demo workflow uses two independent processes:
+
+1) **Demo app dev server** (preview target)
+
+```bash
+cd demo/app
+pnpm install
+pnpm dev
+```
+
+This prints a URL like `http://localhost:5173`. Scaffa attaches to this URL for `app` preview sessions.
+
+2) **Scaffa** (the editor)
+
+```bash
+pnpm dev
+```
+
+v0 intentionally does not auto-start framework dev servers; preview targets are treated as external HTTP runtimes.
+
 ### Hot Reload Behavior
 
 - **Renderer**: Vite provides instant HMR
@@ -159,6 +181,12 @@ console.log('[InspectorStore] Failed to load registry:', error);
 ```
 
 Search logs by prefix to filter specific subsystems.
+
+### Where Extension Logs Appear (v0)
+
+In v0, `console.log()` from extension modules typically appears in the **Electron DevTools console** (main window), not in the terminal where you launched `pnpm dev`.
+
+If `scaffa.config.ts` validation fails or a module fails to load, start by checking the same DevTools console output for errors.
 
 ### Common Console Patterns
 

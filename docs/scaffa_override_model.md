@@ -101,6 +101,9 @@ Scaffa may have multiple sources of values:
 2. **Config layer** (project-level constraints/defaults that apply to preview context)
 3. **User override layer** (Inspector edits)
 
+Notes:
+- Registry `uiDefaultValue` is UI-only metadata; it is not a value source in precedence rules.
+
 Precedence (highest wins):
 
 `user overrides` > `config layer` > `code baseline`
@@ -132,6 +135,10 @@ Recommended location:
 ```text
 /.scaffa/overrides.v0.json
 ```
+
+v0 behavior expectations:
+- Scaffa should create `/.scaffa/` on first write if it does not exist.
+- Whether `/.scaffa/overrides.v0.json` is committed to git is a **project policy** decision; if it should not be shared, add `/.scaffa/` to `.gitignore`.
 
 Recommended format (conceptual):
 

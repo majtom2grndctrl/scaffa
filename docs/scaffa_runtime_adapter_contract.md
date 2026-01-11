@@ -6,6 +6,7 @@
 
 Related:
 - [Architecture Plan](./index.md)
+- [Scaffa Runtime Adapter Integration Guide](./scaffa_runtime_adapter_integration_guide.md)
 - [Scaffa Preview Session Protocol](./scaffa_preview_session_protocol.md)
 - [Scaffa Override Model + Persistence](./scaffa_override_model.md)
 - [Scaffa Project Graph Schema + Patch Protocol](./scaffa_project_graph_schema.md)
@@ -34,7 +35,7 @@ This is distinct from:
 
 The adapter MUST be able to produce an `InstanceDescriptor` for a selected UI element:
 
-- `componentTypeId` is **stable** (matches registry + graph type IDs)
+- `componentTypeId` is **stable** (matches registry + graph type IDs; it is the join key across boundaries)
 - `instanceId` is stable for at least the lifetime of a preview session
 - optional `source` is provided when available (file/line/column)
 

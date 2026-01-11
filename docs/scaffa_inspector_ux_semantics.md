@@ -108,6 +108,8 @@ The UI MUST reflect the override immediately:
 
 - baseline value from code, potentially with a config layer applied
 
+Reset does NOT mean “set to `uiDefaultValue`”; registry `uiDefaultValue` is UI-only metadata used to initialize controls and communicate intended defaults.
+
 Reset MUST be reversible by re-applying the same override (undo/redo is a separate capability, but the model should allow it).
 
 ### 4.3 Orphaned Overrides

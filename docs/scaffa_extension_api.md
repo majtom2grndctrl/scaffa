@@ -6,12 +6,18 @@
 
 This document intentionally omits implementation details. It defines *contracts*, not mechanisms.
 
+Related:
+- [Architecture Plan](./index.md)
+- [Scaffa Extension Authoring Guide](./scaffa_extension_authoring_guide.md)
+- [Scaffa Project Graph Schema + Patch Protocol](./scaffa_project_graph_schema.md)
+- [Scaffa Component Registry Schema](./scaffa_component_registry_schema.md)
+
 ---
 
 ## 1. Core Principles
 
 - All extension code runs in the **Extension Host** process.
-- Extensions **never import Scaffa internals**.
+- Extensions must not import Scaffa *implementation internals*; they interact through the Extension API surface and shared protocol types.
 - Extensions interact with Scaffa only through the **Extension API**.
 - The API is **capability‑based**, **typed**, and **versioned**.
 - v0 assumes extensions are *trusted*, but shaped so sandboxing/permissions can be added later.
@@ -44,6 +50,7 @@ interface ExtensionContext {
   readonly apiVersion: string
 
   workspace: WorkspaceAPI
+  registry: RegistryAPI
   graph: ProjectGraphAPI
   preview: PreviewAPI
   ui: UIAPI
@@ -75,7 +82,23 @@ All mutations are transactional and diffable.
 
 ---
 
-## 5. Project Graph API
+## 5. Registry API
+
+Extensions may contribute component registries that power the Inspector.
+
+```ts
+interface RegistryAPI {
+  contributeRegistry(registry: ComponentRegistry): Disposable
+}
+```
+
+Naming note:
+- Registries use **`contribute*`** to emphasize composition/override semantics.
+- Graph producers use **`register*`** to emphasize explicit producer registration.
+
+---
+
+## 6. Project Graph API
 
 The Project Graph is the canonical model of the workspace.
 
@@ -90,7 +113,7 @@ Extensions **consume** the graph; only adapters/providers **produce** patches.
 
 ---
 
-## 6. Preview API
+## 7. Preview API
 
 Preview is session‑based.
 
@@ -106,7 +129,7 @@ Extensions never directly manipulate WebContents.
 
 ---
 
-## 7. UI Contribution API
+## 8. UI Contribution API
 
 Extensions may contribute UI in constrained ways.
 
@@ -121,7 +144,7 @@ All UI is declarative. Extensions do not imperatively mutate renderer state.
 
 ---
 
-## 8. Command API
+## 9. Command API
 
 Commands are the backbone of user interaction.
 
@@ -135,7 +158,7 @@ Commands may be bound to menus, keybindings, or invoked by AI.
 
 ---
 
-## 9. AI API (Phase 1)
+## 10. AI API (Phase 1)
 
 AI is assistive and constrained.
 
@@ -150,7 +173,7 @@ AI cannot mutate the workspace directly; it must return edits or commands.
 
 ---
 
-## 10. Versioning & Compatibility
+## 11. Versioning & Compatibility
 
 - API is versioned (e.g. `v0`)
 - Extensions must declare compatible API versions
@@ -158,7 +181,7 @@ AI cannot mutate the workspace directly; it must return edits or commands.
 
 ---
 
-## 11. Non‑Goals (v0)
+## 12. Non‑Goals (v0)
 
 - Direct filesystem access
 - Direct Electron access
@@ -166,4 +189,3 @@ AI cannot mutate the workspace directly; it must return edits or commands.
 - Renderer DOM manipulation
 
 These are intentionally excluded to preserve future sandboxing.
-

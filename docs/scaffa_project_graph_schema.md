@@ -93,6 +93,8 @@ Notes:
 - overrides
 - graph
 
+In practice, `ComponentTypeId` is the join key that lets a selected runtime instance map to Inspector metadata.
+
 ### 3.2 Instance IDs
 
 `InstanceId` is only guaranteed stable within a session; stability across reloads is adapter-dependent.

@@ -16,6 +16,11 @@
 - IPC boundaries + sequence diagrams: [IPC Boundaries + Key Sequence Diagrams](./scaffa_ipc_boundaries_and_sequences.md)
 - (Deferred) Iteration Deck sketch: [Iteration Deck Integration Sketch](./scaffa_iteration_deck_integration.md)
 
+**Implementation guides (v0):**
+- Extension authoring: [Scaffa Extension Authoring Guide](./scaffa_extension_authoring_guide.md)
+- Runtime adapter integration: [Scaffa Runtime Adapter Integration Guide](./scaffa_runtime_adapter_integration_guide.md)
+- Development setup + pitfalls: [Scaffa Development Guide](./scaffa_development_guide.md)
+
 ## 1. Product Definition
 
 > **CLI note:** Use `pnpm` for all applicable commands (install, dev server, builds).
@@ -156,6 +161,8 @@ Preview is modeled as sessions:
 See also: [Scaffa Preview Session Protocol](./scaffa_preview_session_protocol.md)
 
 This abstraction is required from day one.
+
+In v0, preview targets are treated as **independent runtimes** (typically an HTTP server you start separately). Scaffa attaches by URL; it does not “bundle” or auto-start framework dev servers.
 
 ### 4.3 Inspector
 

@@ -92,8 +92,9 @@ export type PropExposure =
       kind: "editable";
       control: ControlDefinition;
 
-      // Default used for UI initialization / reset affordances.
-      // This does NOT rewrite code; see override precedence in `docs/scaffa_override_model.md`.
+      // UI-only default used for form initialization and empty-state affordances.
+      // This does NOT rewrite code, and "Reset" clears the user override layer (revealing the baseline).
+      // See precedence rules in `docs/scaffa_override_model.md`.
       uiDefaultValue?: JsonValue;
 
       // Common constraints for validation / affordances.
