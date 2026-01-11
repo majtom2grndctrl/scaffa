@@ -3,9 +3,13 @@ import ReactDOM from 'react-dom/client';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { RouterProvider } from '@tanstack/react-router';
 import { router } from './router';
+import { initializeSessionListeners } from './state/sessionStore';
 import './styles.css';
 
 const queryClient = new QueryClient();
+
+// Initialize session event listeners
+initializeSessionListeners();
 
 ReactDOM.createRoot(document.getElementById('root')!).render(
   <React.StrictMode>

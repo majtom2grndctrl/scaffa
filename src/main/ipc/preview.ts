@@ -3,12 +3,16 @@ import {
   StartSessionRequestSchema,
   StartSessionResponseSchema,
   StopSessionRequestSchema,
+  GetLaunchersRequestSchema,
+  GetLaunchersResponseSchema,
   SessionReadyEventSchema,
   SessionErrorEventSchema,
   SessionStoppedEventSchema,
   type StartSessionRequest,
   type StartSessionResponse,
   type StopSessionRequest,
+  type GetLaunchersRequest,
+  type GetLaunchersResponse,
   type SessionReadyEvent,
   type SessionErrorEvent,
   type SessionStoppedEvent,
@@ -16,6 +20,7 @@ import {
 import { validated, validateEvent } from './validation.js';
 import { z } from 'zod';
 import { previewSessionManager } from '../preview/preview-session-manager.js';
+import { launcherRegistry } from '../preview/launcher-registry.js';
 
 // ─────────────────────────────────────────────────────────────────────────────
 // Preview Session IPC Handlers (v0)
@@ -46,6 +51,19 @@ export function registerPreviewHandlers() {
       async (_event, request: StopSessionRequest): Promise<void> => {
         console.log('[IPC] preview:stopSession', request);
         await previewSessionManager.stopSession(request.sessionId);
+      }
+    )
+  );
+
+  ipcMain.handle(
+    'preview:getLaunchers',
+    validated(
+      GetLaunchersRequestSchema,
+      GetLaunchersResponseSchema,
+      async (_event, _request: GetLaunchersRequest): Promise<GetLaunchersResponse> => {
+        console.log('[IPC] preview:getLaunchers');
+        const launchers = launcherRegistry.getAllLaunchers();
+        return { launchers };
       }
     )
   );

@@ -3,6 +3,7 @@ import {
   PreviewSessionTargetSchema,
   PreviewSessionIdSchema,
   InstanceIdSchema,
+  PreviewLauncherDescriptorSchema,
 } from './preview-session.js';
 import { OverrideOpSchema, PropPathSchema } from './override.js';
 import {
@@ -38,6 +39,16 @@ export const StopSessionRequestSchema = z.object({
 });
 
 export type StopSessionRequest = z.infer<typeof StopSessionRequestSchema>;
+
+export const GetLaunchersRequestSchema = z.object({});
+
+export type GetLaunchersRequest = z.infer<typeof GetLaunchersRequestSchema>;
+
+export const GetLaunchersResponseSchema = z.object({
+  launchers: z.array(PreviewLauncherDescriptorSchema),
+});
+
+export type GetLaunchersResponse = z.infer<typeof GetLaunchersResponseSchema>;
 
 // ─────────────────────────────────────────────────────────────────────────────
 // Override APIs

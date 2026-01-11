@@ -3,6 +3,8 @@ import type {
   StartSessionRequest,
   StartSessionResponse,
   StopSessionRequest,
+  GetLaunchersRequest,
+  GetLaunchersResponse,
   SetOverrideRequest,
   ClearOverrideRequest,
   ClearInstanceOverridesRequest,
@@ -112,6 +114,10 @@ const scaffaApi = {
 
     stopSession: (request: StopSessionRequest): Promise<void> => {
       return ipcRenderer.invoke('preview:stopSession', request);
+    },
+
+    getLaunchers: (request: GetLaunchersRequest): Promise<GetLaunchersResponse> => {
+      return ipcRenderer.invoke('preview:getLaunchers', request);
     },
 
     onSessionReady: (callback: EventCallback<SessionReadyEvent>): Unsubscribe => {
