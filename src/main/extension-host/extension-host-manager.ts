@@ -12,11 +12,17 @@ import type {
   RegistryContributionMessage,
   GraphSnapshotMessage,
   GraphPatchMessage,
+  LauncherRegisteredMessage,
+  PreviewLauncherStartedMessage,
+  PreviewLauncherStoppedMessage,
+  PreviewLauncherErrorMessage,
+  PreviewLauncherLogMessage,
 } from '../../extension-host/ipc-protocol.js';
 import type { ComponentRegistry } from '../../shared/index.js';
 import type { ScaffaConfig } from '../../shared/config.js';
 import { registryManager } from '../registry/registry-manager.js';
 import { applyGraphPatch } from '../ipc/graph.js';
+import { launcherRegistry } from '../preview/launcher-registry.js';
 
 const __dirname = fileURLToPath(new URL('.', import.meta.url));
 
@@ -168,6 +174,26 @@ export class ExtensionHostManager {
         console.error('[ExtHostManager] Extension host error:', message.error);
         break;
 
+      case 'launcher-registered':
+        this.handleLauncherRegistered(message);
+        break;
+
+      case 'preview-launcher-started':
+        this.handlePreviewLauncherStarted(message);
+        break;
+
+      case 'preview-launcher-stopped':
+        this.handlePreviewLauncherStopped(message);
+        break;
+
+      case 'preview-launcher-error':
+        this.handlePreviewLauncherError(message);
+        break;
+
+      case 'preview-launcher-log':
+        this.handlePreviewLauncherLog(message);
+        break;
+
       default:
         console.warn('[ExtHostManager] Unknown message type:', (message as any).type);
     }
@@ -208,6 +234,56 @@ export class ExtensionHostManager {
   }
 
   /**
+   * Handle launcher registered from extension host.
+   */
+  private handleLauncherRegistered(message: LauncherRegisteredMessage): void {
+    console.log(`[ExtHostManager] Launcher registered: ${message.descriptor.id}`);
+    launcherRegistry.registerLauncher(message.descriptor);
+  }
+
+  /**
+   * Handle preview launcher started from extension host.
+   */
+  private handlePreviewLauncherStarted(message: PreviewLauncherStartedMessage): void {
+    console.log(
+      `[ExtHostManager] Preview launcher started: ${message.launcherId} (${message.requestId})`
+    );
+    launcherRegistry.handleLauncherStarted(
+      message.requestId,
+      message.launcherId,
+      message.result
+    );
+  }
+
+  /**
+   * Handle preview launcher stopped from extension host.
+   */
+  private handlePreviewLauncherStopped(message: PreviewLauncherStoppedMessage): void {
+    console.log(
+      `[ExtHostManager] Preview launcher stopped: ${message.launcherId} (${message.requestId})`
+    );
+    launcherRegistry.handleLauncherStopped(message.requestId, message.launcherId);
+  }
+
+  /**
+   * Handle preview launcher error from extension host.
+   */
+  private handlePreviewLauncherError(message: PreviewLauncherErrorMessage): void {
+    console.error(
+      `[ExtHostManager] Preview launcher error: ${message.launcherId} (${message.requestId})`,
+      message.error
+    );
+    launcherRegistry.handleLauncherError(message.requestId, message.launcherId, message.error);
+  }
+
+  /**
+   * Handle preview launcher log from extension host.
+   */
+  private handlePreviewLauncherLog(message: PreviewLauncherLogMessage): void {
+    launcherRegistry.handleLauncherLog(message.launcherId, message.entry);
+  }
+
+  /**
    * Send message to extension host.
    */
   private sendToExtHost(message: MainToExtHostMessage): void {
@@ -217,6 +293,13 @@ export class ExtensionHostManager {
     }
 
     this.process.send(message);
+  }
+
+  /**
+   * Send message to extension host (public method for launcher registry).
+   */
+  sendMessage(message: MainToExtHostMessage): void {
+    this.sendToExtHost(message);
   }
 
   /**

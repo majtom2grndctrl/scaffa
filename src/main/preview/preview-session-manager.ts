@@ -19,6 +19,7 @@ import {
   broadcastSessionStopped,
 } from '../ipc/preview.js';
 import { overrideStore } from '../overrides/override-store.js';
+import { launcherRegistry } from './launcher-registry.js';
 
 // ─────────────────────────────────────────────────────────────────────────────
 // Preview Session Manager
@@ -38,8 +39,31 @@ class PreviewSessionManager {
     const sessionId = this.generateSessionId();
     console.log(`[SessionManager] Starting session ${sessionId} for target:`, target);
 
+    // Handle managed sessions (via launcher)
+    let resolvedTarget = target;
+    if (target.type === 'app' && target.launcherId) {
+      console.log(`[SessionManager] Starting managed session via launcher: ${target.launcherId}`);
+      try {
+        const launchResult = await launcherRegistry.startLauncher(
+          target.launcherId,
+          target.launcherOptions ?? {}
+        );
+
+        // Replace target with resolved URL
+        resolvedTarget = {
+          type: 'app',
+          url: launchResult.url,
+        };
+
+        console.log(`[SessionManager] Launcher started, resolved URL: ${launchResult.url}`);
+      } catch (error) {
+        console.error(`[SessionManager] Failed to start launcher ${target.launcherId}:`, error);
+        throw error;
+      }
+    }
+
     // Create session
-    const session = new PreviewSession(sessionId, target, this.createEventHandlers());
+    const session = new PreviewSession(sessionId, resolvedTarget, this.createEventHandlers());
     this.sessions.set(sessionId, session);
 
     // Start the session (create WebContents and load URL)

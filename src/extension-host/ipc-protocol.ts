@@ -7,6 +7,13 @@
 import type { ComponentRegistry } from '../shared/index.js';
 import type { GraphPatch } from '../shared/project-graph.js';
 import type { ScaffaConfig } from '../shared/config.js';
+import type {
+  PreviewLauncherDescriptor,
+  PreviewLauncherOptions,
+  PreviewLaunchResult,
+  PreviewLogEntry,
+  PreviewLauncherId,
+} from '../shared/preview-session.js';
 
 // ─────────────────────────────────────────────────────────────────────────────
 // Main → Extension Host Messages
@@ -36,10 +43,31 @@ export interface ShutdownMessage {
   type: 'shutdown';
 }
 
+/**
+ * Request to start a preview launcher.
+ */
+export interface StartPreviewLauncherMessage {
+  type: 'start-preview-launcher';
+  launcherId: PreviewLauncherId;
+  options: PreviewLauncherOptions;
+  requestId: string; // For correlating responses
+}
+
+/**
+ * Request to stop a preview launcher.
+ */
+export interface StopPreviewLauncherMessage {
+  type: 'stop-preview-launcher';
+  launcherId: PreviewLauncherId;
+  requestId: string; // For correlating responses
+}
+
 export type MainToExtHostMessage =
   | InitMessage
   | ConfigChangedMessage
-  | ShutdownMessage;
+  | ShutdownMessage
+  | StartPreviewLauncherMessage
+  | StopPreviewLauncherMessage;
 
 // ─────────────────────────────────────────────────────────────────────────────
 // Extension Host → Main Messages
@@ -91,9 +119,64 @@ export interface ErrorMessage {
   };
 }
 
+/**
+ * Module registered a preview launcher.
+ */
+export interface LauncherRegisteredMessage {
+  type: 'launcher-registered';
+  descriptor: PreviewLauncherDescriptor;
+}
+
+/**
+ * Preview launcher started successfully.
+ */
+export interface PreviewLauncherStartedMessage {
+  type: 'preview-launcher-started';
+  requestId: string;
+  launcherId: PreviewLauncherId;
+  result: PreviewLaunchResult;
+}
+
+/**
+ * Preview launcher stopped.
+ */
+export interface PreviewLauncherStoppedMessage {
+  type: 'preview-launcher-stopped';
+  requestId: string;
+  launcherId: PreviewLauncherId;
+}
+
+/**
+ * Preview launcher encountered an error.
+ */
+export interface PreviewLauncherErrorMessage {
+  type: 'preview-launcher-error';
+  requestId: string;
+  launcherId: PreviewLauncherId;
+  error: {
+    code: string;
+    message: string;
+    stack?: string;
+  };
+}
+
+/**
+ * Log entry from preview launcher.
+ */
+export interface PreviewLauncherLogMessage {
+  type: 'preview-launcher-log';
+  launcherId: PreviewLauncherId;
+  entry: PreviewLogEntry;
+}
+
 export type ExtHostToMainMessage =
   | ReadyMessage
   | RegistryContributionMessage
   | GraphSnapshotMessage
   | GraphPatchMessage
-  | ErrorMessage;
+  | ErrorMessage
+  | LauncherRegisteredMessage
+  | PreviewLauncherStartedMessage
+  | PreviewLauncherStoppedMessage
+  | PreviewLauncherErrorMessage
+  | PreviewLauncherLogMessage;

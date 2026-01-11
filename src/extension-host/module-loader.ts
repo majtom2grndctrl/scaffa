@@ -15,6 +15,8 @@ import type {
   RegistryAPI,
   GraphAPI,
   GraphProducer,
+  PreviewAPI,
+  PreviewLauncher,
 } from './extension-context.js';
 import type { ExtHostToMainMessage } from './ipc-protocol.js';
 
@@ -38,6 +40,7 @@ export class ModuleLoader {
   private loadedModules: Map<string, LoadedModule> = new Map();
   private registryContributions: ComponentRegistry[] = [];
   private graphProducers: Map<string, GraphProducer> = new Map();
+  private previewLaunchers: Map<string, PreviewLauncher> = new Map();
 
   constructor(workspacePath: string | null, config: ScaffaConfig) {
     this.workspacePath = workspacePath;
@@ -186,12 +189,46 @@ export class ModuleLoader {
       },
     };
 
+    const previewAPI: PreviewAPI = {
+      registerLauncher: (launcher: PreviewLauncher) => {
+        const launcherId = launcher.descriptor.id;
+        this.previewLaunchers.set(launcherId, launcher);
+        console.log(
+          `[ModuleLoader] Module ${moduleId} registered preview launcher: ${launcherId}`
+        );
+
+        // Send launcher descriptor to main
+        this.sendToMain({
+          type: 'launcher-registered',
+          descriptor: launcher.descriptor,
+        });
+
+        // Subscribe to launcher logs and forward to main
+        const unsubscribe = launcher.onLog((entry) => {
+          this.sendToMain({
+            type: 'preview-launcher-log',
+            launcherId,
+            entry,
+          });
+        });
+
+        // Return disposable to unregister
+        return {
+          dispose: () => {
+            this.previewLaunchers.delete(launcherId);
+            unsubscribe.dispose();
+          },
+        };
+      },
+    };
+
     return {
       apiVersion: 'v0',
       extensionId: moduleId,
       workspaceRoot: this.workspacePath,
       registry: registryAPI,
       graph: graphAPI,
+      preview: previewAPI,
       subscriptions,
     };
   }
@@ -219,6 +256,97 @@ export class ModuleLoader {
       });
     } catch (error) {
       console.error(`[ModuleLoader] Failed to start graph producer ${producer.id}:`, error);
+    }
+  }
+
+  /**
+   * Start a preview launcher.
+   */
+  async startPreviewLauncher(
+    launcherId: string,
+    options: Record<string, unknown>,
+    requestId: string
+  ): Promise<void> {
+    const launcher = this.previewLaunchers.get(launcherId);
+
+    if (!launcher) {
+      this.sendToMain({
+        type: 'preview-launcher-error',
+        requestId,
+        launcherId,
+        error: {
+          code: 'LAUNCHER_NOT_FOUND',
+          message: `Preview launcher ${launcherId} not found`,
+        },
+      });
+      return;
+    }
+
+    try {
+      console.log(`[ModuleLoader] Starting preview launcher: ${launcherId}`);
+      const result = await launcher.start(options);
+
+      this.sendToMain({
+        type: 'preview-launcher-started',
+        requestId,
+        launcherId,
+        result,
+      });
+    } catch (error) {
+      console.error(`[ModuleLoader] Failed to start preview launcher ${launcherId}:`, error);
+      this.sendToMain({
+        type: 'preview-launcher-error',
+        requestId,
+        launcherId,
+        error: {
+          code: 'LAUNCHER_START_FAILED',
+          message: error instanceof Error ? error.message : String(error),
+          stack: error instanceof Error ? error.stack : undefined,
+        },
+      });
+    }
+  }
+
+  /**
+   * Stop a preview launcher.
+   */
+  async stopPreviewLauncher(launcherId: string, requestId: string): Promise<void> {
+    const launcher = this.previewLaunchers.get(launcherId);
+
+    if (!launcher) {
+      this.sendToMain({
+        type: 'preview-launcher-error',
+        requestId,
+        launcherId,
+        error: {
+          code: 'LAUNCHER_NOT_FOUND',
+          message: `Preview launcher ${launcherId} not found`,
+        },
+      });
+      return;
+    }
+
+    try {
+      console.log(`[ModuleLoader] Stopping preview launcher: ${launcherId}`);
+      await launcher.stop();
+
+      this.sendToMain({
+        type: 'preview-launcher-stopped',
+        requestId,
+        launcherId,
+      });
+    } catch (error) {
+      console.error(`[ModuleLoader] Failed to stop preview launcher ${launcherId}:`, error);
+      this.sendToMain({
+        type: 'preview-launcher-error',
+        requestId,
+        launcherId,
+        error: {
+          code: 'LAUNCHER_STOP_FAILED',
+          message: error instanceof Error ? error.message : String(error),
+          stack: error instanceof Error ? error.stack : undefined,
+        },
+      });
     }
   }
 
@@ -254,6 +382,7 @@ export class ModuleLoader {
     this.loadedModules.clear();
     this.registryContributions = [];
     this.graphProducers.clear();
+    this.previewLaunchers.clear();
 
     // Update config
     this.config = newConfig;

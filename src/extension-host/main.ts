@@ -10,6 +10,8 @@ import type {
   ExtHostToMainMessage,
   InitMessage,
   ConfigChangedMessage,
+  StartPreviewLauncherMessage,
+  StopPreviewLauncherMessage,
 } from './ipc-protocol.js';
 import { ModuleLoader } from './module-loader.js';
 import type { ScaffaConfig } from '../shared/config.js';
@@ -51,6 +53,14 @@ function handleMessage(message: MainToExtHostMessage): void {
 
     case 'shutdown':
       handleShutdown();
+      break;
+
+    case 'start-preview-launcher':
+      handleStartPreviewLauncher(message);
+      break;
+
+    case 'stop-preview-launcher':
+      handleStopPreviewLauncher(message);
       break;
 
     default:
@@ -130,6 +140,52 @@ async function handleShutdown(): Promise<void> {
 
   isInitialized = false;
   process.exit(0);
+}
+
+/**
+ * Handle start preview launcher request.
+ */
+async function handleStartPreviewLauncher(message: StartPreviewLauncherMessage): Promise<void> {
+  if (!isInitialized || !moduleLoader) {
+    console.warn('[ExtHost] Not initialized, ignoring start-preview-launcher message');
+    sendToMain({
+      type: 'preview-launcher-error',
+      requestId: message.requestId,
+      launcherId: message.launcherId,
+      error: {
+        code: 'NOT_INITIALIZED',
+        message: 'Extension host not initialized',
+      },
+    });
+    return;
+  }
+
+  await moduleLoader.startPreviewLauncher(
+    message.launcherId,
+    message.options,
+    message.requestId
+  );
+}
+
+/**
+ * Handle stop preview launcher request.
+ */
+async function handleStopPreviewLauncher(message: StopPreviewLauncherMessage): Promise<void> {
+  if (!isInitialized || !moduleLoader) {
+    console.warn('[ExtHost] Not initialized, ignoring stop-preview-launcher message');
+    sendToMain({
+      type: 'preview-launcher-error',
+      requestId: message.requestId,
+      launcherId: message.launcherId,
+      error: {
+        code: 'NOT_INITIALIZED',
+        message: 'Extension host not initialized',
+      },
+    });
+    return;
+  }
+
+  await moduleLoader.stopPreviewLauncher(message.launcherId, message.requestId);
 }
 
 // ─────────────────────────────────────────────────────────────────────────────

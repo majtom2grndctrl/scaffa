@@ -5,6 +5,12 @@
 
 import type { ComponentRegistry } from '../shared/index.js';
 import type { GraphPatch } from '../shared/project-graph.js';
+import type {
+  PreviewLauncherDescriptor,
+  PreviewLauncherOptions,
+  PreviewLaunchResult,
+  PreviewLogEntry,
+} from '../shared/preview-session.js';
 
 // ─────────────────────────────────────────────────────────────────────────────
 // Disposable Pattern
@@ -43,6 +49,11 @@ export interface ExtensionContext {
    * Graph API for contributing graph producers.
    */
   readonly graph: GraphAPI;
+
+  /**
+   * Preview API for contributing preview launchers.
+   */
+  readonly preview: PreviewAPI;
 
   /**
    * Subscriptions for automatic cleanup.
@@ -94,6 +105,50 @@ export interface GraphAPI {
    * @returns Disposable to unregister the producer
    */
   registerProducer(producer: GraphProducer): Disposable;
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Preview API (Managed Sessions)
+// ─────────────────────────────────────────────────────────────────────────────
+
+/**
+ * Preview launcher interface.
+ * Modules implement this to provide toolchain-specific managed previews.
+ */
+export interface PreviewLauncher {
+  /**
+   * Launcher descriptor (metadata).
+   */
+  readonly descriptor: PreviewLauncherDescriptor;
+
+  /**
+   * Start the preview runtime.
+   * @param options - Launcher-specific options (e.g. port, env)
+   * @returns Promise resolving to launch result (URL + optional PID)
+   */
+  start(options: PreviewLauncherOptions): Promise<PreviewLaunchResult>;
+
+  /**
+   * Stop the preview runtime.
+   * @returns Promise resolving when the runtime is stopped
+   */
+  stop(): Promise<void>;
+
+  /**
+   * Subscribe to log events from the preview runtime.
+   * @param onLog - Callback for log entries
+   * @returns Disposable to unsubscribe
+   */
+  onLog(onLog: (entry: PreviewLogEntry) => void): Disposable;
+}
+
+export interface PreviewAPI {
+  /**
+   * Register a preview launcher.
+   * @param launcher - The preview launcher to register
+   * @returns Disposable to unregister the launcher
+   */
+  registerLauncher(launcher: PreviewLauncher): Disposable;
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
