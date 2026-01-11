@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react';
+import { useMemo, useState, useEffect } from 'react';
 import { useInspectorStore } from '../state/inspectorStore';
 import type { PropDefinition } from '../../shared/index.js';
 import { ControlRenderer } from './inspector/PropControls';
@@ -14,6 +14,43 @@ export const InspectorPanel = () => {
     if (!selectedInstance || !registry) return null;
     return registry.components[selectedInstance.componentTypeId] ?? null;
   }, [selectedInstance, registry]);
+
+  // Log actionable warning when registry entry is missing
+  useEffect(() => {
+    // Only log if we have a selected instance, registry is loaded, and entry is missing
+    if (!selectedInstance || isRegistryLoading || registryEntry !== null) {
+      return;
+    }
+
+    // Registry entry is missing - log actionable warning
+    console.warn(
+      `[Inspector] Missing registry entry for component type: ${selectedInstance.componentTypeId}`
+    );
+    console.warn('[Inspector] → Debugging hints:');
+    console.warn(`[Inspector]   • ComponentTypeId: ${selectedInstance.componentTypeId}`);
+    console.warn(
+      `[Inspector]   • Instance ID: ${selectedInstance.instanceId}`
+    );
+    console.warn(`[Inspector]   • Session ID: ${selectedInstance.sessionId}`);
+    console.warn(
+      `[Inspector]   • Available registry keys: ${Object.keys(registry?.components ?? {}).join(', ') || '(none)'}`
+    );
+    console.warn('[Inspector] → Possible causes:');
+    console.warn(
+      '[Inspector]   • Runtime wrapper typeId does not match registry key'
+    );
+    console.warn(
+      '[Inspector]   • Module failed to contribute registry (check config health banner)'
+    );
+    console.warn('[Inspector]   • Component is not wrapped with ScaffaInstance');
+    console.warn('[Inspector] → To fix:');
+    console.warn('[Inspector]   • Ensure ComponentTypeId matches across:');
+    console.warn('[Inspector]     1. Registry entry key (e.g., components["ui.button"])');
+    console.warn('[Inspector]     2. Graph node id (componentType node)');
+    console.warn(
+      '[Inspector]     3. Runtime wrapper <ScaffaInstance typeId="ui.button" />'
+    );
+  }, [selectedInstance, registry, registryEntry, isRegistryLoading]);
 
   // Count overrides for the selected instance
   const instanceOverrideCount = useMemo(() => {
@@ -198,12 +235,41 @@ export const InspectorPanel = () => {
         {/* Registry Status */}
         {!isRegistryLoading && !registryEntry && (
           <div className="rounded border border-warning bg-warning-subtle px-3 py-2">
-            <p className="text-xs text-warning">
-              No registry entry found for this component type.
+            <p className="text-xs font-medium text-warning">
+              Missing Registry Entry
             </p>
-            <p className="mt-1 text-xs text-fg-muted">
-              Props cannot be edited until a registry entry is defined.
+            <p className="mt-1 text-xs text-fg">
+              No registry entry found for:{' '}
+              <code className="font-mono">{selectedInstance.componentTypeId}</code>
             </p>
+            <p className="mt-2 text-xs text-fg-muted">
+              Props cannot be edited without a registry entry. The Inspector will show
+              instance metadata only.
+            </p>
+            <details className="mt-2">
+              <summary className="cursor-pointer text-xs text-warning hover:text-warning-hover">
+                Debugging hints
+              </summary>
+              <div className="mt-2 space-y-1 text-[10px] text-fg-muted">
+                <p>• Check DevTools console for detailed diagnostics</p>
+                <p>• Ensure ComponentTypeId matches across:</p>
+                <p className="ml-3">
+                  1. Registry entry key (e.g., components[&quot;ui.button&quot;])
+                </p>
+                <p className="ml-3">2. Graph node id (componentType node)</p>
+                <p className="ml-3">
+                  3. Runtime wrapper typeId (&lt;ScaffaInstance typeId=&quot;...&quot; /&gt;)
+                </p>
+                {registry && Object.keys(registry.components).length > 0 && (
+                  <p className="mt-2">
+                    • Available registry keys:{' '}
+                    <span className="font-mono">
+                      {Object.keys(registry.components).join(', ')}
+                    </span>
+                  </p>
+                )}
+              </div>
+            </details>
           </div>
         )}
 
