@@ -10,14 +10,16 @@ import {
   type ClearInstanceOverridesRequest,
   type ClearAllOverridesRequest,
   type OverridesChangedEvent,
+  type OverrideOp,
 } from '../../shared/index.js';
 import { validated, validateEvent } from './validation.js';
 import { z } from 'zod';
+import { overrideStore } from '../overrides/override-store.js';
+import { previewSessionManager } from '../preview/preview-session-manager.js';
 
 // ─────────────────────────────────────────────────────────────────────────────
-// Override IPC Handlers (v0 Stub)
+// Override IPC Handlers (v0)
 // ─────────────────────────────────────────────────────────────────────────────
-// Full implementation will come in epic 7iq.6
 
 /**
  * Register override IPC handlers.
@@ -29,8 +31,15 @@ export function registerOverrideHandlers() {
       SetOverrideRequestSchema,
       z.void(),
       async (_event, request: SetOverrideRequest): Promise<void> => {
-        // Stub: Full implementation in 7iq.6
         console.log('[IPC] overrides:set', request);
+        await applyOverrideOps(request.sessionId, [
+          {
+            op: 'set',
+            instanceId: request.instanceId,
+            path: request.path,
+            value: request.value,
+          },
+        ]);
       }
     )
   );
@@ -41,8 +50,14 @@ export function registerOverrideHandlers() {
       ClearOverrideRequestSchema,
       z.void(),
       async (_event, request: ClearOverrideRequest): Promise<void> => {
-        // Stub: Full implementation in 7iq.6
         console.log('[IPC] overrides:clear', request);
+        await applyOverrideOps(request.sessionId, [
+          {
+            op: 'clear',
+            instanceId: request.instanceId,
+            path: request.path,
+          },
+        ]);
       }
     )
   );
@@ -53,8 +68,13 @@ export function registerOverrideHandlers() {
       ClearInstanceOverridesRequestSchema,
       z.void(),
       async (_event, request: ClearInstanceOverridesRequest): Promise<void> => {
-        // Stub: Full implementation in 7iq.6
         console.log('[IPC] overrides:clearInstance', request);
+        await applyOverrideOps(request.sessionId, [
+          {
+            op: 'clearInstance',
+            instanceId: request.instanceId,
+          },
+        ]);
       }
     )
   );
@@ -65,11 +85,44 @@ export function registerOverrideHandlers() {
       ClearAllOverridesRequestSchema,
       z.void(),
       async (_event, request: ClearAllOverridesRequest): Promise<void> => {
-        // Stub: Full implementation in 7iq.6
         console.log('[IPC] overrides:clearAll', request);
+        await applyOverrideOps(request.sessionId, [
+          {
+            op: 'clearAll',
+          },
+        ]);
       }
     )
   );
+}
+
+/**
+ * Apply override operations and notify affected parties.
+ */
+async function applyOverrideOps(sessionId: string, ops: OverrideOp[]): Promise<void> {
+  // Get session to determine target type
+  const session = previewSessionManager.getSession(sessionId as any);
+  if (!session) {
+    console.error(`[IPC] Cannot apply overrides: session ${sessionId} not found`);
+    return;
+  }
+
+  // Apply to override store
+  await overrideStore.applyOps(sessionId as any, session.target, ops);
+
+  // Forward to runtime adapter
+  previewSessionManager.applyOverrides(sessionId as any, ops);
+
+  // Broadcast to renderer
+  const allOverrides = overrideStore.getSessionOverrides(sessionId as any);
+  broadcastOverridesChanged({
+    sessionId: sessionId as any,
+    overrides: allOverrides.map((op) => ({
+      instanceId: op.instanceId! as string,
+      path: op.path! as string,
+      value: op.value!,
+    })),
+  });
 }
 
 /**

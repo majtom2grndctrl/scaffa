@@ -3,6 +3,7 @@ import * as fs from 'node:fs/promises';
 import * as path from 'node:path';
 import type { WorkspaceInfo } from '../../shared/index.js';
 import { configManager } from '../config/config-manager.js';
+import { overrideStore } from '../overrides/override-store.js';
 
 // ─────────────────────────────────────────────────────────────────────────────
 // Workspace Manager (v0)
@@ -40,6 +41,9 @@ class WorkspaceManager {
 
     // Load config for the current workspace
     await configManager.loadForWorkspace(this.currentWorkspace?.path ?? null);
+
+    // Initialize override store for the current workspace
+    await overrideStore.init(this.currentWorkspace?.path ?? null);
   }
 
   /**
@@ -69,6 +73,9 @@ class WorkspaceManager {
 
     // Load config for the new workspace
     await configManager.loadForWorkspace(workspace?.path ?? null);
+
+    // Initialize override store for the new workspace
+    await overrideStore.init(workspace?.path ?? null);
   }
 
   /**

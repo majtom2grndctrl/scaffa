@@ -18,6 +18,7 @@ import {
   broadcastSessionError,
   broadcastSessionStopped,
 } from '../ipc/preview.js';
+import { overrideStore } from '../overrides/override-store.js';
 
 // ─────────────────────────────────────────────────────────────────────────────
 // Preview Session Manager
@@ -208,10 +209,9 @@ class PreviewSessionManager {
       type: session.target.type,
     });
 
-    // Send host.init with initial overrides
-    // v0: No override store yet, so send empty array
-    // This will be replaced in Epic 7iq.6 with actual override loading
-    this.sendInitialOverrides(sessionId, []);
+    // Send host.init with initial overrides from the override store
+    const initialOverrides = overrideStore.getSessionOverrides(sessionId);
+    this.sendInitialOverrides(sessionId, initialOverrides);
   }
 
   /**
