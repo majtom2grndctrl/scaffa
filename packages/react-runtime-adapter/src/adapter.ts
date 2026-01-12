@@ -273,53 +273,12 @@ export class ScaffaReactAdapter {
           outline-offset: 2px;
           box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.4), 0 0 12px rgba(34, 211, 238, 0.5);
         }
-        #scaffa-preview-hint {
-          position: fixed;
-          top: 12px;
-          left: 12px;
-          z-index: 2147483647;
-          pointer-events: none;
-          font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, "Apple Color Emoji", "Segoe UI Emoji";
-          font-size: 12px;
-          line-height: 1.2;
-          color: rgba(255, 255, 255, 0.95);
-          background: rgba(0, 0, 0, 0.65);
-          border: 1px solid rgba(255, 255, 255, 0.18);
-          border-radius: 10px;
-          padding: 10px 12px;
-          box-shadow: 0 10px 30px rgba(0, 0, 0, 0.35);
-          backdrop-filter: blur(10px);
-          -webkit-backdrop-filter: blur(10px);
-          opacity: 0;
-          transform: translateY(-2px);
-          animation: scaffaHintAppearAndFade 4s ease-out forwards;
-        }
-        @keyframes scaffaHintAppearAndFade {
-          0% { opacity: 0; transform: translateY(-2px); }
-          10% { opacity: 1; transform: translateY(0); }
-          75% { opacity: 1; transform: translateY(0); }
-          100% { opacity: 0; transform: translateY(0); }
-        }
-        #scaffa-preview-hint kbd {
-          font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
-          font-size: 11px;
-          padding: 1px 6px;
-          border-radius: 6px;
-          background: rgba(255, 255, 255, 0.12);
-          border: 1px solid rgba(255, 255, 255, 0.18);
-        }
       `.trim();
       document.head.appendChild(style);
     }
 
-    const existingHint = document.getElementById('scaffa-preview-hint');
-    if (!existingHint) {
-      const hint = document.createElement('div');
-      hint.id = 'scaffa-preview-hint';
-      hint.innerHTML = `<div><kbd>Alt</kbd>+Click to inspect</div><div style="margin-top:6px; opacity:0.85"><kbd>Esc</kbd> clears selection</div>`;
-      document.body.appendChild(hint);
-      window.setTimeout(() => hint.remove(), 4500);
-    }
+    // Note: Discoverability hint is now owned by Scaffa UI (not injected into app DOM)
+    // See PreviewHint component in renderer for the Scaffa-owned hint overlay
   }
 
   /**

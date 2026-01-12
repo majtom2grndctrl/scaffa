@@ -1,7 +1,8 @@
-import { useRef, useState } from 'react';
+import { useRef, useState, useEffect } from 'react';
 import { useVirtualizer } from '@tanstack/virtual';
 import { useSessionStore } from '../state/sessionStore';
 import { StartPreviewDialog } from './StartPreviewDialog';
+import { PreviewHint } from './PreviewHint';
 import type { PreviewSessionTarget } from '../../shared/index.js';
 
 export const PreviewSessionList = () => {
@@ -9,6 +10,15 @@ export const PreviewSessionList = () => {
   const sessions = useSessionStore((state) => state.sessions);
   const addSession = useSessionStore((state) => state.addSession);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const [showHint, setShowHint] = useState(false);
+
+  // Show hint when first session becomes ready
+  useEffect(() => {
+    const hasReadySession = sessions.some((s) => s.state === 'ready');
+    if (hasReadySession && !showHint) {
+      setShowHint(true);
+    }
+  }, [sessions, showHint]);
 
   const rowVirtualizer = useVirtualizer({
     count: sessions.length,
@@ -54,6 +64,7 @@ export const PreviewSessionList = () => {
 
   return (
     <>
+      <PreviewHint show={showHint} onComplete={() => setShowHint(false)} />
       <div className="rounded-lg border border-default bg-surface-1 p-4">
         <div className="flex items-center justify-between">
           <h2 className="text-sm font-semibold uppercase tracking-wide text-fg-muted">

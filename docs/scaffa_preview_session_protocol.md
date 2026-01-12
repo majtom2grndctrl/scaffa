@@ -140,7 +140,22 @@ Scaffa adopts a **minimal keyboard reservation policy** to avoid conflicting wit
 
 **Future consideration:** If Scaffa adds a Play/Inspect mode toggle, the discoverability hint for that toggle should appear near the preview controls or in a non-intrusive overlay.
 
-#### 5.0.3 Stopping/Exiting Preview Sessions
+#### 5.0.3 Discoverability Hint
+
+When a preview session becomes ready, Scaffa displays a **non-intrusive discoverability hint** explaining the inspect controls:
+
+- **Content:** "Alt+Click to inspect" and "Esc clears selection"
+- **Display duration:** ~3-4 seconds with fade animation
+- **Position:** Upper-left of Workbench UI, near preview controls
+- **Ownership:** Hint is rendered by Scaffa UI (not injected into the guest app DOM)
+- **Pointer events:** Never captures pointer events (user can interact with preview immediately)
+- **Re-display:** Currently shows once per session; future versions may add manual re-show via help
+
+**Rationale:** The hint ensures discoverability without polluting the guest app DOM or conflicting with app styling. By owning the hint in Scaffa's UI layer, we maintain architectural separation and prevent z-index conflicts, CSS specificity issues, or layout shifts in the user's app.
+
+**v0 Note:** Since preview embedding in the Workbench is not yet implemented, the hint appears near the Preview Session List panel. When preview display integration is complete, the hint may be repositioned as an overlay on the preview area.
+
+#### 5.0.4 Stopping/Exiting Preview Sessions
 
 Preview sessions are stopped via **explicit UI controls**, not keyboard shortcuts:
 
