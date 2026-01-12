@@ -18,10 +18,10 @@ export default defineScaffaConfig({
       id: 'demo-module',
       path: './extensions/demo-module/index.ts',
     },
-    // Graph producer for routes and component types
+    // Graph producer for routes (React Router data-router API)
     {
-      id: 'demo-graph-producer',
-      path: './extensions/demo-graph-producer/index.ts',
+      id: 'react-router-graph-producer',
+      path: '../modules/react-router-graph-producer/index.ts',
     },
     // Vite+React preview launcher for managed dev server
     {
