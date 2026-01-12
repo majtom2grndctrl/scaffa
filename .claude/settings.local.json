@@ -21,7 +21,8 @@
       "Bash(git push:*)",
       "Bash(git log:*)",
       "Bash(pnpm dev:*)",
-      "Bash(bd dep add:*)"
+      "Bash(bd dep add:*)",
+      "Skill(implement-ticket)"
     ]
   }
 }

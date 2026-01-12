@@ -110,19 +110,44 @@ This guarantees:
 Scaffa must support two user intents against the same running app:
 
 - **Interact** (default): clicks, links, keyboard shortcuts, and navigation behave like the app normally does.
-- **Inspect** (gesture): the user intentionally “picks” an instance to drive Inspector editing.
+- **Inspect** (gesture): the user intentionally "picks" an instance to drive Inspector editing.
 
-v0 input contract:
+#### 5.0.1 Inspect Gesture Contract
+
+v0 input contract for inspect mode:
 - Hold <kbd>Alt/Option</kbd> to highlight candidates under the cursor.
 - <kbd>Alt/Option</kbd>+Click selects an instance and MUST prevent app interaction for that click.
 - <kbd>Esc</kbd> clears selection when something is selected.
-- <kbd>Esc</kbd> MUST NOT be used to stop/exit preview sessions in v0 (web apps commonly bind Esc).
 
 Recommended visual affordances:
 - While holding <kbd>Alt/Option</kbd>, highlight the candidate instance under the cursor.
 - After selection, show a persistent selection highlight so users can see what the Inspector is editing.
 
-Stopping/exiting previews should be done via explicit UI affordances (tracked separately).
+#### 5.0.2 Keyboard Shortcut Policy
+
+Scaffa adopts a **minimal keyboard reservation policy** to avoid conflicting with web app shortcuts:
+
+**Reserved by Scaffa (consumed, not passed through):**
+- <kbd>Alt/Option</kbd> (modifier only) + hover/click for inspect gesture
+- <kbd>Esc</kbd> when a component instance is selected (clears selection)
+
+**Passed through to the app:**
+- <kbd>Esc</kbd> when no selection exists (app receives the event)
+- All other keyboard input (arrow keys, <kbd>Enter</kbd>, <kbd>Space</kbd>, letter keys, etc.)
+- All keyboard shortcuts not explicitly listed as reserved above
+
+**Rationale:** Web applications frequently bind keyboard shortcuts for navigation, modals, command palettes, and other features. Scaffa's preview experience prioritizes **interact by default**—users should be able to test and use the app normally without Scaffa intercepting their input.
+
+**Future consideration:** If Scaffa adds a Play/Inspect mode toggle, the discoverability hint for that toggle should appear near the preview controls or in a non-intrusive overlay.
+
+#### 5.0.3 Stopping/Exiting Preview Sessions
+
+Preview sessions are stopped via **explicit UI controls**, not keyboard shortcuts:
+
+- **Primary affordance:** Stop button in the Preview Session List panel (visible when session is in "ready" state)
+- <kbd>Esc</kbd> MUST NOT stop/exit preview sessions (web apps commonly bind <kbd>Esc</kbd> to close modals, dialogs, etc.)
+
+**Rationale:** Accidentally stopping a preview session during app interaction would be disruptive. An explicit click action provides clear intent and prevents accidental session termination.
 
 ### 5.1 Event Origin
 
