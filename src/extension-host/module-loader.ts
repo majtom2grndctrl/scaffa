@@ -5,6 +5,7 @@
 
 import { pathToFileURL } from 'node:url';
 import path from 'node:path';
+import { createRequire } from 'node:module';
 import type { ScaffaConfig, ScaffaModule } from '../shared/config.js';
 import type { ComponentRegistry } from '../shared/index.js';
 import type { GraphPatch } from '../shared/project-graph.js';
@@ -138,23 +139,49 @@ export class ModuleLoader {
    * Resolve module path from config.
    */
   private resolveModulePath(moduleConfig: ScaffaModule): string | null {
-    // v0: Simple path resolution
-    // Future: Support npm packages, relative paths, etc.
+    // v0: Path resolution anchored at the workspace root (directory containing scaffa.config.*).
+    // Supports:
+    // - file paths via `module.path` (relative to workspace root; absolute ok)
+    // - npm packages via `module.package` (Node resolution anchored at workspace root)
+    // - fallback: attempt to resolve `module.id` as a package
 
     if (moduleConfig.path) {
-      // Relative to workspace
       if (this.workspacePath) {
-        return path.join(this.workspacePath, moduleConfig.path);
+        // Support workspace-anchored convenience prefixes.
+        // - "@/x" means "<workspaceRoot>/x"
+        // - "workspace:/x" means "<workspaceRoot>/x"
+        if (moduleConfig.path.startsWith('@/')) {
+          return path.resolve(this.workspacePath, moduleConfig.path.slice(2));
+        }
+        if (moduleConfig.path.startsWith('workspace:')) {
+          const rest = moduleConfig.path.slice('workspace:'.length).replace(/^\/+/, '');
+          return path.resolve(this.workspacePath, rest);
+        }
+
+        return path.resolve(this.workspacePath, moduleConfig.path);
       }
-      return moduleConfig.path;
+      return path.resolve(moduleConfig.path);
     }
 
-    // Try node_modules
-    if (this.workspacePath) {
-      return path.join(this.workspacePath, 'node_modules', moduleConfig.id);
+    const packageSpecifier = moduleConfig.package ?? moduleConfig.id;
+    const resolvedPackageEntry = this.resolvePackageEntry(packageSpecifier);
+    if (resolvedPackageEntry) {
+      return resolvedPackageEntry;
     }
 
     return null;
+  }
+
+  private resolvePackageEntry(specifier: string): string | null {
+    try {
+      const req = createRequire(import.meta.url);
+      if (this.workspacePath) {
+        return req.resolve(specifier, { paths: [this.workspacePath] });
+      }
+      return req.resolve(specifier);
+    } catch {
+      return null;
+    }
   }
 
   /**
@@ -163,6 +190,14 @@ export class ModuleLoader {
   private async importModule(modulePath: string): Promise<ExtensionModule> {
     const fileUrl = pathToFileURL(modulePath).href;
     const module = await import(fileUrl);
+    const direct = module as Partial<ExtensionModule>;
+    if (typeof direct?.activate === 'function') {
+      return module as ExtensionModule;
+    }
+    const cjsDefault = (module as any)?.default as Partial<ExtensionModule> | undefined;
+    if (typeof cjsDefault?.activate === 'function') {
+      return cjsDefault as ExtensionModule;
+    }
     return module as ExtensionModule;
   }
 

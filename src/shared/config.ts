@@ -14,6 +14,16 @@ import { ComponentTypeIdSchema } from './preview-session.js';
 export const ScaffaModuleSchema = z.object({
   id: z.string(),
   path: z.string().optional(),
+  /**
+   * Optional npm package specifier for package-based modules.
+   * When provided, the extension host will resolve it using Node's module resolution
+   * anchored at the workspace root (directory containing scaffa.config.*).
+   *
+   * Examples:
+   * - "@scaffa/module-react-router"
+   * - "./relative-package" (workspace local via package.json "name")
+   */
+  package: z.string().optional(),
   // Module contributions are resolved at runtime by the extension host
   contributions: z.unknown().optional(),
 });

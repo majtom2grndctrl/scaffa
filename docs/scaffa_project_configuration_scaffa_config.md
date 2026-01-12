@@ -89,9 +89,13 @@ Rule:
 Example:
 - `demo/scaffa.config.ts` with `path: './extensions/demo-module/index.ts'` resolves to `demo/extensions/demo-module/index.ts`.
 
-Planned (not v0):
-- package-based modules (e.g. `@scaffa/module-*`)
-- workspace-relative import conveniences
+Also supported in v0:
+- **Workspace-anchored prefixes**:
+  - `path: '@/extensions/demo-module/index.ts'` resolves to `<workspaceRoot>/extensions/demo-module/index.ts`
+  - `path: 'workspace:/extensions/demo-module/index.ts'` resolves to `<workspaceRoot>/extensions/demo-module/index.ts`
+- **Package-based modules**:
+  - `package: '@scaffa/some-module'` is resolved using Node.js module resolution anchored at `<workspaceRoot>`.
+  - If `package` is omitted, Scaffa will also attempt to resolve `id` as a package specifier.
 
 ---
 
