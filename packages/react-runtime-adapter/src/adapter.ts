@@ -242,6 +242,12 @@ export class ScaffaReactAdapter {
 
   /**
    * Injects minimal preview UX affordances (selection outlines + hint).
+   *
+   * Accessibility considerations:
+   * - Uses outline (not border) to avoid layout shifts
+   * - Multiple non-color cues: width (2px vs 3px), style (dashed vs solid)
+   * - High-contrast colors with box-shadow for visibility on any background
+   * - outline-offset separates highlight from element boundary
    */
   private ensurePreviewUxInjected(): void {
     const existingStyles = document.getElementById('scaffa-preview-ux-styles');
@@ -249,16 +255,23 @@ export class ScaffaReactAdapter {
       const style = document.createElement('style');
       style.id = 'scaffa-preview-ux-styles';
       style.textContent = `
+        /* Hover highlight: dashed outline indicates transient candidate state */
         [data-scaffa-instance-id][data-scaffa-pick-hover="true"] {
-          outline: 2px solid #d946ef; /* fuchsia */
+          outline: 2px dashed #d946ef;
           outline-offset: 2px;
+          box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.3), 0 0 8px rgba(217, 70, 239, 0.4);
         }
+        /* Selected highlight: solid outline indicates persistent selection */
         [data-scaffa-instance-id][data-scaffa-selected="true"] {
-          outline: 3px solid #22d3ee; /* cyan */
+          outline: 3px solid #22d3ee;
           outline-offset: 2px;
+          box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.4), 0 0 12px rgba(34, 211, 238, 0.5);
         }
+        /* When both states apply, selected wins (user already picked this instance) */
         [data-scaffa-instance-id][data-scaffa-selected="true"][data-scaffa-pick-hover="true"] {
-          outline: 3px solid #22d3ee; /* selected wins */
+          outline: 3px solid #22d3ee;
+          outline-offset: 2px;
+          box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.4), 0 0 12px rgba(34, 211, 238, 0.5);
         }
         #scaffa-preview-hint {
           position: fixed;

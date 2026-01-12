@@ -220,7 +220,53 @@ The important part is that the contract remains framework-agnostic: React is one
 
 ---
 
-## 7. Non-Goals (v0)
+## 7. Known Limitations (Visual Highlights)
+
+### 7.1 Inspect Mode Highlighting
+
+The v0 runtime adapter uses CSS `outline` and `box-shadow` to visually indicate:
+- **Hover candidate** (Alt/Option held): 2px dashed outline
+- **Selected instance**: 3px solid outline
+
+**Accessibility features:**
+- Multiple non-color cues: outline style (dashed vs solid) and width (2px vs 3px)
+- High-contrast colors (fuchsia for hover, cyan for selection)
+- Box-shadow provides visibility on both light and dark backgrounds
+- Uses `outline` (not `border`) to avoid layout shifts
+
+### 7.2 Limitations
+
+**Portal and iframe boundaries:**
+- Highlights only work within the same document context
+- React Portals to other DOM nodes: ✅ works (same document)
+- iframes with different origins: ❌ cannot highlight (cross-origin restriction)
+- iframes with same origin: ⚠️ requires adapter initialization in iframe context
+
+**Shadow DOM:**
+- Closed shadow roots: ❌ cannot highlight (encapsulation boundary)
+- Open shadow roots: ⚠️ may work if adapter traverses shadow DOM boundaries
+
+**CSS stacking and visibility:**
+- Elements with `z-index` conflicts may overlap highlights
+- Elements with `overflow: hidden` on ancestors may clip outline/shadow
+- `position: fixed` or `sticky` elements may cause highlight positioning issues
+
+**Performance:**
+- Highlights use CSS animations and box-shadow filters
+- On low-end devices, large numbers of highlighted elements may cause jank
+- Recommendation: highlight one candidate + one selected instance only
+
+### 7.3 Future Improvements
+
+Potential enhancements beyond v0:
+- Scaffa-owned overlay layer (eliminates most CSS conflicts)
+- Canvas-based highlights (avoids stacking context issues)
+- Cross-iframe coordination (requires postMessage protocol)
+- Customizable highlight colors for accessibility preferences
+
+---
+
+## 8. Non-Goals (v0)
 
 - Full runtime component tree introspection
 - Editing component type definitions in code
