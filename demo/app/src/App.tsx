@@ -1,8 +1,12 @@
 import React from 'react';
+import { useScaffaRouterState } from '@scaffa/react-runtime-adapter';
 import { DemoButton } from './components/DemoButton';
 import { DemoCard } from './components/DemoCard';
 
 export function App() {
+  // Capture and report router state to Scaffa
+  useScaffaRouterState();
+
   const [count, setCount] = React.useState(0);
 
   return (

@@ -20,7 +20,7 @@ interface RuntimeTransport {
 }
 
 interface RuntimeEvent {
-  type: 'runtime.ready' | 'runtime.selectionChanged';
+  type: 'runtime.ready' | 'runtime.selectionChanged' | 'runtime.routerStateChanged';
   [key: string]: unknown;
 }
 
@@ -488,6 +488,28 @@ export class ScaffaReactAdapter {
       return;
     }
     this.transport.sendToHost(event);
+  }
+
+  /**
+   * Emit router state change event to host.
+   */
+  emitRouterStateChanged(routerState: {
+    pathname: string;
+    matchedRouteIds?: string[];
+    matchedPaths?: string[];
+  }): void {
+    if (!this.sessionId) {
+      console.warn('[ScaffaReactAdapter] Cannot emit router state: no session ID');
+      return;
+    }
+
+    this.sendToHost({
+      type: 'runtime.routerStateChanged',
+      sessionId: this.sessionId,
+      routerState,
+    });
+
+    this.log('Router state changed:', routerState);
   }
 
   /**
