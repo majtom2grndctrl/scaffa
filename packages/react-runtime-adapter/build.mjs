@@ -18,7 +18,7 @@ await build({
   platform: 'browser',
   target: 'es2020',
   outfile: resolve(distDir, 'index.js'),
-  external: ['react', 'react-dom'],
+  external: ['react', 'react-dom', 'react-router-dom'],
   jsx: 'automatic',
   sourcemap: true,
 });
