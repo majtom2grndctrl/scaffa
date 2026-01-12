@@ -49,6 +49,11 @@ The adapter MUST emit selection events when the user clicks/taps in the preview:
 - selection must feel immediate; throttle only if necessary
 - adapter must avoid breaking app behavior (do not swallow clicks unless configured)
 
+v0 standard (recommended):
+- Default to **interact** (normal app behavior).
+- Gate selection behind an explicit **inspect gesture** (e.g. <kbd>Alt/Option</kbd>+Click) so web apps remain usable (navigation, buttons, modals).
+- When performing the inspect gesture, prevent the underlying app interaction for that click (so “pick” does not also “activate”).
+
 ### 2.3 Override Application
 
 The adapter MUST support applying and clearing overrides:

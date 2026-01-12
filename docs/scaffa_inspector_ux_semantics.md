@@ -16,6 +16,11 @@ Related:
 
 The Inspector operates on a **selected instance** in the preview (not a component type definition).
 
+Selection in v0 is explicit so the preview remains a high-fidelity runtime:
+- Default: interact with the app normally.
+- Inspect: <kbd>Alt/Option</kbd>+Click selects an instance (and prevents app interaction for that click).
+- <kbd>Esc</kbd> clears selection when something is selected.
+
 For each prop on that instance, the Inspector answers:
 
 - What is the current value?

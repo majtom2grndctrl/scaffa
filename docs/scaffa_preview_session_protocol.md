@@ -103,11 +103,30 @@ This guarantees:
 
 ---
 
-## 5. Selection Flow (Click-to-Select)
+## 5. Selection Flow (Pick-to-Select)
+
+### 5.0 Interaction Model (v0): Interact vs Inspect
+
+Scaffa must support two user intents against the same running app:
+
+- **Interact** (default): clicks, links, keyboard shortcuts, and navigation behave like the app normally does.
+- **Inspect** (gesture): the user intentionally “picks” an instance to drive Inspector editing.
+
+v0 input contract:
+- Hold <kbd>Alt/Option</kbd> to highlight candidates under the cursor.
+- <kbd>Alt/Option</kbd>+Click selects an instance and MUST prevent app interaction for that click.
+- <kbd>Esc</kbd> clears selection when something is selected.
+- <kbd>Esc</kbd> MUST NOT be used to stop/exit preview sessions in v0 (web apps commonly bind Esc).
+
+Recommended visual affordances:
+- While holding <kbd>Alt/Option</kbd>, highlight the candidate instance under the cursor.
+- After selection, show a persistent selection highlight so users can see what the Inspector is editing.
+
+Stopping/exiting previews should be done via explicit UI affordances (tracked separately).
 
 ### 5.1 Event Origin
 
-- User clicks in the preview runtime.
+- User performs an inspect gesture in the preview runtime (e.g. <kbd>Alt/Option</kbd>+Click).
 - Runtime adapter resolves the clicked element to an `InstanceDescriptor`.
 - Runtime adapter emits `runtime.selectionChanged { sessionId, selected }`.
 
