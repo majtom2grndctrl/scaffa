@@ -1,3 +1,8 @@
+---
+name: implement-ticket
+description: Implement a Beads ticket with documentation grounding and correction workflow
+---
+
 # Implement Beads Ticket
 
 Implement a Beads ticket with documentation grounding and correction workflow.
