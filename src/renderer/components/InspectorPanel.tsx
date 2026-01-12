@@ -105,7 +105,7 @@ export const InspectorPanel = () => {
         <div className="mt-4">
           <p className="text-sm text-fg-subtle">No instance selected</p>
           <p className="mt-2 text-xs text-fg-subtle">
-            Click on a component in the preview to inspect and edit its properties.
+            Hold Alt/Option and click a component in the preview to inspect and edit its properties.
           </p>
         </div>
       </div>

@@ -104,7 +104,7 @@ In addition to `docs/index.md` “Deferred” items, v0 explicitly excludes:
 
 ### Step 3: Click-to-Select
 
-- User clicks a button in the preview.
+- User holds <kbd>Alt/Option</kbd> and clicks a button/card in the preview to select it.
 - Runtime adapter resolves the click to `{ instanceId, componentTypeId }`.
 - Selection updates in the renderer (Inspector shows “Button” instance).
 
@@ -130,7 +130,51 @@ In addition to `docs/index.md` “Deferred” items, v0 explicitly excludes:
 
 ---
 
-## 5. Follow-Up Questions (Ticket Drivers)
+## 5. Walkthrough Checklist (Canonical)
+
+Use this checklist to validate the v0 “first user journey” end-to-end. This is the canonical checklist; demo docs should link here rather than duplicating it.
+
+### Pre-flight
+
+- [ ] Start the demo app dev server (e.g. `demo/app` via `pnpm dev`) and note its URL (usually `http://localhost:5173`).
+- [ ] Start Scaffa (`pnpm dev` from repo root).
+- [ ] Open a workspace configured for Scaffa (use `demo/` for the reference walkthrough).
+
+### Preview session
+
+- [ ] Start an `app` preview session by URL (attached mode): the preview shows the running demo app.
+- [ ] (Note) In v0, Scaffa primarily attaches to an already-running dev server; managed preview launchers are future module contributions.
+- [ ] Confirm the runtime adapter handshake completes (preview is “ready”).
+
+### Selection (Inspect vs Interact)
+
+v0 interaction contract:
+- Default: clicks/links/buttons behave normally (interact mode).
+- Inspect: hold <kbd>Alt/Option</kbd> to highlight candidates; <kbd>Alt/Option</kbd>+Click selects (and prevents app interaction for that click).
+- Clear selection: <kbd>Esc</kbd> clears the current selection (only when something is selected).
+
+- [ ] Hold <kbd>Alt/Option</kbd> and hover: the instance under the cursor shows a highlight.
+- [ ] <kbd>Alt/Option</kbd>+Click a Button instance: Inspector activates and shows instance + props.
+
+### Inspector semantics
+
+- [ ] Inspector uses canonical semantics: editable vs inspect-only vs opaque, and overridden vs not overridden.
+- [ ] Editable props show controls; inspect-only/opaque props do not allow edits.
+
+### Overrides (edit → apply → clear)
+
+- [ ] Edit an editable prop: preview updates immediately and Inspector indicates the prop is overridden.
+- [ ] Reset/clear the override: preview returns to baseline and Inspector clears overridden state.
+- [ ] Verify app behavior still works when not selecting (e.g. normal clicks increment counters / navigate).
+
+### Persistence
+
+- [ ] Persisted overrides update deterministically at `<workspace>/.scaffa/overrides.v0.json`.
+- [ ] Restart Scaffa, reopen the workspace, and start preview: persisted overrides are restored without manual file/DB hacking.
+
+---
+
+## 6. Follow-Up Questions (Ticket Drivers)
 
 These questions are expected to produce implementation tickets (not answered by v0 scope alone):
 

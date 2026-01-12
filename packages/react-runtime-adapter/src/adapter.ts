@@ -50,6 +50,9 @@ export class ScaffaReactAdapter {
   private selectionHandlers = new Set<(identity: InstanceIdentity | null) => void>();
   private overrideChangeHandlers = new Set<() => void>();
   private isReady = false;
+  private selectedInstanceId: string | null = null;
+  private hoveredInstanceId: string | null = null;
+  private isAltHeld = false;
 
   constructor(config: ScaffaAdapterConfig) {
     this.config = config;
@@ -74,8 +77,8 @@ export class ScaffaReactAdapter {
       this.handleCommand(command);
     });
 
-    // Setup click-to-select
-    this.setupClickToSelect();
+    this.ensurePreviewUxInjected();
+    this.setupPreviewInputHandlers();
 
     // Emit runtime.ready
     this.sendToHost({
@@ -238,28 +241,204 @@ export class ScaffaReactAdapter {
   }
 
   /**
-   * Setup click-to-select event handler.
+   * Injects minimal preview UX affordances (selection outlines + hint).
    */
-  private setupClickToSelect(): void {
-    document.addEventListener('click', (event) => {
-      // Find nearest scaffa instance element
-      const target = event.target as HTMLElement;
-      const instanceElement = target.closest('[data-scaffa-instance-id]');
-
-      if (instanceElement) {
-        const instanceId = instanceElement.getAttribute('data-scaffa-instance-id')!;
-        const identity = this.instanceRegistry.get(instanceId);
-
-        if (identity) {
-          this.selectInstance(identity);
-          // Prevent click from propagating to app
-          event.stopPropagation();
+  private ensurePreviewUxInjected(): void {
+    const existingStyles = document.getElementById('scaffa-preview-ux-styles');
+    if (!existingStyles) {
+      const style = document.createElement('style');
+      style.id = 'scaffa-preview-ux-styles';
+      style.textContent = `
+        [data-scaffa-instance-id][data-scaffa-pick-hover="true"] {
+          outline: 2px solid #d946ef; /* fuchsia */
+          outline-offset: 2px;
         }
-      } else {
-        // Click outside any instance - clear selection
-        this.selectInstance(null);
-      }
-    }, true); // Use capture phase
+        [data-scaffa-instance-id][data-scaffa-selected="true"] {
+          outline: 3px solid #22d3ee; /* cyan */
+          outline-offset: 2px;
+        }
+        [data-scaffa-instance-id][data-scaffa-selected="true"][data-scaffa-pick-hover="true"] {
+          outline: 3px solid #22d3ee; /* selected wins */
+        }
+        #scaffa-preview-hint {
+          position: fixed;
+          top: 12px;
+          left: 12px;
+          z-index: 2147483647;
+          pointer-events: none;
+          font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, "Apple Color Emoji", "Segoe UI Emoji";
+          font-size: 12px;
+          line-height: 1.2;
+          color: rgba(255, 255, 255, 0.95);
+          background: rgba(0, 0, 0, 0.65);
+          border: 1px solid rgba(255, 255, 255, 0.18);
+          border-radius: 10px;
+          padding: 10px 12px;
+          box-shadow: 0 10px 30px rgba(0, 0, 0, 0.35);
+          backdrop-filter: blur(10px);
+          -webkit-backdrop-filter: blur(10px);
+          opacity: 0;
+          transform: translateY(-2px);
+          animation: scaffaHintAppearAndFade 4s ease-out forwards;
+        }
+        @keyframes scaffaHintAppearAndFade {
+          0% { opacity: 0; transform: translateY(-2px); }
+          10% { opacity: 1; transform: translateY(0); }
+          75% { opacity: 1; transform: translateY(0); }
+          100% { opacity: 0; transform: translateY(0); }
+        }
+        #scaffa-preview-hint kbd {
+          font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+          font-size: 11px;
+          padding: 1px 6px;
+          border-radius: 6px;
+          background: rgba(255, 255, 255, 0.12);
+          border: 1px solid rgba(255, 255, 255, 0.18);
+        }
+      `.trim();
+      document.head.appendChild(style);
+    }
+
+    const existingHint = document.getElementById('scaffa-preview-hint');
+    if (!existingHint) {
+      const hint = document.createElement('div');
+      hint.id = 'scaffa-preview-hint';
+      hint.innerHTML = `<div><kbd>Alt</kbd>+Click to inspect</div><div style="margin-top:6px; opacity:0.85"><kbd>Esc</kbd> clears selection</div>`;
+      document.body.appendChild(hint);
+      window.setTimeout(() => hint.remove(), 4500);
+    }
+  }
+
+  /**
+   * Setup input handlers for v0:
+   * - Default: interact with the app normally
+   * - Alt/Option+hover: show what will be selected
+   * - Alt/Option+click: select instance (prevents app interaction)
+   * - Esc: clears selection (only when something is selected)
+   */
+  private setupPreviewInputHandlers(): void {
+    window.addEventListener(
+      'keydown',
+      (event) => {
+        if (event.key === 'Alt') {
+          this.isAltHeld = true;
+          return;
+        }
+
+        if (event.key === 'Escape' && this.selectedInstanceId) {
+          event.preventDefault();
+          event.stopPropagation();
+          this.selectInstance(null);
+        }
+      },
+      true
+    );
+
+    window.addEventListener(
+      'keyup',
+      (event) => {
+        if (event.key === 'Alt') {
+          this.isAltHeld = false;
+          this.setHoveredInstanceId(null);
+        }
+      },
+      true
+    );
+
+    document.addEventListener(
+      'mousemove',
+      (event) => {
+        const target = event.target as HTMLElement | null;
+        if (!this.isAltHeld || !target) {
+          if (this.hoveredInstanceId) this.setHoveredInstanceId(null);
+          return;
+        }
+
+        const instanceElement = target.closest('[data-scaffa-instance-id]') as HTMLElement | null;
+        const instanceId = instanceElement?.getAttribute('data-scaffa-instance-id') ?? null;
+        this.setHoveredInstanceId(instanceId);
+      },
+      true
+    );
+
+    document.addEventListener(
+      'click',
+      (event) => {
+        if (!event.altKey) {
+          return;
+        }
+
+        const target = event.target as HTMLElement | null;
+        const instanceElement = target?.closest?.('[data-scaffa-instance-id]') as HTMLElement | null;
+
+        event.preventDefault();
+        event.stopPropagation();
+
+        if (!instanceElement) {
+          this.selectInstance(null);
+          return;
+        }
+
+        const instanceId = instanceElement.getAttribute('data-scaffa-instance-id');
+        if (!instanceId) {
+          this.selectInstance(null);
+          return;
+        }
+
+        const identity = this.instanceRegistry.get(instanceId) ?? null;
+        if (!identity) {
+          this.selectInstance(null);
+          return;
+        }
+
+        this.selectInstance(identity);
+      },
+      true
+    );
+  }
+
+  private setHoveredInstanceId(instanceId: string | null): void {
+    if (this.hoveredInstanceId === instanceId) {
+      return;
+    }
+
+    if (this.hoveredInstanceId) {
+      const prev = this.getInstanceElement(this.hoveredInstanceId);
+      if (prev) prev.removeAttribute('data-scaffa-pick-hover');
+    }
+
+    this.hoveredInstanceId = instanceId;
+
+    if (instanceId) {
+      const next = this.getInstanceElement(instanceId);
+      if (next) next.setAttribute('data-scaffa-pick-hover', 'true');
+    }
+  }
+
+  private setSelectedInstanceId(instanceId: string | null): void {
+    if (this.selectedInstanceId === instanceId) {
+      return;
+    }
+
+    if (this.selectedInstanceId) {
+      const prev = this.getInstanceElement(this.selectedInstanceId);
+      if (prev) prev.removeAttribute('data-scaffa-selected');
+    }
+
+    this.selectedInstanceId = instanceId;
+
+    if (instanceId) {
+      const next = this.getInstanceElement(instanceId);
+      if (next) next.setAttribute('data-scaffa-selected', 'true');
+    }
+  }
+
+  private getInstanceElement(instanceId: string): HTMLElement | null {
+    try {
+      return document.querySelector(`[data-scaffa-instance-id="${CSS.escape(instanceId)}"]`);
+    } catch {
+      return document.querySelector(`[data-scaffa-instance-id="${instanceId}"]`);
+    }
   }
 
   /**
@@ -267,6 +446,7 @@ export class ScaffaReactAdapter {
    */
   private selectInstance(identity: InstanceIdentity | null): void {
     this.log('Selection changed:', identity);
+    this.setSelectedInstanceId(identity?.instanceId ?? null);
 
     // Notify selection handlers
     this.selectionHandlers.forEach((handler) => handler(identity));
