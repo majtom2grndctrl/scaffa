@@ -1,24 +1,24 @@
-import { spawn } from 'node:child_process';
-import { platform } from 'node:os';
+import { spawn } from "node:child_process";
+import { platform } from "node:os";
 
-const useShell = platform() === 'win32';
-const vite = spawn('pnpm', ['vite', '--host', '0.0.0.0', '--port', '5173'], {
-  stdio: 'inherit',
-  shell: useShell,
-});
-
-const electron = spawn(
-  'pnpm',
-  ['electron', '.', '--enable-logging'],
+const useShell = platform() === "win32";
+const vite = spawn(
+  "pnpm",
+  ["-C", "src/renderer", "dev", "--host", "0.0.0.0", "--port", "5173"],
   {
-    stdio: 'inherit',
+    stdio: "inherit",
     shell: useShell,
-    env: {
-      ...process.env,
-      VITE_DEV_SERVER_URL: 'http://localhost:5173',
-    },
-  }
+  },
 );
+
+const electron = spawn("pnpm", ["electron", ".", "--enable-logging"], {
+  stdio: "inherit",
+  shell: useShell,
+  env: {
+    ...process.env,
+    VITE_DEV_SERVER_URL: "http://localhost:5173",
+  },
+});
 
 const shutdown = (signal) => {
   if (!vite.killed) {
@@ -29,17 +29,17 @@ const shutdown = (signal) => {
   }
 };
 
-process.on('SIGINT', () => shutdown('SIGINT'));
-process.on('SIGTERM', () => shutdown('SIGTERM'));
+process.on("SIGINT", () => shutdown("SIGINT"));
+process.on("SIGTERM", () => shutdown("SIGTERM"));
 
-vite.on('close', (code) => {
+vite.on("close", (code) => {
   if (code && code !== 0) {
-    shutdown('SIGTERM');
+    shutdown("SIGTERM");
   }
 });
 
-electron.on('close', (code) => {
+electron.on("close", (code) => {
   if (code && code !== 0) {
-    shutdown('SIGTERM');
+    shutdown("SIGTERM");
   }
 });

@@ -1,5 +1,5 @@
 module.exports = {
-  content: ['./src/renderer/**/*.{ts,tsx,html}'],
+  content: ['./**/*.{ts,tsx,html}'],
   theme: {
     extend: {
       keyframes: {

@@ -1,6 +1,7 @@
 packages:
-  - 'packages/*'
-  - 'examples/*'
+  - "packages/*"
+  - "examples/*"
+  - "src/renderer"
 
 onlyBuiltDependencies:
   - electron
