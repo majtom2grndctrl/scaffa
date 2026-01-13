@@ -66,22 +66,26 @@ You MUST follow these steps in order.
 
 ### Phase 2: Normalize generated colors to Scaffa theme tokens
 
-Scaffa’s renderer uses Tailwind v4 theme tokens defined in `src/renderer/styles.css` (e.g. `bg-surface-1`, `text-fg-muted`, `border-default`, `ring-focus`, `bg-selected`, etc).
+Scaffa’s renderer uses Tailwind v4 theme tokens defined in `src/renderer/styles.css` (e.g. `bg-surface-panel`, `bg-surface-card`, `bg-surface-overlay`, `text-fg-muted`, `border-default`, `ring-focus`, `bg-selected`, etc).
 
 The shadcn generator commonly emits palette tokens like `bg-background`, `text-foreground`, `border-border`, `ring-ring`, `bg-primary`, `text-muted-foreground`, etc. Those MUST be replaced with Scaffa tokens.
+
+Prefer Scaffa’s **surface role** tokens over numeric surface levels:
+- `bg-surface-app`, `bg-surface-panel`, `bg-surface-pane` *(reserved; currently aliases panel)*, `bg-surface-card`, `bg-surface-overlay`, `bg-surface-inset`
+- For text/borders/rings, keep using `text-fg*`, `border-*`, `ring-focus`, etc.
 
 #### 2.1 Required mapping (default)
 
 Use this mapping as the baseline. Adjust only if the component semantics demand it.
 
 - Backgrounds
-  - `bg-background` → `bg-surface-0`
-  - `bg-card` → `bg-surface-1`
-  - `bg-popover` → `bg-surface-1`
-  - `bg-muted` → `bg-surface-2`
+  - `bg-background` → `bg-surface-app`
+  - `bg-card` → `bg-surface-card`
+  - `bg-popover` → `bg-surface-overlay`
+  - `bg-muted` → `bg-surface-inset`
   - `bg-accent` → `bg-hover`
   - `bg-primary` → `bg-selected`
-  - `bg-secondary` → `bg-surface-2`
+  - `bg-secondary` → `bg-surface-card`
   - `bg-destructive` → `bg-danger`
 
 - Text
@@ -107,7 +111,7 @@ Use this mapping as the baseline. Adjust only if the component semantics demand 
 
   For common shadcn focus patterns:
   - `focus-visible:ring-ring` → `focus-visible:ring-focus`
-  - `focus-visible:ring-offset-background` → `focus-visible:ring-offset-surface-0`
+  - `focus-visible:ring-offset-background` → `focus-visible:ring-offset-surface-app`
 
 If you encounter shadcn tokens not covered above (e.g. `bg-input`, `text-primary`, etc.), prefer mapping them to the closest Scaffa semantic token from `src/renderer/styles.css` rather than introducing a new color.
 
@@ -144,6 +148,7 @@ pnpm build
 3. Persist beads updates (if any) and push:
    ```bash
    git pull --rebase
+   # If this session is explicitly "no beads", skip `bd sync`.
    bd sync
    git push
    git status  # MUST show up to date
@@ -152,4 +157,5 @@ pnpm build
 ## Notes / Gotchas
 
 - This repo uses Tailwind v4 `@theme` tokens; prefer `bg-surface-*`, `text-fg*`, `border-*`, `ring-focus`, `bg-selected`, etc over shadcn’s palette tokens.
+- Prefer surface roles (`bg-surface-app/panel/card/overlay/inset`) over numeric surface levels (`bg-surface-0..3`) when choosing container backgrounds.
 - If a generated component requires additional tokens not in the Scaffa theme, file a ticket instead of inventing new one-off colors inside components.

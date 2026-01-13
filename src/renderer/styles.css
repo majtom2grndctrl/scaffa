@@ -9,6 +9,13 @@
     --color-surface-2: var(--surface-2);
     --color-surface-3: var(--surface-3);
     --color-surface-inset: var(--surface-inset);
+    /* Preferred surface role aliases (see docs/design/colors.md). */
+    --color-surface-app: var(--surface-0);
+    --color-surface-panel: var(--surface-1);
+    --color-surface-pane: var(--surface-1);
+    --color-surface-card: var(--surface-2);
+    --color-surface-overlay: var(--surface-3);
+    --color-input: var(--input);
     --color-fg: var(--fg);
     --color-fg-muted: var(--fg-muted);
     --color-fg-subtle: var(--fg-subtle);
@@ -57,6 +64,7 @@
     --surface-2: var(--neutral-800);
     --surface-3: var(--neutral-700);
     --surface-inset: var(--neutral-800);
+    --input: #ffffff;
     --fg: var(--neutral-050);
     --fg-muted: var(--neutral-200);
     --fg-subtle: var(--neutral-300);
@@ -92,6 +100,7 @@
         --surface-2: var(--neutral-200);
         --surface-3: var(--neutral-300);
         --surface-inset: var(--neutral-200);
+        --input: var(--neutral-200);
         --fg: var(--neutral-950);
         --fg-muted: var(--neutral-800);
         --fg-subtle: var(--neutral-700);

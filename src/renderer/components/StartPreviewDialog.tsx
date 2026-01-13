@@ -112,7 +112,7 @@ export const StartPreviewDialog = ({
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50">
-      <div className="w-full max-w-md rounded-lg border border-default bg-surface-1 p-6 shadow-lg">
+      <div className="w-full max-w-md rounded-lg border border-default bg-surface-overlay p-6 shadow-lg">
         <h2 className="text-lg font-semibold text-fg">Start Preview Session</h2>
 
         <form onSubmit={handleSubmit} className="mt-4 space-y-4">
@@ -166,7 +166,7 @@ export const StartPreviewDialog = ({
                 onChange={(e) => setUrl(e.target.value)}
                 placeholder="http://localhost:5173"
                 disabled={isLoading}
-                className="w-full rounded-md border border-subtle bg-surface-inset px-3 py-2 text-sm text-fg placeholder-fg-subtle focus:border-accent focus:outline-none focus:ring-1 focus:ring-accent disabled:cursor-not-allowed disabled:opacity-50"
+                className="w-full rounded-md border border-subtle bg-input px-3 py-2 text-sm text-fg placeholder-fg-subtle focus:border-accent focus:outline-none focus:ring-1 focus:ring-accent disabled:cursor-not-allowed disabled:opacity-50"
               />
               <p className="mt-1 text-xs text-fg-subtle">
                 Enter the URL of your running dev server (must include http:// or https://)
@@ -194,7 +194,7 @@ export const StartPreviewDialog = ({
                     value={selectedLauncher}
                     onChange={(e) => setSelectedLauncher(e.target.value)}
                     disabled={isLoading}
-                    className="w-full rounded-md border border-subtle bg-surface-inset px-3 py-2 text-sm text-fg focus:border-accent focus:outline-none focus:ring-1 focus:ring-accent disabled:cursor-not-allowed disabled:opacity-50"
+                    className="w-full rounded-md border border-subtle bg-input px-3 py-2 text-sm text-fg focus:border-accent focus:outline-none focus:ring-1 focus:ring-accent disabled:cursor-not-allowed disabled:opacity-50"
                   >
                     {launchers.map((launcher) => (
                       <option key={launcher.id} value={launcher.id}>

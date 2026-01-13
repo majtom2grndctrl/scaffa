@@ -100,7 +100,7 @@ export const ConfigHealthBanner = () => {
                           <summary className="cursor-pointer text-xs text-fg-muted hover:text-fg">
                             Show stack trace
                           </summary>
-                          <pre className="mt-1 max-h-32 overflow-auto rounded bg-surface-2 p-2 text-[10px] text-fg-muted font-mono">
+                          <pre className="mt-1 max-h-32 overflow-auto rounded bg-surface-inset p-2 text-[10px] text-fg-muted font-mono">
                             {moduleStatus.error.stack}
                           </pre>
                         </details>

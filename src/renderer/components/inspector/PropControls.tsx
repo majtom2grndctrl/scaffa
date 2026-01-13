@@ -38,7 +38,7 @@ export const StringControl = ({
         placeholder={placeholder}
         disabled={disabled}
         rows={3}
-        className="w-full rounded border border-default bg-surface-0 px-2 py-1.5 text-xs text-fg placeholder:text-fg-subtle focus:border-accent focus:outline-none focus:ring-1 focus:ring-accent disabled:opacity-50"
+        className="w-full rounded border border-default bg-input px-2 py-1.5 text-xs text-fg placeholder:text-fg-subtle focus:border-accent focus:outline-none focus:ring-1 focus:ring-accent disabled:opacity-50"
       />
     );
   }
@@ -50,7 +50,7 @@ export const StringControl = ({
       onChange={(e) => onChange(e.target.value)}
       placeholder={placeholder}
       disabled={disabled}
-      className="w-full rounded border border-default bg-surface-0 px-2 py-1.5 text-xs text-fg placeholder:text-fg-subtle focus:border-accent focus:outline-none focus:ring-1 focus:ring-accent disabled:opacity-50"
+      className="w-full rounded border border-default bg-input px-2 py-1.5 text-xs text-fg placeholder:text-fg-subtle focus:border-accent focus:outline-none focus:ring-1 focus:ring-accent disabled:opacity-50"
     />
   );
 };
@@ -77,7 +77,7 @@ export const NumberControl = ({
         onChange={(e) => onChange(parseFloat(e.target.value))}
         step={step}
         disabled={disabled}
-        className="w-full rounded border border-default bg-surface-0 px-2 py-1.5 text-xs text-fg focus:border-accent focus:outline-none focus:ring-1 focus:ring-accent disabled:opacity-50"
+        className="w-full rounded border border-default bg-input px-2 py-1.5 text-xs text-fg focus:border-accent focus:outline-none focus:ring-1 focus:ring-accent disabled:opacity-50"
       />
       {unit && <span className="text-xs text-fg-muted">{unit}</span>}
     </div>
@@ -128,7 +128,7 @@ export const SelectControl = ({
       value={value ?? ''}
       onChange={(e) => onChange(e.target.value)}
       disabled={disabled}
-      className="w-full rounded border border-default bg-surface-0 px-2 py-1.5 text-xs text-fg focus:border-accent focus:outline-none focus:ring-1 focus:ring-accent disabled:opacity-50"
+      className="w-full rounded border border-default bg-input px-2 py-1.5 text-xs text-fg focus:border-accent focus:outline-none focus:ring-1 focus:ring-accent disabled:opacity-50"
     >
       <option value="">Select...</option>
       {options.map((opt) => (
@@ -164,7 +164,7 @@ export const ColorControl = ({
         onChange={(e) => onChange(e.target.value)}
         disabled={disabled}
         placeholder="#000000"
-        className="flex-1 rounded border border-default bg-surface-0 px-2 py-1.5 text-xs text-fg font-mono focus:border-accent focus:outline-none focus:ring-1 focus:ring-accent disabled:opacity-50"
+        className="flex-1 rounded border border-default bg-input px-2 py-1.5 text-xs text-fg font-mono focus:border-accent focus:outline-none focus:ring-1 focus:ring-accent disabled:opacity-50"
       />
     </div>
   );
@@ -215,7 +215,7 @@ export const JsonControl = ({
         onChange={(e) => handleChange(e.target.value)}
         disabled={disabled}
         rows={5}
-        className="w-full rounded border border-default bg-surface-0 px-2 py-1.5 text-xs text-fg font-mono focus:border-accent focus:outline-none focus:ring-1 focus:ring-accent disabled:opacity-50"
+        className="w-full rounded border border-default bg-input px-2 py-1.5 text-xs text-fg font-mono focus:border-accent focus:outline-none focus:ring-1 focus:ring-accent disabled:opacity-50"
       />
       <p className="text-[10px] text-fg-subtle">
         Enter valid JSON. Changes apply on valid input only.

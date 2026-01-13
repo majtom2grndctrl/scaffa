@@ -98,7 +98,7 @@ export const InspectorPanel = () => {
   // No selection state
   if (!selectedInstance) {
     return (
-      <div className="rounded-lg border border-default bg-surface-1 p-4">
+      <div className="rounded-lg border border-default bg-surface-panel p-4">
         <h2 className="text-sm font-semibold uppercase tracking-wide text-fg-muted">
           Inspector
         </h2>
@@ -132,7 +132,7 @@ export const InspectorPanel = () => {
   };
 
   return (
-    <div className="rounded-lg border border-default bg-surface-1 p-4">
+    <div className="rounded-lg border border-default bg-surface-panel p-4">
       <h2 className="text-sm font-semibold uppercase tracking-wide text-fg-muted">
         Inspector
       </h2>

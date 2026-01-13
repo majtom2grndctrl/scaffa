@@ -65,7 +65,7 @@ export const PreviewSessionList = () => {
   return (
     <>
       <PreviewHint show={showHint} onComplete={() => setShowHint(false)} />
-      <div className="rounded-lg border border-default bg-surface-1 p-4">
+      <div className="rounded-lg border border-default bg-surface-panel p-4">
         <div className="flex items-center justify-between">
           <h2 className="text-sm font-semibold uppercase tracking-wide text-fg-muted">
             Preview Sessions
