@@ -4,6 +4,8 @@ dist/
 out/
 release/
 .vite/
+demo/extensions/**/index.js
+modules/**/index.js
 .DS_Store
 .env
 .env.*

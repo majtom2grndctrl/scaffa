@@ -9,8 +9,7 @@ export default defineScaffaConfig({
   modules: [
     {
       id: 'sample-graph-producer',
-      path: './modules/sample-graph-producer/index.ts',
+      path: './modules/sample-graph-producer/index.js',
     },
   ],
 });
-

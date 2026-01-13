@@ -1,7 +1,16 @@
-import { spawn } from "node:child_process";
+import { spawn, spawnSync } from "node:child_process";
 import { platform } from "node:os";
 
 const useShell = platform() === "win32";
+const moduleBuild = spawnSync("pnpm", ["build:modules"], {
+  stdio: "inherit",
+  shell: useShell,
+});
+
+if (moduleBuild.status && moduleBuild.status !== 0) {
+  process.exit(moduleBuild.status);
+}
+
 const vite = spawn(
   "pnpm",
   ["-C", "src/renderer", "dev", "--host", "0.0.0.0", "--port", "5173"],

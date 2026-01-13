@@ -16,17 +16,17 @@ export default defineScaffaConfig({
     // Component registry provider for demo.button and demo.card
     {
       id: 'demo-module',
-      path: './extensions/demo-module/index.ts',
+      path: './extensions/demo-module/index.js',
     },
     // Graph producer for routes (React Router data-router API)
     {
       id: 'react-router-graph-producer',
-      path: '../modules/react-router-graph-producer/index.ts',
+      path: '../modules/react-router-graph-producer/index.js',
     },
     // Vite+React preview launcher for managed dev server
     {
       id: 'vite-launcher',
-      path: './extensions/vite-launcher/index.ts',
+      path: './extensions/vite-launcher/index.js',
     },
   ],
 });
