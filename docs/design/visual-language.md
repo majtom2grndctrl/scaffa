@@ -30,11 +30,15 @@ Scaffa is a design + development tool; the chrome should feel like an IDE.
 - Dark mode: **very dark gray** surfaces (not pure black).
 
 Use the canonical surface levels (see `docs/design/colors.md`):
-- `surface-0`: app root background
-- `surface-1`: primary panel surfaces (sidebars, inspector, panels)
-- `surface-2`: raised surfaces (cards within panels)
-- `surface-3`: overlay surfaces (menus/popovers)
+Surface numbers are implementation details; the stable metaphor is **container role**:
+- `surface-app` (`surface-0`): app root background
+- `surface-panel` (`surface-1`): docked panels (left/right/bottom regions)
+- `surface-pane` *(reserved)*: an intermediate surface inside a docked panel (split panes, grouped sections)
+- `surface-card` (`surface-2`): raised blocks inside a panel/pane
+- `surface-overlay` (`surface-3`): menus/popovers/dialog surfaces
 - `surface-inset`: wells (lists, code blocks, embedded regions)
+
+**Rule:** Surfaces describe **containers**, not controls. A button is not “a surface level”; it’s a control with interactive states.
 
 **Shadows:** Only overlays may use a shadow; most structure should be readable from surface level + border alone.
 
@@ -98,7 +102,7 @@ Scaffa’s default layout is a docked workbench:
 Layout guidance:
 - Sidebars and bottom panel should be **resizable**.
 - Separate regions with **borders** (not heavy gutters).
-- Use surface levels (`surface-0/1/2`) to distinguish nested regions; keep contrast subtle.
+- Use surface roles (`surface-panel` → `surface-pane` → `surface-card`) to distinguish nested regions; keep contrast subtle.
 
 ---
 
@@ -107,4 +111,3 @@ Layout guidance:
 - Light/dark mode must be supported everywhere (Scaffa already adapts today).
 - UI should use **semantic tokens** (not raw grays) so mode changes don’t require per-component redesign.
 - Only use mode-specific classes as a last resort; prefer variables/tokens in `src/renderer/styles.css`.
-

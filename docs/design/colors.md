@@ -32,11 +32,24 @@ Used for app chrome, panels, cards, popovers, and nested layers.
 
 * `bg-surface-0` — app root background
 * `bg-surface-1` — primary panel surface
+* *(Reserved)* **pane surface** — an intermediate surface between docked panels and cards (split panes, grouped sections inside a panel)
 * `bg-surface-2` — raised surfaces (cards)
 * `bg-surface-3` — overlay surfaces (menus/popovers)
 * `bg-surface-inset` — inset wells, code blocks, input backgrounds
 
 Optional (if needed later): `bg-surface-accent` (for selected/active containers)
+
+**Surface role names (preferred in prose/specs):**
+
+Surface numbers are *implementation levels*; the stable metaphor is **container role**:
+- `surface-app` → `bg-surface-0`
+- `surface-panel` → `bg-surface-1` (left/right sidebars, docked panels)
+- `surface-pane` → *(reserved; between panel and card)* (use `bg-surface-1` + borders/inset until implemented)
+- `surface-card` → `bg-surface-2`
+- `surface-overlay` → `bg-surface-3`
+- `surface-inset` → `bg-surface-inset`
+
+**Rule:** Surfaces are for **containers**, not controls. Buttons/inputs use component styling + interaction tokens (`bg-hover`, `bg-pressed`, `ring-focus`) rather than “taking a surface level.”
 
 ### 2.2 Foreground (text & icons)
 
