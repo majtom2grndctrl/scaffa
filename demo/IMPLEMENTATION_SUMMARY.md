@@ -141,7 +141,7 @@ See `demo/TESTING.md` for comprehensive testing checklist.
 ## Success Criteria Met
 
 ✅ `pnpm dev` starts Scaffa
-✅ Open demo workspace via File menu
+✅ Open demo workspace from Launcher
 ✅ Registry shows Button and Card components with prop metadata
 ✅ Start app preview session
 ✅ Preview shows running React app
