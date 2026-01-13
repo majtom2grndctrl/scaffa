@@ -5,6 +5,26 @@
 
 ---
 
+## Agent TL;DR
+
+- Use this file as a **router**: pick 2–4 linked docs for the task, don’t load everything.
+- Source of truth for: **process model**, **core concepts**, and where contracts live.
+- Don’t use for: deep schema details (load the specific contract doc instead).
+
+## Agent Router (Task → Minimal Docs)
+
+- **UI visual language / theme tokens** → `docs/design/visual-language.md`, `docs/design/colors.md`
+- **Add/normalize UI components (shadcn)** → `.claude/skills/add-shadcn-component/SKILL.md`, `docs/design/colors.md`
+- **Inspector behavior & editing semantics** → `docs/scaffa_inspector_ux_semantics.md`, `docs/scaffa_component_registry_schema.md`, `docs/scaffa_override_model.md`
+- **Override model (data + persistence)** → `docs/scaffa_override_model.md`, `docs/scaffa_preview_session_protocol.md`
+- **Preview sessions & selection flows** → `docs/scaffa_preview_session_protocol.md`, `docs/scaffa_ipc_boundaries_and_sequences.md`, `docs/scaffa_runtime_adapter_contract.md`
+- **Runtime adapter implementation** → `docs/scaffa_runtime_adapter_contract.md`, `docs/scaffa_runtime_adapter_integration_guide.md`
+- **Project configuration** → `docs/scaffa_project_configuration_scaffa_config.md`
+- **Extension API / modules** → `docs/scaffa_extension_api.md`, `docs/scaffa_extension_authoring_guide.md`
+- **Cross-process IPC debugging** → `docs/scaffa_ipc_boundaries_and_sequences.md`, `docs/scaffa_development_guide.md`
+- **MCP server/tooling** → `docs/scaffa_mcp_server_contract.md`
+- **Dev environment / pitfalls** → `docs/scaffa_development_guide.md` (optional: `docs/lessons_learned.md`)
+
 **Architecture contract docs (v0):**
 - v0 scope + first journey: [Scaffa v0 Scope + First User Journey](./scaffa_v0_scope_and_user_journey.md)
 - Runtime adapters: [Scaffa Runtime Adapter Contract](./scaffa_runtime_adapter_contract.md)

@@ -4,6 +4,13 @@
 > **Audience:** Scaffa core contributors, adapter authors, and extension authors  
 > **Goal:** Define the canonical non-destructive override data model, precedence rules, lifecycle operations, and v0 persistence/serialization strategy.
 
+## Agent TL;DR
+
+- Load when: implementing **set/clear/reset overrides**, persistence, or precedence rules.
+- Primary artifacts: `InstanceRef` (`sessionId + instanceId`), `PropPath` (JSON Pointer), JSON-only `JsonValue`.
+- Key invariant: overrides are **non-destructive**, **inspectable**, and **reversible**; orphaned overrides are surfaced, not silently dropped.
+- Also load: `docs/scaffa_inspector_ux_semantics.md` (UX meaning), `docs/scaffa_runtime_adapter_contract.md` (apply/clear), `docs/scaffa_preview_session_protocol.md` (routing).
+
 Related:
 - [Architecture Plan](./index.md)
 - [Scaffa Preview Session Protocol](./scaffa_preview_session_protocol.md)

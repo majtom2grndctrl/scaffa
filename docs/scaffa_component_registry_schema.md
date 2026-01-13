@@ -4,6 +4,13 @@
 > **Audience:** Module authors and Scaffa core contributors  
 > **Goal:** Define the canonical schema for component metadata that powers the Inspector (editability, controls, defaults, grouping) and enables registry composition across modules and projects.
 
+## Agent TL;DR
+
+- Load when: adding/changing **Inspector-editable props** or the **canonical control schema** contributed by modules.
+- Primary artifacts: `ComponentTypeId`, `ControlDefinition` union, prop editability states, grouping/ordering semantics.
+- Key invariant: `ComponentTypeId` must match across **registry ↔ graph ↔ runtime adapter ↔ overrides**.
+- Also load: `docs/scaffa_inspector_ux_semantics.md`, `docs/scaffa_override_model.md`, `docs/scaffa_project_configuration_scaffa_config.md`.
+
 Related:
 - [Architecture Plan](./index.md)
 - [Scaffa Project Configuration (`scaffa.config.ts`)](./scaffa_project_configuration_scaffa_config.md)

@@ -2,7 +2,15 @@
 
 > **Status:** Draft / v0 shape  
 > **Audience:** Scaffa core contributors and extension/module authors  
-> **Goal:** Define the Inspector’s semantics and visual language so core + extensions present consistent meaning for editability, overrides, and escape hatches.
+> **Goal:** Define the Inspector’s semantics and affordances so core + extensions present consistent meaning for editability, overrides, and escape hatches.
+
+## Agent TL;DR
+
+- Load when: implementing or changing **Inspector behavior**, meanings, and state-driven affordances.
+- Primary semantics: editability (`editable | inspect-only | opaque`) and override state (`not overridden | overridden | orphaned`).
+- Key rule: extensions may add sections, but must not invent new meanings or hidden side effects.
+- Visual language is defined elsewhere: `docs/design/visual-language.md` and `docs/design/colors.md`.
+- Also load: `docs/scaffa_component_registry_schema.md` (controls), `docs/scaffa_override_model.md` (data/persistence).
 
 Related:
 - [Architecture Plan](./index.md)

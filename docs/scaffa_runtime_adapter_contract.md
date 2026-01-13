@@ -4,6 +4,13 @@
 > **Audience:** Framework adapter authors (first‑party and internal)  
 > **Goal:** Define the framework‑agnostic contract for runtime instance identity, selection, and applying non‑destructive prop overrides inside preview runtimes.
 
+## Agent TL;DR
+
+- Load when: implementing or modifying a **framework runtime adapter** (click-to-select, instance identity, apply/clear overrides).
+- Key invariants: `componentTypeId` is the **join key** across registry/graph/runtime/overrides; selection is explicit (inspect gesture).
+- Primary concerns: instance identity, selection events, override application, lifecycle hooks.
+- Also load: `docs/scaffa_runtime_adapter_integration_guide.md`, `docs/scaffa_preview_session_protocol.md`, `docs/scaffa_override_model.md`.
+
 Related:
 - [Architecture Plan](./index.md)
 - [Scaffa Runtime Adapter Integration Guide](./scaffa_runtime_adapter_integration_guide.md)

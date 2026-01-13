@@ -4,6 +4,13 @@
 > **Audience:** Scaffa core contributors and adapter authors  
 > **Goal:** Capture critical cross-process flows as concrete sequence diagrams aligned with the multi-process architecture.
 
+## Agent TL;DR
+
+- Load when: debugging or changing **cross-process flows** (renderer↔preload↔main↔extension-host↔preview-runtime).
+- Primary value: canonical process boundary definitions + mermaid diagrams for session start, selection, and override flows.
+- Don’t load when: you only need the data model (`docs/scaffa_override_model.md`) or registry schema (`docs/scaffa_component_registry_schema.md`).
+- Also load: `docs/scaffa_preview_session_protocol.md` for the precise contract terms used in the diagrams.
+
 Related:
 - [Architecture Plan](./index.md)
 - [Scaffa Preview Session Protocol](./scaffa_preview_session_protocol.md)

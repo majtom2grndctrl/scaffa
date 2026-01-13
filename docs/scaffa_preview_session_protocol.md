@@ -4,6 +4,13 @@
 > **Audience:** Scaffa core contributors, adapter authors, and extension authors  
 > **Goal:** Precisely define preview session types, lifecycle, and the selection/override flows across main/renderer/preload/extension host/runtime adapter.
 
+## Agent TL;DR
+
+- Load when: touching **preview session lifecycle**, **selection routing**, or **override routing** across processes.
+- Primary artifacts: `PreviewSessionTarget`, `PreviewSessionId`, session lifecycle events, and “which process owns what”.
+- Don’t load when: you only need override data shape (`docs/scaffa_override_model.md`) or adapter internals (`docs/scaffa_runtime_adapter_contract.md`).
+- Also load: `docs/scaffa_ipc_boundaries_and_sequences.md` for concrete sequence diagrams.
+
 Related:
 - [Architecture Plan](./index.md)
 - [Scaffa Runtime Adapter Contract](./scaffa_runtime_adapter_contract.md)
