@@ -21,7 +21,7 @@ Example:
 
 ## Prerequisites (MUST verify)
 
-1. shadcn is initialized (typically a `components.json` exists at repo root).
+1. shadcn is initialized for the renderer and `src/renderer/components.json` exists (assume true; do not check).
 2. The renderer theme tokens are defined in `src/renderer/styles.css` (Tailwind v4 `@theme` tokens).
 
 If shadcn is not initialized yet, STOP and ask the user to run init first.
@@ -40,9 +40,9 @@ You MUST follow these steps in order.
 
 ### Phase 1: Add the component(s)
 
-1. Confirm shadcn is initialized:
+1. Run shadcn from the same folder as `src/renderer/components.json`:
    ```bash
-   ls -la components.json
+   pushd src/renderer
    ```
 
 2. Add the requested components.
@@ -54,7 +54,12 @@ You MUST follow these steps in order.
 
    If this repo’s shadcn init documented a shorter alias (e.g. `pnpm dlx add ...`), use the repo’s convention instead, but keep the semantics identical: “run shadcn add for these components”.
 
-3. Capture what changed:
+3. Return to the repo root:
+   ```bash
+   popd
+   ```
+
+4. Capture what changed:
    ```bash
    git status --porcelain
    ```
