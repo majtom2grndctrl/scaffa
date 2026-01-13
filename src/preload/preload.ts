@@ -22,6 +22,14 @@ import type {
   GetWorkspaceRequest,
   GetWorkspaceResponse,
   WorkspaceChangedEvent,
+  GetRecentWorkspacesRequest,
+  GetRecentWorkspacesResponse,
+  OpenRecentWorkspaceRequest,
+  OpenRecentWorkspaceResponse,
+  RemoveRecentWorkspaceRequest,
+  RemoveRecentWorkspaceResponse,
+  OpenDemoWorkspaceRequest,
+  OpenDemoWorkspaceResponse,
 } from '../shared/index.js';
 import type {
   GetConfigRequest,
@@ -65,6 +73,30 @@ const scaffaApi = {
 
     get: (request: GetWorkspaceRequest): Promise<GetWorkspaceResponse> => {
       return ipcRenderer.invoke('workspace:get', request);
+    },
+
+    getRecents: (
+      request: GetRecentWorkspacesRequest
+    ): Promise<GetRecentWorkspacesResponse> => {
+      return ipcRenderer.invoke('workspace:getRecents', request);
+    },
+
+    openRecent: (
+      request: OpenRecentWorkspaceRequest
+    ): Promise<OpenRecentWorkspaceResponse> => {
+      return ipcRenderer.invoke('workspace:openRecent', request);
+    },
+
+    removeRecent: (
+      request: RemoveRecentWorkspaceRequest
+    ): Promise<RemoveRecentWorkspaceResponse> => {
+      return ipcRenderer.invoke('workspace:removeRecent', request);
+    },
+
+    openDemo: (
+      request: OpenDemoWorkspaceRequest
+    ): Promise<OpenDemoWorkspaceResponse> => {
+      return ipcRenderer.invoke('workspace:openDemo', request);
     },
 
     onWorkspaceChanged: (

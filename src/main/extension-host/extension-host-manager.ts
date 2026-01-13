@@ -64,6 +64,8 @@ export class ExtensionHostManager {
       return;
     }
 
+    this.shouldRestart = true;
+    this.restartCount = 0;
     this.workspacePath = workspacePath;
     this.config = config;
 
@@ -373,6 +375,22 @@ export class ExtensionHostManager {
    * Stop the extension host process gracefully.
    */
   async stop(): Promise<void> {
+    await this.stopInternal();
+  }
+
+  /**
+   * Restart the extension host with a new workspace + config.
+   */
+  async restart(workspacePath: string | null, config: ScaffaConfig): Promise<void> {
+    await this.stopInternal();
+    this.clearModuleActivationStatuses();
+    await this.start(workspacePath, config);
+  }
+
+  /**
+   * Stop the extension host process with restart control.
+   */
+  private async stopInternal(): Promise<void> {
     if (!this.process) {
       return;
     }

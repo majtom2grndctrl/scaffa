@@ -18,7 +18,11 @@ class ConfigManager {
    * Load config for the given workspace path.
    * Returns the load result (success or error details).
    */
-  async loadForWorkspace(workspacePath: string | null): Promise<ConfigLoadResult> {
+  async loadForWorkspace(
+    workspacePath: string | null,
+    options?: { notifyExtensionHost?: boolean }
+  ): Promise<ConfigLoadResult> {
+    const notifyExtensionHost = options?.notifyExtensionHost ?? true;
     if (!workspacePath) {
       // No workspace - use default config
       this.currentConfig = getDefaultConfig();
@@ -32,7 +36,9 @@ class ConfigManager {
       registryManager.recomposeWithConfig(this.currentConfig);
 
       // Notify extension host (if available)
-      this.notifyExtensionHost();
+      if (notifyExtensionHost) {
+        this.notifyExtensionHost();
+      }
 
       return this.loadResult;
     }
@@ -54,7 +60,9 @@ class ConfigManager {
     registryManager.recomposeWithConfig(this.currentConfig);
 
     // Notify extension host
-    this.notifyExtensionHost();
+    if (notifyExtensionHost) {
+      this.notifyExtensionHost();
+    }
 
     return this.loadResult;
   }

@@ -9,9 +9,11 @@ import type { GraphSnapshot, GraphPatch, GraphNode } from '../../shared/index.js
 interface GraphState {
   snapshot: GraphSnapshot | null;
   isLoading: boolean;
+  isInitialized: boolean;
 
   // Actions
   initialize: () => Promise<void>;
+  refresh: () => Promise<void>;
   applyPatch: (patch: GraphPatch) => void;
   reset: () => void;
 }
@@ -19,18 +21,24 @@ interface GraphState {
 export const useGraphStore = create<GraphState>((set, get) => ({
   snapshot: null,
   isLoading: false,
+  isInitialized: false,
 
   /**
    * Initialize the graph by fetching the current snapshot and subscribing to patches.
    */
   initialize: async () => {
+    if (get().isInitialized) {
+      await get().refresh();
+      return;
+    }
+
     set({ isLoading: true });
 
     try {
       // Fetch initial snapshot
       const snapshot = await window.scaffa.graph.getSnapshot({});
       console.log('[GraphStore] Initialized with snapshot:', snapshot);
-      set({ snapshot, isLoading: false });
+      set({ snapshot, isLoading: false, isInitialized: true });
 
       // Subscribe to patches
       window.scaffa.graph.onPatch((patch) => {
@@ -39,6 +47,21 @@ export const useGraphStore = create<GraphState>((set, get) => ({
       });
     } catch (error) {
       console.error('[GraphStore] Failed to initialize:', error);
+      set({ isLoading: false });
+    }
+  },
+
+  /**
+   * Refresh the graph snapshot without re-subscribing to patches.
+   */
+  refresh: async () => {
+    set({ isLoading: true });
+    try {
+      const snapshot = await window.scaffa.graph.getSnapshot({});
+      console.log('[GraphStore] Refreshed snapshot:', snapshot);
+      set({ snapshot, isLoading: false });
+    } catch (error) {
+      console.error('[GraphStore] Failed to refresh:', error);
       set({ isLoading: false });
     }
   },

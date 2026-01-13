@@ -20,9 +20,11 @@ interface InspectorState {
 
   // Override state for current session
   overrides: PersistedOverride[];
+  isInitialized: boolean;
 
   // Actions
   initialize: () => Promise<void>;
+  refresh: () => Promise<void>;
   reset: () => void;
 }
 
@@ -31,6 +33,7 @@ export const useInspectorStore = create<InspectorState>((set, get) => ({
   registry: null,
   isRegistryLoading: false,
   overrides: [],
+  isInitialized: false,
 
   /**
    * Initialize the inspector by:
@@ -39,6 +42,11 @@ export const useInspectorStore = create<InspectorState>((set, get) => ({
    * 3. Subscribing to override events
    */
   initialize: async () => {
+    if (get().isInitialized) {
+      await get().refresh();
+      return;
+    }
+
     console.log('[InspectorStore] Initializing...');
 
     // Fetch registry
@@ -46,7 +54,11 @@ export const useInspectorStore = create<InspectorState>((set, get) => ({
     try {
       const response = await window.scaffa.registry.get({});
       console.log('[InspectorStore] Loaded registry:', response.registry);
-      set({ registry: response.registry, isRegistryLoading: false });
+      set({
+        registry: response.registry,
+        isRegistryLoading: false,
+        isInitialized: true,
+      });
     } catch (error) {
       console.error('[InspectorStore] Failed to load registry:', error);
       set({ isRegistryLoading: false });
@@ -63,6 +75,26 @@ export const useInspectorStore = create<InspectorState>((set, get) => ({
       console.log('[InspectorStore] Overrides changed:', event);
       set({ overrides: event.overrides });
     });
+  },
+
+  /**
+   * Refresh registry and reset instance state without re-subscribing.
+   */
+  refresh: async () => {
+    set({
+      selectedInstance: null,
+      overrides: [],
+      isRegistryLoading: true,
+    });
+
+    try {
+      const response = await window.scaffa.registry.get({});
+      console.log('[InspectorStore] Refreshed registry:', response.registry);
+      set({ registry: response.registry, isRegistryLoading: false });
+    } catch (error) {
+      console.error('[InspectorStore] Failed to refresh registry:', error);
+      set({ isRegistryLoading: false });
+    }
   },
 
   /**

@@ -48,6 +48,11 @@ interface SessionStore {
    * Get a session by ID.
    */
   getSession: (sessionId: PreviewSessionId) => PreviewSession | undefined;
+
+  /**
+   * Reset all sessions (e.g., on workspace change).
+   */
+  reset: () => void;
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -98,6 +103,10 @@ export const useSessionStore = create<SessionStore>((set, get) => ({
 
   getSession: (sessionId) => {
     return get().sessions.find((session) => session.sessionId === sessionId);
+  },
+
+  reset: () => {
+    set({ sessions: [] });
   },
 }));
 

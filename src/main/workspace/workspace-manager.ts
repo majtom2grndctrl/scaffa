@@ -12,13 +12,16 @@ import { projectGraphStore } from '../graph/graph-store.js';
 // Manages current workspace selection and persistence.
 
 const WORKSPACE_STATE_FILE = 'workspace-state.json';
+const MAX_RECENT_WORKSPACES = 8;
 
 interface WorkspaceState {
   currentWorkspace: WorkspaceInfo | null;
+  recentWorkspaces: WorkspaceInfo[];
 }
 
 class WorkspaceManager {
   private currentWorkspace: WorkspaceInfo | null = null;
+  private recentWorkspaces: WorkspaceInfo[] = [];
   private stateFilePath: string;
 
   constructor() {
@@ -33,15 +36,21 @@ class WorkspaceManager {
       const data = await fs.readFile(this.stateFilePath, 'utf-8');
       const state: WorkspaceState = JSON.parse(data);
       this.currentWorkspace = state.currentWorkspace;
+      this.recentWorkspaces = (state.recentWorkspaces ?? []).sort((a, b) =>
+        (b.lastOpened ?? '').localeCompare(a.lastOpened ?? '')
+      );
       console.log('[Workspace] Loaded workspace:', this.currentWorkspace?.path);
     } catch (error) {
       // File doesn't exist or is invalid - start fresh
       console.log('[Workspace] No persisted workspace found');
       this.currentWorkspace = null;
+      this.recentWorkspaces = [];
     }
 
     // Load config for the current workspace
-    await configManager.loadForWorkspace(this.currentWorkspace?.path ?? null);
+    await configManager.loadForWorkspace(this.currentWorkspace?.path ?? null, {
+      notifyExtensionHost: false,
+    });
 
     // Initialize override store for the current workspace
     await overrideStore.init(this.currentWorkspace?.path ?? null);
@@ -56,6 +65,7 @@ class WorkspaceManager {
   private async save(): Promise<void> {
     const state: WorkspaceState = {
       currentWorkspace: this.currentWorkspace,
+      recentWorkspaces: this.recentWorkspaces,
     };
     await fs.writeFile(this.stateFilePath, JSON.stringify(state, null, 2), 'utf-8');
   }
@@ -68,15 +78,39 @@ class WorkspaceManager {
   }
 
   /**
+   * Get recent workspaces (most recent first).
+   */
+  getRecentWorkspaces(): WorkspaceInfo[] {
+    return [...this.recentWorkspaces];
+  }
+
+  /**
+   * Remove a workspace from recents.
+   */
+  async removeRecentWorkspace(pathToRemove: string): Promise<void> {
+    this.recentWorkspaces = this.recentWorkspaces.filter(
+      (workspace) => workspace.path !== pathToRemove
+    );
+    await this.save();
+  }
+
+  /**
    * Set the current workspace and persist it.
    */
   async setCurrentWorkspace(workspace: WorkspaceInfo | null): Promise<void> {
-    this.currentWorkspace = workspace;
+    if (workspace) {
+      const updated = this.addRecentWorkspace(workspace);
+      this.currentWorkspace = updated;
+    } else {
+      this.currentWorkspace = null;
+    }
     await this.save();
     console.log('[Workspace] Workspace changed:', workspace?.path);
 
     // Load config for the new workspace
-    await configManager.loadForWorkspace(workspace?.path ?? null);
+    await configManager.loadForWorkspace(workspace?.path ?? null, {
+      notifyExtensionHost: false,
+    });
 
     // Initialize override store for the new workspace
     await overrideStore.init(workspace?.path ?? null);
@@ -94,6 +128,23 @@ class WorkspaceManager {
       name: path.basename(folderPath),
       lastOpened: new Date().toISOString(),
     };
+  }
+
+  /**
+   * Add or update a workspace in recents.
+   */
+  private addRecentWorkspace(workspace: WorkspaceInfo): WorkspaceInfo {
+    const updated: WorkspaceInfo = {
+      ...workspace,
+      lastOpened: new Date().toISOString(),
+    };
+
+    this.recentWorkspaces = [
+      updated,
+      ...this.recentWorkspaces.filter((entry) => entry.path !== workspace.path),
+    ].slice(0, MAX_RECENT_WORKSPACES);
+
+    return updated;
   }
 }
 
