@@ -50,7 +50,7 @@ import type { GraphSnapshot, GraphPatch } from '../../../src/shared/project-grap
 ## 3. Workspace Config Relative Paths
 
 ### Issue
-Module paths in `scaffa.config.ts` are relative to the config file location, not the project root:
+Module paths in `scaffa.config.js` are relative to the config file location, not the project root:
 
 ```typescript
 modules: [
@@ -356,7 +356,7 @@ exposure: {
 ## 16. Scaffa Config Schema Validation
 
 ### Issue
-`scaffa.config.ts` is loaded by extension host, but validation errors might not surface clearly.
+`scaffa.config.js` is loaded by extension host, but validation errors might not surface clearly.
 
 ### Observation
 - Zod validation happens, but error messages might be in console

@@ -180,7 +180,7 @@ Serialization requirements:
 - deterministic ordering (stable diffs)
 - written transactionally (write temp + rename)
 
-Whether this file is committed to git is a **project policy** decision (documented in `scaffa.config.ts` conventions).
+Whether this file is committed to git is a **project policy** decision (documented in `scaffa.config.js` conventions).
 
 ---
 

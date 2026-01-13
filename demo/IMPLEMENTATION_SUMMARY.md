@@ -21,7 +21,7 @@ Successfully created a complete demo workspace that validates the Scaffa v0 end-
 
 ```
 demo/
-├── scaffa.config.ts              # Workspace configuration
+├── scaffa.config.js              # Workspace configuration
 ├── README.md                     # User documentation
 ├── TESTING.md                    # Comprehensive test checklist
 ├── IMPLEMENTATION_SUMMARY.md     # This file

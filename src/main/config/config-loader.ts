@@ -10,7 +10,7 @@ import {
 // ─────────────────────────────────────────────────────────────────────────────
 // Config Loader (v0)
 // ─────────────────────────────────────────────────────────────────────────────
-// Loads and validates scaffa.config.ts from a workspace.
+// Loads and validates scaffa.config.js from a workspace.
 
 export interface ConfigLoadResult {
   success: boolean;
@@ -23,7 +23,7 @@ export interface ConfigLoadResult {
 }
 
 /**
- * Load and validate scaffa.config.ts from a workspace.
+ * Load and validate scaffa.config.js from a workspace.
  *
  * @param workspacePath - Absolute path to the workspace folder
  * @returns Load result with config or error
@@ -31,44 +31,59 @@ export interface ConfigLoadResult {
 export async function loadConfig(
   workspacePath: WorkspacePath | string
 ): Promise<ConfigLoadResult> {
-  const configPath = path.join(workspacePath, 'scaffa.config.ts');
+  const jsConfigPath = path.join(workspacePath, 'scaffa.config.js');
+  const tsConfigPath = path.join(workspacePath, 'scaffa.config.ts');
 
   try {
-    // Check if config file exists
-    try {
-      await fs.access(configPath);
-    } catch {
+    // Check if runtime config exists
+    const hasJsConfig = await fs
+      .access(jsConfigPath)
+      .then(() => true)
+      .catch(() => false);
+    const hasTsConfig = await fs
+      .access(tsConfigPath)
+      .then(() => true)
+      .catch(() => false);
+
+    if (!hasJsConfig) {
+      if (hasTsConfig) {
+        return {
+          success: false,
+          error: {
+            code: 'INVALID_SYNTAX',
+            message:
+              'Scaffa config must be JavaScript at runtime. Compile scaffa.config.ts to scaffa.config.js.',
+            details: {
+              tsConfigPath,
+              hint: 'Ensure scaffa.config.js exists alongside scaffa.config.ts',
+            },
+          },
+        };
+      }
+
       return {
         success: false,
         error: {
           code: 'NOT_FOUND',
-          message: `Config file not found: ${configPath}`,
+          message: `Config file not found: ${jsConfigPath}`,
         },
       };
     }
 
-    // For v0: We expect a compiled .js version to exist alongside the .ts file
-    // In production, projects would compile their config as part of their build
-    // For now, we'll look for a .js version or use dynamic import with tsx/ts-node
-    const jsConfigPath = configPath.replace(/\.ts$/, '.js');
     let configModule: { default?: unknown };
 
     try {
-      // Try to load compiled .js version first
       const fileUrl = pathToFileURL(jsConfigPath).href;
       configModule = await import(fileUrl);
     } catch {
-      // If no .js version exists, try loading .ts directly
-      // This requires the workspace to have ts-node or similar set up
-      // For v0, we'll return an error and document this requirement
       return {
         success: false,
         error: {
           code: 'INVALID_SYNTAX',
-          message: `Config must be compiled to .js. Run 'tsc scaffa.config.ts' in your workspace.`,
+          message:
+            'Failed to load scaffa.config.js. Ensure it is valid JavaScript and exports a default config.',
           details: {
-            configPath,
-            hint: 'Ensure scaffa.config.js exists alongside scaffa.config.ts',
+            jsConfigPath,
           },
         },
       };

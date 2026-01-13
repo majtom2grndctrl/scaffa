@@ -186,8 +186,8 @@ async function openWorkspacePath(folderPath: string): Promise<{
   if (!loadResult.success) {
     const errorMessage =
       loadResult.error?.code === 'NOT_FOUND'
-        ? `No scaffa.config.ts found in ${folderPath}`
-        : loadResult.error?.message ?? 'Failed to load scaffa.config.ts';
+        ? `No scaffa.config.js found in ${folderPath}`
+        : loadResult.error?.message ?? 'Failed to load scaffa.config.js';
     return {
       workspace: null,
       error: {

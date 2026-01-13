@@ -37,7 +37,7 @@ v0 is successful when a designer (within explicit guardrails) can:
 
 ### 2.2 Workspace + Configuration
 
-- Load `scaffa.config.ts` and module list
+- Load `scaffa.config.js` and module list
 - Apply project-level registry overrides (see `docs/scaffa_project_configuration_scaffa_config.md`)
 
 ### 2.3 Extension Host (Trusted)
@@ -92,7 +92,7 @@ In addition to `docs/index.md` “Deferred” items, v0 explicitly excludes:
 
 - Scaffa opens to the Launcher view.
 - User selects an existing workspace (project folder) via Open Workspace (or chooses a recent workspace).
-- Scaffa loads `scaffa.config.ts`.
+- Scaffa loads `scaffa.config.js`.
 - Extension host starts and registers enabled modules.
 - Effective component registry is composed (module registries + project overrides).
 

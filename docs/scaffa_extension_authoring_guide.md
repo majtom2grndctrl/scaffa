@@ -167,7 +167,6 @@ Recommended workflow:
 
 ## 7. Common Failure Modes (v0)
 
-- **Module loads but "does nothing"**: check DevTools for activation errors and confirm the module path in `scaffa.config.ts`.
+- **Module loads but "does nothing"**: check DevTools for activation errors and confirm the module path in `scaffa.config.js`.
 - **Registry contributed but Inspector shows raw props**: confirm `ComponentTypeId` matches registry ↔ graph ↔ runtime wrapper.
 - **TypeScript friction in producers**: use the graph construction helpers (`createRouteNode`, `createComponentTypeNode`, etc.) from the Extension SDK to avoid `as any` casts. See section 4 for examples.
-

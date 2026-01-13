@@ -4,7 +4,7 @@ import { ComponentTypeIdSchema } from './preview-session.js';
 // ─────────────────────────────────────────────────────────────────────────────
 // Scaffa Config Schema (v0)
 // ─────────────────────────────────────────────────────────────────────────────
-// Defines the shape of scaffa.config.ts project configuration.
+// Defines the shape of scaffa.config.js project configuration.
 // See: docs/scaffa_project_configuration_scaffa_config.md
 
 /**
@@ -122,7 +122,7 @@ export const AiConfigSchema = z.object({
 export type AiConfig = z.infer<typeof AiConfigSchema>;
 
 /**
- * Full scaffa.config.ts schema.
+ * Full scaffa.config.js schema.
  */
 export const ScaffaConfigSchema = z.object({
   schemaVersion: z.literal('v0').optional().default('v0'),

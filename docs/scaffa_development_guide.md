@@ -217,7 +217,7 @@ Search logs by prefix to filter specific subsystems.
 
 In v0, `console.log()` from extension modules typically appears in the **Electron DevTools console** (main window), not in the terminal where you launched `pnpm dev`.
 
-If `scaffa.config.ts` validation fails or a module fails to load, start by checking the same DevTools console output for errors.
+If `scaffa.config.js` validation fails or a module fails to load, start by checking the same DevTools console output for errors.
 
 ### Common Console Patterns
 

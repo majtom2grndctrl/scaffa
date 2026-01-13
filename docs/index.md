@@ -263,7 +263,7 @@ Example:
 
 ### 5.2 Project Manifest
 
-Each Scaffa project defines a manifest (e.g. `scaffa.config.ts`) that:
+Each Scaffa project defines a manifest (e.g. `scaffa.config.js`) that:
 - enables modules
 - customizes or overrides registry entries
 - defines providers/decorators

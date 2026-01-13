@@ -113,7 +113,7 @@ export const Launcher = () => {
               </p>
             </div>
             <div className="rounded-md border border-subtle bg-surface-inset px-3 py-2 text-xs text-fg-subtle">
-              <p className="font-mono">scaffa.config.ts</p>
+              <p className="font-mono">scaffa.config.js</p>
               <p className="mt-1">Required at workspace root</p>
             </div>
           </div>
@@ -151,9 +151,10 @@ export const Launcher = () => {
             <div className="rounded-md border border-subtle bg-surface-inset p-3">
               <p className="text-xs font-semibold text-fg">Need to prep?</p>
               <p className="mt-2 text-xs text-fg-subtle">
-                Compile <span className="font-mono">scaffa.config.ts</span> to
-                ensure a matching <span className="font-mono">.js</span> file is
-                available.
+                Scaffa loads <span className="font-mono">scaffa.config.js</span>{' '}
+                at runtime. You can author in{' '}
+                <span className="font-mono">scaffa.config.ts</span>, but compile
+                it to <span className="font-mono">scaffa.config.js</span>.
               </p>
             </div>
           </div>

@@ -193,7 +193,7 @@ Demo Workspace Walkthrough
 
   Modules not activating?
   - Check Electron DevTools console for errors
-  - Verify demo/scaffa.config.ts paths are correct
+  - Verify demo/scaffa.config.js paths are correct
 
   Click-to-select not working?
   - Check preview console for adapter handshake messages

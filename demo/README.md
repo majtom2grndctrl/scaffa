@@ -17,7 +17,7 @@ This demo workspace showcases all core v0 capabilities:
 
 ```
 demo/
-├── scaffa.config.ts           # Workspace configuration
+├── scaffa.config.js           # Workspace configuration
 ├── extensions/
 │   └── demo-module/           # Component registry provider
 │       ├── index.ts           # Registry for demo.button and demo.card
@@ -50,7 +50,7 @@ pnpm dev
 
 - In Scaffa (Launcher), use **Open Workspace**
 - Navigate to and select the `demo/` directory
-- Scaffa will load `scaffa.config.ts` and activate modules
+- Scaffa will load `scaffa.config.js` and activate modules
 
 ### 3. Start App Preview
 

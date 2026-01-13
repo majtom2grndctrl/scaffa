@@ -13,7 +13,7 @@
 
 Related:
 - [Architecture Plan](./index.md)
-- [Scaffa Project Configuration (`scaffa.config.ts`)](./scaffa_project_configuration_scaffa_config.md)
+- [Scaffa Project Configuration (`scaffa.config.js`)](./scaffa_project_configuration_scaffa_config.md)
 - [Scaffa Inspector UX Rules & Semantics](./scaffa_inspector_ux_semantics.md)
 
 ---
@@ -30,7 +30,7 @@ A **Component Registry** is type-level metadata for a component library. It answ
 Registries are:
 - **Contributed by modules** (extension host)
 - **Composed** into a single effective registry for a workspace
-- **Overridden** by project configuration (`scaffa.config.ts`)
+- **Overridden** by project configuration (`scaffa.config.js`)
 
 ---
 
@@ -184,7 +184,7 @@ This keeps overrides explicit and predictable.
 
 ### 4.2 Project Overrides Layer
 
-Project configuration (`scaffa.config.ts`) applies **after** module composition.
+Project configuration (`scaffa.config.js`) applies **after** module composition.
 
 Overrides can:
 - disable a component type entirely (hide it in UI, forbid overrides)

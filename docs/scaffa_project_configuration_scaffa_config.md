@@ -1,4 +1,4 @@
-# Scaffa Project Configuration (scaffa.config.ts)
+# Scaffa Project Configuration (scaffa.config.js)
 
 > **Status:** Draft / v0 shape
 > **Audience:** Application engineers configuring Scaffa for a project
@@ -21,7 +21,7 @@ This file is **code**, not JSON, to allow reuse and composition.
 ## 2. File Location
 
 ```text
-/scaffa.config.ts
+/scaffa.config.js
 ```
 
 ---
@@ -84,10 +84,10 @@ Order matters: later modules may override earlier ones.
 In v0, modules are loaded from file paths.
 
 Rule:
-- A module `path` is resolved **relative to the directory containing `scaffa.config.ts`**.
+- A module `path` is resolved **relative to the directory containing `scaffa.config.js`**.
 
 Example:
-- `demo/scaffa.config.ts` with `path: './extensions/demo-module/index.ts'` resolves to `demo/extensions/demo-module/index.ts`.
+- `demo/scaffa.config.js` with `path: './extensions/demo-module/index.ts'` resolves to `demo/extensions/demo-module/index.ts`.
 
 Also supported in v0:
 - **Workspace-anchored prefixes**:
@@ -161,7 +161,7 @@ These constraints are enforced by core services.
 
 ## 9. Validation and Error Surfacing (v0)
 
-`scaffa.config.ts` is validated with a schema (Zod). In v0:
+`scaffa.config.js` is validated with a schema (Zod). In v0:
 - Config validation errors are surfaced in the **ConfigHealthBanner** (visible below the header)
 - Module activation failures are displayed in the banner with actionable error messages
 - Detailed diagnostics are also logged to the developer console for debugging

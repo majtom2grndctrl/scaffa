@@ -1,7 +1,7 @@
 // ─────────────────────────────────────────────────────────────────────────────
 // Module Loader (v0)
 // ─────────────────────────────────────────────────────────────────────────────
-// Loads and activates extension modules from scaffa.config.ts.
+// Loads and activates extension modules from scaffa.config.js.
 
 import { pathToFileURL } from 'node:url';
 import path from 'node:path';
