@@ -28,6 +28,17 @@ pnpm build:electron
 pnpm build:renderer
 ```
 
+### UI Components (shadcn/ui)
+
+Use shadcn/ui (BaseUI variant) as the default source of renderer components.
+
+```bash
+cd src/renderer
+pnpm dlx shadcn@latest add <component...>
+```
+
+After adding components, replace any shadcn palette utility classes (e.g. `bg-background`, `text-foreground`, `ring-ring`) with Scaffa theme tokens from `src/renderer/styles.css` (e.g. `bg-surface-*`, `text-fg*`, `border-default`, `ring-focus`).
+
 ### Running the Demo Workspace
 
 The v0 demo workflow uses two independent processes: the demo app dev server (preview target) and Scaffa (the editor).

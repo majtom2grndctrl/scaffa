@@ -291,6 +291,8 @@ All AI code changes:
 - Autoprefixer
 - shadcn/ui (BaseUI variant)
 
+The renderer UI should default to shadcn/ui components for new primitives and composable UI pieces. Use the shadcn CLI from `src/renderer` and remap palette utility classes to Scaffa theme tokens in `src/renderer/styles.css` so renderer styling stays consistent.
+
 ### State & Workbench Architecture
 - Zustand
 
