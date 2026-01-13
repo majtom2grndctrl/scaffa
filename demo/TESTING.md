@@ -30,7 +30,7 @@ pnpm dev
 
 ### 3) Open the `demo/` Workspace
 
-- In Scaffa: **File → Open Workspace**
+- In Scaffa (Launcher): **Open Workspace**
 - Select the `demo/` directory
 
 6. Begin integration with Iteration Deck (future)

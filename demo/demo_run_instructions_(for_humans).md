@@ -41,12 +41,12 @@ Demo Workspace Walkthrough
 
   pnpm dev
 
-  The Scaffa Electron app should launch. You'll see the Workbench UI with empty panels.
+  The Scaffa Electron app should launch. You'll see the Launcher view.
 
   ---
-  📂 Open the Demo Workspace
+  📂 Open the Demo Workspace (Launcher)
 
-  1. In Scaffa, click File → Open Workspace (or use keyboard shortcut)
+  1. In Scaffa, click Open Workspace
   2. Navigate to and select the demo/ folder
   3. Click Open
 
@@ -153,7 +153,7 @@ Demo Workspace Walkthrough
 
   1. Close Scaffa completely (Cmd+Q or File → Quit)
   2. Restart Scaffa: pnpm dev
-  3. Reopen the workspace: File → Open Workspace → Select demo/
+  3. Reopen the workspace: Open Workspace → Select demo/
   4. Start app preview again: http://localhost:5173
   5. Your overrides are restored! The preview shows your edited values, not the original code values
 

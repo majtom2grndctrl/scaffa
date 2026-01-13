@@ -134,7 +134,7 @@ See `demo/TESTING.md` for comprehensive testing checklist.
 2. `pnpm build` (root)
 3. `cd demo/app && pnpm install && pnpm dev` (start demo app on localhost:5173)
 4. `pnpm dev` (start Scaffa)
-5. File → Open Workspace → Select `demo/`
+5. Launcher → Open Workspace → Select `demo/`
 6. Start app preview with URL `http://localhost:5173`
 7. Click components, edit in Inspector, verify live updates
 

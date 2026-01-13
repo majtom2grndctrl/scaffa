@@ -17,7 +17,7 @@ Related:
 
 v0 is successful when a designer (within explicit guardrails) can:
 
-1. Open a workspace configured for Scaffa
+1. Launch Scaffa and open a workspace from the Launcher
 2. Start an app preview session
 3. Select a UI instance via click-to-select
 4. Use the Inspector to edit approved props (non-destructive overrides)
@@ -88,9 +88,10 @@ In addition to `docs/index.md` “Deferred” items, v0 explicitly excludes:
 
 ## 4. First End-to-End User Journey (Narrative)
 
-### Step 1: Open Workspace
+### Step 1: Launcher → Open Workspace
 
-- User opens Scaffa and selects a project folder.
+- Scaffa opens to the Launcher view.
+- User selects an existing workspace (project folder) via Open Workspace (or chooses a recent workspace).
 - Scaffa loads `scaffa.config.ts`.
 - Extension host starts and registers enabled modules.
 - Effective component registry is composed (module registries + project overrides).
@@ -138,7 +139,7 @@ Use this checklist to validate the v0 “first user journey” end-to-end. This 
 
 - [ ] Start the demo app dev server (e.g. `demo/app` via `pnpm dev`) and note its URL (usually `http://localhost:5173`).
 - [ ] Start Scaffa (`pnpm dev` from repo root).
-- [ ] Open a workspace configured for Scaffa (use `demo/` for the reference walkthrough).
+- [ ] From the Launcher, open a workspace configured for Scaffa (use `demo/` for the reference walkthrough).
 
 ### Preview session
 

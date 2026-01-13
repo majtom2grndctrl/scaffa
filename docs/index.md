@@ -130,10 +130,11 @@ Responsibilities:
 - Launching and supervising the extension host
 - Owning privileged OS capabilities
 
-### 3.2 Renderer Process (Workbench UI)
+### 3.2 Renderer Process (Launcher + Workbench UI)
 
 Responsibilities:
-- Docked editor UI
+- Launcher view (open / recent / create workspace entry point)
+- Workbench UI (docked editor + panels)
 - Panels (Web View, Routes, Component Tree, Inspector)
 - Projection of project graph + instance state
 
@@ -178,7 +179,7 @@ src/
 │   ├── router.tsx          # TanStack Router config
 │   ├── components/         # UI components (Inspector, Graph, etc.)
 │   ├── state/              # Zustand stores
-│   └── views/              # Top-level views (AppShell, Workbench)
+│   └── views/              # Top-level views (AppShell, Launcher, Workbench)
 ├── extension-host/          # Extension host process
 │   ├── main.ts             # Entry point
 │   ├── extension-context.ts # Extension API surface

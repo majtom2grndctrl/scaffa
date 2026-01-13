@@ -48,7 +48,7 @@ pnpm dev
 
 ### 2. Open Demo Workspace
 
-- In Scaffa, use **File → Open Workspace**
+- In Scaffa (Launcher), use **Open Workspace**
 - Navigate to and select the `demo/` directory
 - Scaffa will load `scaffa.config.ts` and activate modules
 
