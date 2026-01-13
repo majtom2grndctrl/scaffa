@@ -17,6 +17,10 @@
 - MCP server: [Scaffa MCP Server Contract](./scaffa_mcp_server_contract.md)
 - (Deferred) Iteration Deck sketch: [Iteration Deck Integration Sketch](./scaffa_iteration_deck_integration.md)
 
+**Design language (v0):**
+- Visual language: [Scaffa Visual Language](./design/visual-language.md)
+- Theme color semantics: [Scaffa Semantic Color Utilities](./design/colors.md)
+
 **Implementation guides (v0):**
 - Extension authoring: [Scaffa Extension Authoring Guide](./scaffa_extension_authoring_guide.md)
 - Runtime adapter integration: [Scaffa Runtime Adapter Integration Guide](./scaffa_runtime_adapter_integration_guide.md)

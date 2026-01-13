@@ -39,6 +39,10 @@ pnpm dlx shadcn@latest add <component...>
 
 After adding components, replace any shadcn palette utility classes (e.g. `bg-background`, `text-foreground`, `ring-ring`) with Scaffa theme tokens from `src/renderer/styles.css` (e.g. `bg-surface-*`, `text-fg*`, `border-default`, `ring-focus`).
 
+For UI consistency, follow:
+- `docs/design/visual-language.md`
+- `docs/design/colors.md`
+
 ### Running the Demo Workspace
 
 The v0 demo workflow uses two independent processes: the demo app dev server (preview target) and Scaffa (the editor).
