@@ -19,7 +19,7 @@ Example:
 /add-shadcn-component button dropdown-menu dialog
 ```
 
-## Prerequisites (MUST verify)
+## Prerequisites (assumed)
 
 1. shadcn is initialized for the renderer and `src/renderer/components.json` exists (assume true; do not check).
 2. The renderer theme tokens are defined in `src/renderer/styles.css` (Tailwind v4 `@theme` tokens).
@@ -45,7 +45,7 @@ You MUST follow these steps in order.
    pushd src/renderer
    ```
 
-2. Add the requested components.
+2. While still in `src/renderer`, add the requested components.
 
    Preferred (explicit) command:
    ```bash
