@@ -22,7 +22,8 @@
       "Bash(git log:*)",
       "Bash(pnpm dev:*)",
       "Bash(bd dep add:*)",
-      "Skill(implement-ticket)"
+      "Skill(implement-ticket)",
+      "Skill(add-shadcn-component)"
     ]
   }
 }
