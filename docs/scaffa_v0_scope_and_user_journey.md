@@ -18,11 +18,12 @@ Related:
 v0 is successful when a designer (within explicit guardrails) can:
 
 1. Launch Scaffa and open a workspace from the Launcher
-2. Start an app preview session
-3. Select a UI instance via click-to-select
+2. Start an **Editor View** session (embedded runtime in the Workbench)
+3. Select a UI instance via click-to-select in Editor View
 4. Use the Inspector to edit approved props (non-destructive overrides)
-5. Reset/clear overrides confidently
-6. Persist the override state in a reviewable, shareable form
+5. Start a separate **Preview Mode** session to interact with the app normally
+6. Reset/clear overrides confidently
+7. Persist the override state in a reviewable, shareable form
 
 “Shareable” in v0 means **serializable and diffable** (not necessarily a hosted cloud feature).
 
@@ -98,14 +99,14 @@ In addition to `docs/index.md` “Deferred” items, v0 explicitly excludes:
 
 ### Step 2: Start App Preview
 
-- User starts an `app` preview session.
+- User starts an `app` preview session for **Editor View**.
 - Main process creates and loads the preview runtime.
 - Runtime adapter handshakes and announces readiness.
 - Scaffa replays any persisted overrides relevant to this session target.
 
 ### Step 3: Click-to-Select
 
-- User holds <kbd>Alt/Option</kbd> and clicks a button/card in the preview to select it.
+- In **Editor View**, user clicks a button/card in the embedded runtime to select it (clicks are consumed for selection).
 - Runtime adapter resolves the click to `{ instanceId, componentTypeId }`.
 - Selection updates in the renderer (Inspector shows “Button” instance).
 
@@ -129,6 +130,12 @@ In addition to `docs/index.md` “Deferred” items, v0 explicitly excludes:
 - Overrides are serialized to a local file in a stable schema.
 - User can review the file in git diff, share it, or discard it.
 
+### (Optional) Preview Mode: Interact Normally
+
+- User starts a separate `app` preview session for **Preview Mode**.
+- In Preview Mode, clicks/links/navigation behave like the app normally does.
+- Inspection remains available via <kbd>Alt/Option</kbd>+Click without interfering with normal interaction by default.
+
 ---
 
 ## 5. Walkthrough Checklist (Canonical)
@@ -143,19 +150,21 @@ Use this checklist to validate the v0 “first user journey” end-to-end. This 
 
 ### Preview session
 
-- [ ] Start an `app` preview session by URL (attached mode): the preview shows the running demo app.
+- [ ] Start an `app` preview session by URL (attached mode) for **Editor View**: the center workspace shows the running demo app.
 - [ ] (Note) In v0, Scaffa primarily attaches to an already-running dev server; managed preview launchers are future module contributions.
 - [ ] Confirm the runtime adapter handshake completes (preview is “ready”).
 
-### Selection (Inspect vs Interact)
+### Selection (Editor View vs Preview Mode)
 
 v0 interaction contract:
-- Default: clicks/links/buttons behave normally (interact mode).
-- Inspect: hold <kbd>Alt/Option</kbd> to highlight candidates; <kbd>Alt/Option</kbd>+Click selects (and prevents app interaction for that click).
+- **Editor View:** click-to-select by default; clicks do not trigger app interaction in the editor session.
+- **Preview Mode:** clicks/links/buttons behave normally; inspect via <kbd>Alt/Option</kbd> (hover highlight) and <kbd>Alt/Option</kbd>+Click (select).
 - Clear selection: <kbd>Esc</kbd> clears the current selection (only when something is selected).
 
-- [ ] Hold <kbd>Alt/Option</kbd> and hover: the instance under the cursor shows a highlight.
-- [ ] <kbd>Alt/Option</kbd>+Click a Button instance: Inspector activates and shows instance + props.
+- [ ] In Editor View, click a Button instance: Inspector activates and shows instance + props.
+- [ ] Start a Preview Mode session and confirm normal app interactions work (click a link navigates in the Preview Mode session only).
+- [ ] In Preview Mode, hold <kbd>Alt/Option</kbd> and hover: the instance under the cursor shows a highlight.
+- [ ] In Preview Mode, <kbd>Alt/Option</kbd>+Click a Button instance: Inspector activates and shows instance + props.
 
 ### Inspector semantics
 

@@ -135,7 +135,7 @@ Responsibilities:
 Responsibilities:
 - Launcher view (open / recent / create workspace entry point)
 - Workbench UI (docked editor + panels)
-- Panels (Web View, Routes, Component Tree, Inspector)
+- Panels (Editor View canvas, Preview Sessions List, Routes, Component Tree, Inspector)
 - Projection of project graph + instance state
 
 Constraints:

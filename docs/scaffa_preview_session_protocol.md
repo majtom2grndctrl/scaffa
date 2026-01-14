@@ -35,6 +35,18 @@ Sessions exist so Scaffa can:
 
 In v0, preview targets are treated as external runtimes (typically an HTTP server you start separately). Scaffa attaches to them via the session target.
 
+### 1.1 Session Purpose: Editor View vs Preview Mode
+
+Scaffa supports two distinct user-facing experiences over the same project runtime:
+
+- **Editor View**: embedded in the center Workbench workspace. Clicks are used for **selection + inspection** (click-to-select by default).
+- **Preview Mode**: a separate session intended for **normal app interaction** (navigation, clicks, keyboard shortcuts), with inspection available via a modifier gesture.
+
+Both experiences are modeled as preview sessions so they can be:
+- created/destroyed independently (resetting runtime state by restarting Preview Mode)
+- isolated from each other (state mutations in Preview Mode don’t pollute Editor View)
+- routed correctly for selection + overrides via `sessionId`
+
 ---
 
 ## 2. Session Types (Canonical)
@@ -48,6 +60,19 @@ export type PreviewSessionTarget =
   | { type: "app"; url: string }
   | { type: "component"; componentTypeId: string; harnessUrl?: string }
   | { type: "variant"; variantId: string }; // future
+
+export type PreviewSessionPurpose = "editor" | "preview";
+
+export type PreviewSessionCreateRequest = {
+  target: PreviewSessionTarget;
+  purpose: PreviewSessionPurpose;
+  /**
+   * If set, new session starts by applying the same effective overrides as the
+   * source session at creation time. This enables “preview what I’m editing”
+   * without sharing runtime state.
+   */
+  inheritOverridesFromSessionId?: PreviewSessionId;
+};
 ```
 
 Notes:
@@ -112,16 +137,16 @@ This guarantees:
 
 ## 5. Selection Flow (Pick-to-Select)
 
-### 5.0 Interaction Model (v0): Interact vs Inspect
+### 5.0 Interaction Model (v0): Editor View vs Preview Mode
 
-Scaffa must support two user intents against the same running app:
+Scaffa supports two purposes with different interaction defaults:
 
-- **Interact** (default): clicks, links, keyboard shortcuts, and navigation behave like the app normally does.
-- **Inspect** (gesture): the user intentionally "picks" an instance to drive Inspector editing.
+- **Editor View (`purpose: "editor"`)**: click-to-select by default; clicks are consumed for selection and do not trigger app interaction.
+- **Preview Mode (`purpose: "preview"`)**: interact-by-default; clicks behave like the app normally does unless the user performs an inspect gesture.
 
-#### 5.0.1 Inspect Gesture Contract
+#### 5.0.1 Inspect Gesture Contract (Preview Mode)
 
-v0 input contract for inspect mode:
+In Preview Mode, inspection is a modifier gesture:
 - Hold <kbd>Alt/Option</kbd> to highlight candidates under the cursor.
 - <kbd>Alt/Option</kbd>+Click selects an instance and MUST prevent app interaction for that click.
 - <kbd>Esc</kbd> clears selection when something is selected.
@@ -130,7 +155,7 @@ Recommended visual affordances:
 - While holding <kbd>Alt/Option</kbd>, highlight the candidate instance under the cursor.
 - After selection, show a persistent selection highlight so users can see what the Inspector is editing.
 
-#### 5.0.2 Keyboard Shortcut Policy
+#### 5.0.2 Keyboard Shortcut Policy (Preview Mode)
 
 Scaffa adopts a **minimal keyboard reservation policy** to avoid conflicting with web app shortcuts:
 
@@ -143,7 +168,7 @@ Scaffa adopts a **minimal keyboard reservation policy** to avoid conflicting wit
 - All other keyboard input (arrow keys, <kbd>Enter</kbd>, <kbd>Space</kbd>, letter keys, etc.)
 - All keyboard shortcuts not explicitly listed as reserved above
 
-**Rationale:** Web applications frequently bind keyboard shortcuts for navigation, modals, command palettes, and other features. Scaffa's preview experience prioritizes **interact by default**—users should be able to test and use the app normally without Scaffa intercepting their input.
+**Rationale:** Web applications frequently bind keyboard shortcuts for navigation, modals, command palettes, and other features. Preview Mode prioritizes **interact by default**—users should be able to test and use the app normally without Scaffa intercepting their input.
 
 **Future consideration:** If Scaffa adds a Play/Inspect mode toggle, the discoverability hint for that toggle should appear near the preview controls or in a non-intrusive overlay.
 
@@ -162,7 +187,17 @@ When a preview session becomes ready, Scaffa displays a **non-intrusive discover
 
 **v0 Note:** Since preview embedding in the Workbench is not yet implemented, the hint appears near the Preview Session List panel. When preview display integration is complete, the hint may be repositioned as an overlay on the preview area.
 
-#### 5.0.4 Stopping/Exiting Preview Sessions
+#### 5.0.4 Editor View Click Policy
+
+In Editor View, Scaffa consumes pointer clicks for selection:
+
+- Any click in the embedded runtime selects the nearest resolvable instance.
+- Clicks MUST NOT trigger app interaction (no navigation, no button handlers) in the editor session.
+- Selection highlighting is always active; candidate hover highlighting is optional.
+
+**Rationale:** Editor View behaves like a design surface (Webflow/Framer-style). Preview Mode is the place for real interaction and state mutation.
+
+#### 5.0.5 Stopping/Exiting Preview Sessions
 
 Preview sessions are stopped via **explicit UI controls**, not keyboard shortcuts:
 
