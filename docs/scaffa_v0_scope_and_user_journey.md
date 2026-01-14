@@ -10,6 +10,7 @@ Related:
 - [Scaffa Runtime Adapter Contract](./scaffa_runtime_adapter_contract.md)
 - [Scaffa Component Registry Schema](./scaffa_component_registry_schema.md)
 - [Scaffa Override Model + Persistence](./scaffa_override_model.md)
+- [Scaffa Save-to-Disk Protocol](./scaffa_save_to_disk_protocol.md)
 
 ---
 

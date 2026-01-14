@@ -131,6 +131,8 @@ v0 includes a “Save” action that converts draft overrides into concrete work
 - Saving writes code changes to disk and clears draft overrides that were successfully applied.
 - If some overrides cannot be safely saved, Scaffa keeps them as draft overrides and surfaces an error (no silent dropping).
 
+See also: [Scaffa Save-to-Disk Protocol](./scaffa_save_to_disk_protocol.md) for validation timing (blur + idle debounce) and revert-on-failure UX.
+
 ### 4.3 Orphaned Overrides
 
 If an override cannot be applied (instance moved/removed), the Inspector (or a dedicated Overrides panel) MUST surface it as **orphaned**:

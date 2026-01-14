@@ -125,6 +125,8 @@ Precedence (highest wins):
 
 “Save” converts draft overrides into source-level edits and writes them to the workspace (working tree).
 
+See also: [Scaffa Save-to-Disk Protocol](./scaffa_save_to_disk_protocol.md)
+
 Principles:
 - Save is explicit (not on every keystroke).
 - Saved changes become the new **code baseline**; the corresponding draft overrides are cleared.

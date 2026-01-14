@@ -118,6 +118,8 @@ sequenceDiagram
 
 Saving converts draft overrides into workspace edits (working tree) and clears the saved draft overrides.
 
+See also: [Scaffa Save-to-Disk Protocol](./scaffa_save_to_disk_protocol.md)
+
 ```mermaid
 sequenceDiagram
   participant UI as Renderer (Workbench)
