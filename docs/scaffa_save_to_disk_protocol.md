@@ -70,6 +70,7 @@ Validation is required because not all runtime changes can be mapped to code edi
 - Provides:
   - per-field validation (dry-run)
   - workspace-wide promotion plan (Save)
+- Uses `WorkspaceAPI` for any workspace reads (main-owned capability; may be sidecar-backed). Extensions must not read workspace files directly.
 
 ### 2.4 Runtime Adapter (Preview Runtime)
 
@@ -206,3 +207,13 @@ When promotion is not supported, return `ValidationResult.ok=false` with a speci
 - Preview Mode (separate interact-by-default session)
 - Git workflow automation (auto-commit/branch/PR)
 - Auto-promoting on a timer without explicit product decision
+
+---
+
+## Appendix: Sidecars (Planned)
+
+Sidecars are an implementation detail behind main-owned capabilities:
+- Main may service `WorkspaceAPI` calls via a workspace sidecar for large workspaces.
+- Save-to-disk ownership boundaries do not change: main still applies edits transactionally, and the extension host still produces a promotion plan.
+
+See: [Scaffa Sidecar Process](./scaffa_sidecar_process.md)

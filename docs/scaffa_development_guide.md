@@ -116,6 +116,20 @@ dist/
         └── index-[hash].css
 ```
 
+### Sidecar Processes (Planned)
+
+Scaffa may add a Rust “workspace sidecar” process for file-heavy and compute-heavy operations.
+
+Planned dev conventions:
+- Sidecar is spawned/supervised by main (never directly by renderer).
+- Main resolves the sidecar binary via `SCAFFA_SIDECAR_PATH` (override) or a well-known local build output path.
+
+Planned packaging conventions:
+- The sidecar binary is bundled as an app resource and launched from `process.resourcesPath`.
+- Packager selection/integration is a separate task (Forge vs electron-builder). Until that is decided, bundling remains planned.
+
+See: `docs/scaffa_sidecar_process.md`
+
 ### Critical Build Constraints
 
 #### 1. Preload Scripts Must Be CommonJS

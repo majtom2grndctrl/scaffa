@@ -163,7 +163,28 @@ Responsibilities:
 
 Modules may be imperative, but are boxed.
 
-### 3.5 Source Code Organization
+### 3.5 Workspace Sidecar Process (Optional, Planned)
+
+Scaffa may optionally run one or more **sidecar processes** for operations that are:
+- file-heavy (large workspaces, lots of reads)
+- compute-heavy (parsing / indexing / analysis)
+- latency-sensitive (incremental updates)
+
+In v0, the most likely first sidecar is a **Workspace Sidecar** (implemented in Rust) supervised by the main process.
+
+Responsibilities:
+- Maintain a workspace file index and caches (content hashes, parsed artifacts)
+- Serve high-volume reads/searches/analysis to Scaffa services
+- Perform incremental recomputation on file change events
+
+Constraints:
+- Sidecar is not an authority: it is a service owned by main.
+- Sidecar does not write to workspace; all workspace writes remain owned by main via transactional edits.
+- Sidecar is not directly reachable from renderer; access is mediated by main-owned capabilities.
+
+See also: [Scaffa Sidecar Process](./scaffa_sidecar_process.md)
+
+### 3.6 Source Code Organization
 
 The source code is organized by process boundary:
 

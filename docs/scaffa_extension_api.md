@@ -22,6 +22,7 @@ Related:
 - Extensions interact with Scaffa only through the **Extension API**.
 - The API is **capability‑based**, **typed**, and **versioned**.
 - v0 assumes extensions are *trusted*, but shaped so sandboxing/permissions can be added later.
+- All workspace IO is mediated by main-owned capabilities (implementation may use a sidecar process; extensions never access the filesystem directly).
 
 ---
 
@@ -51,6 +52,8 @@ interface ExtensionContext {
   readonly apiVersion: string
 
   workspace: WorkspaceAPI
+  // planned: file-heavy and compute-heavy queries (sidecar-backed)
+  analysis?: WorkspaceAnalysisAPI
   registry: RegistryAPI
   graph: ProjectGraphAPI
   preview: PreviewAPI
@@ -82,6 +85,16 @@ interface WorkspaceAPI {
 All mutations are transactional and diffable.
 
 See also: [Scaffa Workspace Edit Protocol](./scaffa_workspace_edit_protocol.md)
+
+Implementation notes:
+- Extensions MUST use `WorkspaceAPI` for workspace reads/writes; they must not import `fs` or access the workspace directly.
+- Main owns the implementation of `WorkspaceAPI` and MAY delegate high-volume reads/search/analysis to a workspace sidecar (planned). See: [Scaffa Sidecar Process](./scaffa_sidecar_process.md)
+
+### 4.1 Workspace Analysis API (Planned)
+
+For operations that are likely to touch many files (search, indexing, parsing), Scaffa may expose an additional analysis capability that is sidecar-backed and mediated by main.
+
+This is intentionally deferred until we have concrete needs and can keep the surface small.
 
 ---
 
