@@ -79,7 +79,10 @@ pnpm dev
 
 #### Notes
 
-v0 intentionally does not auto-start framework dev servers; preview targets are treated as external HTTP runtimes. The `dev:demo` convenience script simply launches both processes in parallel.
+Scaffa **core** does not auto-start framework dev servers. Instead, dev-server startup is owned by toolchain-specific **preview launcher extensions**.
+
+- If a project is a Vite project and enables a Vite launcher extension, starting an `app` preview session should start the Vite dev server (and surface its URL in session logs).
+- The `dev:demo` convenience script simply launches both processes in parallel for faster iteration.
 
 ### Hot Reload Behavior
 

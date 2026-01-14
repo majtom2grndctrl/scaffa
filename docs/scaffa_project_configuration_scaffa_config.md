@@ -24,11 +24,13 @@ This file is **code**, not JSON, to allow reuse and composition.
 /scaffa.config.js
 ```
 
+Scaffa loads `scaffa.config.js` at runtime. Other extensions (e.g. `scaffa.config.ts`) are not loaded directly; if you author config in TypeScript, compile it to `scaffa.config.js` as part of your project build.
+
 ---
 
 ## 3. Top‑Level Shape
 
-```ts
+```js
 // v0 (in-repo development): import from Scaffa source
 import { defineScaffaConfig } from '../src/shared/config.js'
 
@@ -39,7 +41,7 @@ export default defineScaffaConfig({
   modules: [
     {
       id: 'demo-module',
-      path: './extensions/demo-module/index.ts',
+      path: './extensions/demo-module/index.js',
     },
   ],
 
@@ -85,14 +87,15 @@ In v0, modules are loaded from file paths.
 
 Rule:
 - A module `path` is resolved **relative to the directory containing `scaffa.config.js`**.
+- Module entrypoints must be **runtime-loadable JavaScript** (e.g. `index.js`). If you author modules in TypeScript, compile/bundle them before Scaffa loads the workspace.
 
 Example:
-- `demo/scaffa.config.js` with `path: './extensions/demo-module/index.ts'` resolves to `demo/extensions/demo-module/index.ts`.
+- `demo/scaffa.config.js` with `path: './extensions/demo-module/index.js'` resolves to `demo/extensions/demo-module/index.js`.
 
 Also supported in v0:
 - **Workspace-anchored prefixes**:
-  - `path: '@/extensions/demo-module/index.ts'` resolves to `<workspaceRoot>/extensions/demo-module/index.ts`
-  - `path: 'workspace:/extensions/demo-module/index.ts'` resolves to `<workspaceRoot>/extensions/demo-module/index.ts`
+  - `path: '@/extensions/demo-module/index.js'` resolves to `<workspaceRoot>/extensions/demo-module/index.js`
+  - `path: 'workspace:/extensions/demo-module/index.js'` resolves to `<workspaceRoot>/extensions/demo-module/index.js`
 - **Package-based modules**:
   - `package: '@scaffa/some-module'` is resolved using Node.js module resolution anchored at `<workspaceRoot>`.
   - If `package` is omitted, Scaffa will also attempt to resolve `id` as a package specifier.
