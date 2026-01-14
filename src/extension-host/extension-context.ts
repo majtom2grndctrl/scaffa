@@ -11,6 +11,7 @@ import type {
   PreviewLaunchResult,
   PreviewLogEntry,
 } from '../shared/preview-session.js';
+import type { DraftOverride, SavePlan } from '../shared/save.js';
 
 // ─────────────────────────────────────────────────────────────────────────────
 // Disposable Pattern
@@ -54,6 +55,11 @@ export interface ExtensionContext {
    * Preview API for contributing preview launchers.
    */
   readonly preview: PreviewAPI;
+
+  /**
+   * Save API for promoting overrides to workspace edits.
+   */
+  readonly save: SaveAPI;
 
   /**
    * Subscriptions for automatic cleanup.
@@ -149,6 +155,34 @@ export interface PreviewAPI {
    * @returns Disposable to unregister the launcher
    */
   registerLauncher(launcher: PreviewLauncher): Disposable;
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Save API (Override Promotion)
+// ─────────────────────────────────────────────────────────────────────────────
+
+export interface SavePromoter {
+  /**
+   * Unique promoter ID.
+   */
+  readonly id: string;
+
+  /**
+   * Human-friendly name.
+   */
+  readonly displayName: string;
+
+  /**
+   * Promote draft overrides into workspace edits.
+   */
+  promote(overrides: DraftOverride[]): Promise<SavePlan>;
+}
+
+export interface SaveAPI {
+  /**
+   * Register a save promoter.
+   */
+  registerPromoter(promoter: SavePromoter): Disposable;
 }
 
 // ─────────────────────────────────────────────────────────────────────────────

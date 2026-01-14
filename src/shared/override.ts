@@ -2,6 +2,7 @@ import { z } from 'zod';
 import {
   PreviewSessionIdSchema,
   InstanceIdSchema,
+  ComponentTypeIdSchema,
   type PreviewSessionId,
   type InstanceId,
 } from './preview-session.js';
@@ -39,6 +40,8 @@ export const OverrideOpSchema = z.discriminatedUnion('op', [
     instanceId: InstanceIdSchema,
     path: PropPathSchema,
     value: JsonValueSchema,
+    componentTypeId: ComponentTypeIdSchema.optional(),
+    instanceLocator: JsonValueSchema.optional(),
   }),
   z.object({
     op: z.literal('clear'),
@@ -71,6 +74,8 @@ export const PersistedOverrideSchema = z.object({
   instanceId: z.string(),
   path: z.string(),
   value: JsonValueSchema,
+  componentTypeId: z.string().optional(),
+  instanceLocator: JsonValueSchema.optional(),
 });
 
 export type PersistedOverride = z.infer<typeof PersistedOverrideSchema>;

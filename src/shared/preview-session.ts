@@ -1,4 +1,5 @@
 import { z } from 'zod';
+import { JsonValueSchema, SourceRefSchema } from './common.js';
 
 // ─────────────────────────────────────────────────────────────────────────────
 // Preview Session Protocol (v0)
@@ -70,6 +71,8 @@ export const InstanceDescriptorSchema = z.object({
   componentTypeId: ComponentTypeIdSchema,
   displayName: z.string().optional(),
   props: z.record(z.unknown()).optional(),
+  source: SourceRefSchema.optional(),
+  instanceLocator: JsonValueSchema.optional(),
 });
 
 export type InstanceDescriptor = z.infer<typeof InstanceDescriptorSchema>;

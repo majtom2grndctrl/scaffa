@@ -45,6 +45,11 @@ export interface InstanceIdentity {
    * React key hint (optional).
    */
   keyHint?: string;
+
+  /**
+   * Optional instance locator (stable hint for save-to-disk).
+   */
+  instanceLocator?: unknown;
 }
 
 /**

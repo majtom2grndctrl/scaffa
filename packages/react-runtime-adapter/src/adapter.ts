@@ -47,6 +47,7 @@ export class ScaffaReactAdapter {
   private sessionId: string | null = null;
   private overrides = new Map<string, Map<PropPath, unknown>>();
   private instanceRegistry = new Map<string, InstanceIdentity>();
+  private instanceTypeCounters = new Map<string, number>();
   private selectionHandlers = new Set<(identity: InstanceIdentity | null) => void>();
   private overrideChangeHandlers = new Set<() => void>();
   private isReady = false;
@@ -99,8 +100,23 @@ export class ScaffaReactAdapter {
    * Register an instance with the adapter.
    */
   registerInstance(identity: InstanceIdentity): void {
-    this.instanceRegistry.set(identity.instanceId, identity);
-    this.log('Instance registered:', identity);
+    if (this.instanceRegistry.has(identity.instanceId)) {
+      return;
+    }
+
+    const typeCount = this.instanceTypeCounters.get(identity.componentTypeId) ?? 0;
+    this.instanceTypeCounters.set(identity.componentTypeId, typeCount + 1);
+
+    const instanceLocator =
+      identity.instanceLocator ?? ({ kind: 'renderIndex', index: typeCount } as const);
+
+    const storedIdentity: InstanceIdentity = {
+      ...identity,
+      instanceLocator,
+    };
+
+    this.instanceRegistry.set(identity.instanceId, storedIdentity);
+    this.log('Instance registered:', storedIdentity);
   }
 
   /**
@@ -438,6 +454,7 @@ export class ScaffaReactAdapter {
             instanceId: identity.instanceId,
             componentTypeId: identity.componentTypeId,
             displayName: identity.displayName,
+            instanceLocator: identity.instanceLocator,
           }
         : null,
       causedBy: 'click',

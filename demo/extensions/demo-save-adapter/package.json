@@ -1,0 +1,7 @@
+{
+  "name": "@scaffa/demo-save-adapter",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "Demo save-to-disk promoter for Scaffa v0 walkthrough"
+}

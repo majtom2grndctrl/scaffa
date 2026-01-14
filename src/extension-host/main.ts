@@ -12,6 +12,7 @@ import type {
   ConfigChangedMessage,
   StartPreviewLauncherMessage,
   StopPreviewLauncherMessage,
+  PromoteOverridesMessage,
 } from './ipc-protocol.js';
 import { ModuleLoader } from './module-loader.js';
 import type { ScaffaConfig } from '../shared/config.js';
@@ -61,6 +62,10 @@ function handleMessage(message: MainToExtHostMessage): void {
 
     case 'stop-preview-launcher':
       handleStopPreviewLauncher(message);
+      break;
+
+    case 'promote-overrides':
+      handlePromoteOverrides(message);
       break;
 
     default:
@@ -186,6 +191,43 @@ async function handleStopPreviewLauncher(message: StopPreviewLauncherMessage): P
   }
 
   await moduleLoader.stopPreviewLauncher(message.launcherId, message.requestId);
+}
+
+/**
+ * Handle promote overrides request.
+ */
+async function handlePromoteOverrides(message: PromoteOverridesMessage): Promise<void> {
+  if (!isInitialized || !moduleLoader) {
+    console.warn('[ExtHost] Not initialized, ignoring promote-overrides message');
+    sendToMain({
+      type: 'promote-overrides-error',
+      requestId: message.requestId,
+      error: {
+        code: 'NOT_INITIALIZED',
+        message: 'Extension host not initialized',
+      },
+    });
+    return;
+  }
+
+  try {
+    const result = await moduleLoader.promoteOverrides(message.overrides);
+    sendToMain({
+      type: 'promote-overrides-result',
+      requestId: message.requestId,
+      result,
+    });
+  } catch (error) {
+    sendToMain({
+      type: 'promote-overrides-error',
+      requestId: message.requestId,
+      error: {
+        code: 'PROMOTION_FAILED',
+        message: error instanceof Error ? error.message : String(error),
+        stack: error instanceof Error ? error.stack : undefined,
+      },
+    });
+  }
 }
 
 // ─────────────────────────────────────────────────────────────────────────────

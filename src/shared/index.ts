@@ -9,6 +9,8 @@ export * from './runtime-adapter.js';
 export * from './override.js';
 export * from './project-graph.js';
 export * from './workspace.js';
+export * from './workspace-edits.js';
 export * from './config.js';
 export * from './registry.js';
 export * from './ipc.js';
+export * from './save.js';

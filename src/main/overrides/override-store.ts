@@ -30,6 +30,8 @@ interface StoredOverride {
   instanceId: InstanceId;
   path: PropPath;
   value: JsonValue;
+  componentTypeId?: string;
+  instanceLocator?: JsonValue;
 }
 
 interface SessionOverrides {
@@ -106,10 +108,39 @@ export class OverrideStore {
         instanceId: override.instanceId,
         path: override.path,
         value: override.value,
+        componentTypeId: override.componentTypeId,
+        instanceLocator: override.instanceLocator,
       });
     }
 
     return ops;
+  }
+
+  /**
+   * Get all overrides across sessions.
+   */
+  getAllOverrides(): Array<{
+    sessionId: PreviewSessionId;
+    target: PreviewSessionTarget;
+    override: StoredOverride;
+  }> {
+    const results: Array<{
+      sessionId: PreviewSessionId;
+      target: PreviewSessionTarget;
+      override: StoredOverride;
+    }> = [];
+
+    for (const sessionData of this.sessionOverrides.values()) {
+      for (const override of sessionData.overrides.values()) {
+        results.push({
+          sessionId: sessionData.sessionId,
+          target: sessionData.target,
+          override,
+        });
+      }
+    }
+
+    return results;
   }
 
   /**
@@ -141,7 +172,14 @@ export class OverrideStore {
   private applyOp(sessionData: SessionOverrides, op: OverrideOp): void {
     switch (op.op) {
       case 'set':
-        this.setOverride(sessionData, op.instanceId!, op.path!, op.value!);
+        this.setOverride(
+          sessionData,
+          op.instanceId!,
+          op.path!,
+          op.value!,
+          op.componentTypeId,
+          op.instanceLocator
+        );
         break;
 
       case 'clear':
@@ -165,13 +203,17 @@ export class OverrideStore {
     sessionData: SessionOverrides,
     instanceId: InstanceId,
     path: PropPath,
-    value: JsonValue
+    value: JsonValue,
+    componentTypeId?: string,
+    instanceLocator?: JsonValue
   ): void {
     const key = this.makeKey(instanceId, path);
     sessionData.overrides.set(key, {
       instanceId,
       path,
       value,
+      componentTypeId,
+      instanceLocator,
     });
     console.log(`[OverrideStore] Set override: ${key} =`, value);
   }
@@ -297,6 +339,12 @@ export class OverrideStore {
             instanceId: override.instanceId as string,
             path: override.path as string,
             value: override.value,
+            ...(override.componentTypeId
+              ? { componentTypeId: override.componentTypeId }
+              : null),
+            ...(override.instanceLocator
+              ? { instanceLocator: override.instanceLocator }
+              : null),
           });
         }
       }

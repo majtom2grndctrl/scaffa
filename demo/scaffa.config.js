@@ -27,5 +27,10 @@ export default defineScaffaConfig({
       id: 'vite-launcher',
       path: './extensions/vite-launcher/index.js',
     },
+    // Save-to-disk promoter for demo app
+    {
+      id: 'demo-save-adapter',
+      path: './extensions/demo-save-adapter/index.js',
+    },
   ],
 });

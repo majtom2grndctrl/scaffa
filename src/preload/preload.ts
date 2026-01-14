@@ -9,6 +9,8 @@ import type {
   ClearOverrideRequest,
   ClearInstanceOverridesRequest,
   ClearAllOverridesRequest,
+  SaveOverridesRequest,
+  SaveOverridesResponse,
   GetGraphSnapshotRequest,
   GetGraphSnapshotResponse,
   SessionReadyEvent,
@@ -223,6 +225,10 @@ const scaffaApi = {
 
     clearAll: (request: ClearAllOverridesRequest): Promise<void> => {
       return ipcRenderer.invoke('overrides:clearAll', request);
+    },
+
+    save: (request: SaveOverridesRequest): Promise<SaveOverridesResponse> => {
+      return ipcRenderer.invoke('overrides:save', request);
     },
 
     onOverridesChanged: (

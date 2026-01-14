@@ -355,6 +355,8 @@ const PropField = ({ propDef, instanceId, overrides }: PropFieldProps) => {
         instanceId: instanceId as any, // Cast to branded type
         path: `/${propName}` as any, // Cast to branded type (PropPath)
         value: newValue,
+        componentTypeId: selectedInstance.componentTypeId,
+        instanceLocator: selectedInstance.instanceLocator,
       });
       console.log('[PropField] Override set:', { propName, newValue });
     } catch (error) {

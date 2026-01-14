@@ -4,6 +4,7 @@
 // Spawns and supervises the extension host process.
 
 import { fork, type ChildProcess } from 'node:child_process';
+import { randomBytes } from 'node:crypto';
 import { join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import type {
@@ -18,9 +19,12 @@ import type {
   PreviewLauncherErrorMessage,
   PreviewLauncherLogMessage,
   ModuleActivationStatusMessage,
+  PromoteOverridesResultMessage,
+  PromoteOverridesErrorMessage,
 } from '../../extension-host/ipc-protocol.js';
 import type { ComponentRegistry } from '../../shared/index.js';
 import type { ScaffaConfig } from '../../shared/config.js';
+import type { DraftOverride, SavePlan } from '../../shared/save.js';
 import { registryManager } from '../registry/registry-manager.js';
 import { applyGraphPatch } from '../ipc/graph.js';
 import { launcherRegistry } from '../preview/launcher-registry.js';
@@ -54,6 +58,10 @@ export class ExtensionHostManager {
   private workspacePath: string | null = null;
   private config: ScaffaConfig | null = null;
   private moduleActivationStatuses: Map<string, ModuleActivationStatus> = new Map();
+  private pendingPromotions = new Map<
+    string,
+    { resolve: (result: SavePlan) => void; reject: (error: Error) => void }
+  >();
 
   /**
    * Start the extension host process.
@@ -216,6 +224,14 @@ export class ExtensionHostManager {
         this.handleModuleActivationStatus(message);
         break;
 
+      case 'promote-overrides-result':
+        this.handlePromoteOverridesResult(message);
+        break;
+
+      case 'promote-overrides-error':
+        this.handlePromoteOverridesError(message);
+        break;
+
       default:
         console.warn('[ExtHostManager] Unknown message type:', (message as any).type);
     }
@@ -321,6 +337,32 @@ export class ExtensionHostManager {
     this.moduleActivationStatuses.set(moduleId, { moduleId, status, error });
   }
 
+  private handlePromoteOverridesResult(message: PromoteOverridesResultMessage): void {
+    const pending = this.pendingPromotions.get(message.requestId);
+    if (!pending) {
+      console.warn(
+        `[ExtHostManager] Received promotion result for unknown request ${message.requestId}`
+      );
+      return;
+    }
+
+    this.pendingPromotions.delete(message.requestId);
+    pending.resolve(message.result);
+  }
+
+  private handlePromoteOverridesError(message: PromoteOverridesErrorMessage): void {
+    const pending = this.pendingPromotions.get(message.requestId);
+    if (!pending) {
+      console.warn(
+        `[ExtHostManager] Received promotion error for unknown request ${message.requestId}`
+      );
+      return;
+    }
+
+    this.pendingPromotions.delete(message.requestId);
+    pending.reject(new Error(message.error.message));
+  }
+
   /**
    * Get module activation statuses.
    */
@@ -352,6 +394,25 @@ export class ExtensionHostManager {
    */
   sendMessage(message: MainToExtHostMessage): void {
     this.sendToExtHost(message);
+  }
+
+  async promoteOverrides(overrides: DraftOverride[]): Promise<SavePlan> {
+    if (!this.process || !this.process.connected) {
+      throw new Error('Extension host not connected');
+    }
+
+    const requestId = `promote_${randomBytes(12).toString('hex')}`;
+    const result = new Promise<SavePlan>((resolve, reject) => {
+      this.pendingPromotions.set(requestId, { resolve, reject });
+    });
+
+    this.sendToExtHost({
+      type: 'promote-overrides',
+      requestId,
+      overrides,
+    });
+
+    return result;
   }
 
   /**

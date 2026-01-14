@@ -18,8 +18,11 @@ import type {
   GraphProducer,
   PreviewAPI,
   PreviewLauncher,
+  SaveAPI,
+  SavePromoter,
 } from './extension-context.js';
 import type { ExtHostToMainMessage } from './ipc-protocol.js';
+import type { DraftOverride, SavePlan } from '../shared/save.js';
 
 // ─────────────────────────────────────────────────────────────────────────────
 // Module State
@@ -42,6 +45,7 @@ export class ModuleLoader {
   private registryContributions: ComponentRegistry[] = [];
   private graphProducers: Map<string, GraphProducer> = new Map();
   private previewLaunchers: Map<string, PreviewLauncher> = new Map();
+  private savePromoters: Map<string, SavePromoter> = new Map();
 
   constructor(workspacePath: string | null, config: ScaffaConfig) {
     this.workspacePath = workspacePath;
@@ -274,6 +278,19 @@ export class ModuleLoader {
       },
     };
 
+    const saveAPI: SaveAPI = {
+      registerPromoter: (promoter: SavePromoter) => {
+        this.savePromoters.set(promoter.id, promoter);
+        console.log(`[ModuleLoader] Module ${moduleId} registered save promoter: ${promoter.id}`);
+
+        return {
+          dispose: () => {
+            this.savePromoters.delete(promoter.id);
+          },
+        };
+      },
+    };
+
     return {
       apiVersion: 'v0',
       extensionId: moduleId,
@@ -281,6 +298,7 @@ export class ModuleLoader {
       registry: registryAPI,
       graph: graphAPI,
       preview: previewAPI,
+      save: saveAPI,
       subscriptions,
     };
   }
@@ -403,6 +421,32 @@ export class ModuleLoader {
   }
 
   /**
+   * Promote overrides using the first registered save promoter.
+   */
+  async promoteOverrides(overrides: DraftOverride[]): Promise<SavePlan> {
+    const promoter = this.getSavePromoter();
+    if (!promoter) {
+      return {
+        edits: [],
+        failed: overrides.map((override) => ({
+          address: {
+            sessionId: override.sessionId,
+            instanceId: override.instanceId,
+            path: override.path,
+          },
+          result: {
+            ok: false,
+            code: 'unpromotable',
+            message: 'No save promoter registered for this workspace.',
+          },
+        })),
+      };
+    }
+
+    return promoter.promote(overrides);
+  }
+
+  /**
    * Send registry contributions to main process.
    */
   private sendRegistryContributions(): void {
@@ -410,6 +454,19 @@ export class ModuleLoader {
       type: 'registry-contribution',
       registries: this.registryContributions,
     });
+  }
+
+  private getSavePromoter(): SavePromoter | null {
+    const promoters = Array.from(this.savePromoters.values());
+    if (promoters.length === 0) {
+      return null;
+    }
+    if (promoters.length > 1) {
+      console.warn(
+        `[ModuleLoader] Multiple save promoters registered; using "${promoters[0].id}"`
+      );
+    }
+    return promoters[0];
   }
 
   /**
@@ -435,6 +492,7 @@ export class ModuleLoader {
     this.registryContributions = [];
     this.graphProducers.clear();
     this.previewLaunchers.clear();
+    this.savePromoters.clear();
 
     // Update config
     this.config = newConfig;

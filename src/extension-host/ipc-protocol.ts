@@ -7,6 +7,7 @@
 import type { ComponentRegistry } from '../shared/index.js';
 import type { GraphPatch } from '../shared/project-graph.js';
 import type { ScaffaConfig } from '../shared/config.js';
+import type { DraftOverride, SavePlan } from '../shared/save.js';
 import type {
   PreviewLauncherDescriptor,
   PreviewLauncherOptions,
@@ -62,12 +63,22 @@ export interface StopPreviewLauncherMessage {
   requestId: string; // For correlating responses
 }
 
+/**
+ * Request to promote draft overrides into workspace edits.
+ */
+export interface PromoteOverridesMessage {
+  type: 'promote-overrides';
+  requestId: string;
+  overrides: DraftOverride[];
+}
+
 export type MainToExtHostMessage =
   | InitMessage
   | ConfigChangedMessage
   | ShutdownMessage
   | StartPreviewLauncherMessage
-  | StopPreviewLauncherMessage;
+  | StopPreviewLauncherMessage
+  | PromoteOverridesMessage;
 
 // ─────────────────────────────────────────────────────────────────────────────
 // Extension Host → Main Messages
@@ -170,6 +181,28 @@ export interface PreviewLauncherLogMessage {
 }
 
 /**
+ * Promotion result for draft overrides.
+ */
+export interface PromoteOverridesResultMessage {
+  type: 'promote-overrides-result';
+  requestId: string;
+  result: SavePlan;
+}
+
+/**
+ * Promotion error for draft overrides.
+ */
+export interface PromoteOverridesErrorMessage {
+  type: 'promote-overrides-error';
+  requestId: string;
+  error: {
+    code: string;
+    message: string;
+    stack?: string;
+  };
+}
+
+/**
  * Module activation status report.
  * Sent after module loading completes (success or failure).
  */
@@ -195,4 +228,6 @@ export type ExtHostToMainMessage =
   | PreviewLauncherStoppedMessage
   | PreviewLauncherErrorMessage
   | PreviewLauncherLogMessage
-  | ModuleActivationStatusMessage;
+  | ModuleActivationStatusMessage
+  | PromoteOverridesResultMessage
+  | PromoteOverridesErrorMessage;

@@ -3,6 +3,7 @@ import {
   PreviewSessionTargetSchema,
   PreviewSessionIdSchema,
   InstanceIdSchema,
+  ComponentTypeIdSchema,
   PreviewLauncherDescriptorSchema,
 } from './preview-session.js';
 import { OverrideOpSchema, PropPathSchema } from './override.js';
@@ -12,6 +13,7 @@ import {
   GraphSnapshotSchema,
 } from './project-graph.js';
 import { JsonValueSchema } from './common.js';
+import { SaveResultSchema } from './save.js';
 
 // ─────────────────────────────────────────────────────────────────────────────
 // IPC Request/Response Schemas (v0)
@@ -59,6 +61,8 @@ export const SetOverrideRequestSchema = z.object({
   instanceId: InstanceIdSchema,
   path: PropPathSchema,
   value: JsonValueSchema,
+  componentTypeId: ComponentTypeIdSchema.optional(),
+  instanceLocator: JsonValueSchema.optional(),
 });
 
 export type SetOverrideRequest = z.infer<typeof SetOverrideRequestSchema>;
@@ -85,6 +89,14 @@ export const ClearAllOverridesRequestSchema = z.object({
 });
 
 export type ClearAllOverridesRequest = z.infer<typeof ClearAllOverridesRequestSchema>;
+
+export const SaveOverridesRequestSchema = z.object({});
+
+export type SaveOverridesRequest = z.infer<typeof SaveOverridesRequestSchema>;
+
+export const SaveOverridesResponseSchema = SaveResultSchema;
+
+export type SaveOverridesResponse = z.infer<typeof SaveOverridesResponseSchema>;
 
 // ─────────────────────────────────────────────────────────────────────────────
 // Graph APIs
