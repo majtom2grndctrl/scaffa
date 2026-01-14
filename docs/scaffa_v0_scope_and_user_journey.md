@@ -20,12 +20,12 @@ v0 is successful when a designer (within explicit guardrails) can:
 1. Launch Scaffa and open a workspace from the Launcher
 2. Start an **Editor View** session (embedded runtime in the Workbench)
 3. Select a UI instance via click-to-select in Editor View
-4. Use the Inspector to edit approved props (non-destructive overrides)
-5. Start a separate **Preview Mode** session to interact with the app normally
-6. Reset/clear overrides confidently
-7. Persist the override state in a reviewable, shareable form
+4. Use the Inspector to edit approved props (draft overrides)
+5. **Save changes to the project** (writes working-tree code edits)
+6. Reset/clear draft overrides confidently
+7. See changes reflected in the running Editor View (via reload/HMR)
 
-“Shareable” in v0 means **serializable and diffable** (not necessarily a hosted cloud feature).
+“Shareable” in v0 means **diffable** (primarily via normal code diffs; git workflow automation is future).
 
 ---
 
@@ -70,7 +70,13 @@ v0 is successful when a designer (within explicit guardrails) can:
 
 - Canonical override addressing and precedence (see `docs/scaffa_override_model.md`)
 - Transactional set/reset/clear operations
-- Serialize overrides to a local file format (diffable)
+- Persist draft overrides locally so they survive reloads/restarts (optional but recommended)
+
+### 2.8 Save to Disk (v0)
+
+- Convert draft overrides into concrete workspace file edits (working tree)
+- Apply edits transactionally (see Workspace API in `docs/scaffa_extension_api.md`)
+- Clear draft overrides that were successfully saved, so “baseline” becomes the new code
 
 ---
 
@@ -83,7 +89,8 @@ In addition to `docs/index.md` “Deferred” items, v0 explicitly excludes:
 - type-level component authoring UI
 - Iteration Deck UI (variants/snapshots/comparisons)
 - full runtime tree introspection
-- automatic “promote override to code” workflows
+- Preview Mode (separate interact-by-default session)
+- git workflow automation (auto-commit/branch/PR)
 
 ---
 
@@ -118,23 +125,19 @@ In addition to `docs/index.md` “Deferred” items, v0 explicitly excludes:
 - Host persists the change and forwards it to runtime adapter.
 - Preview updates immediately; Inspector shows the prop as “Overridden”.
 
-### Step 5: Reset
+### Step 5: Save to Disk
 
-- User clicks “Reset” for `variant`.
+- User clicks “Save” (or invokes the Save command).
+- Scaffa converts draft overrides into workspace edits (file patches) and writes them to disk.
+- The running app reflects the changes via HMR or reload.
+- Draft overrides that were saved are cleared (the new code becomes the baseline).
+
+### Step 6: Reset
+
+- User clicks “Reset” for `variant` (or “Reset All”).
 - Renderer sends `OverrideOp.clear` to host.
-- Host updates persisted overrides and instructs runtime adapter to clear the override.
+- Host updates draft override state and instructs runtime adapter to clear the override.
 - Preview returns to baseline; Inspector clears “Overridden” state.
-
-### Step 6: Persist / Share
-
-- Overrides are serialized to a local file in a stable schema.
-- User can review the file in git diff, share it, or discard it.
-
-### (Optional) Preview Mode: Interact Normally
-
-- User starts a separate `app` preview session for **Preview Mode**.
-- In Preview Mode, clicks/links/navigation behave like the app normally does.
-- Inspection remains available via <kbd>Alt/Option</kbd>+Click without interfering with normal interaction by default.
 
 ---
 
@@ -154,17 +157,13 @@ Use this checklist to validate the v0 “first user journey” end-to-end. This 
 - [ ] (Note) In v0, Scaffa primarily attaches to an already-running dev server; managed preview launchers are future module contributions.
 - [ ] Confirm the runtime adapter handshake completes (preview is “ready”).
 
-### Selection (Editor View vs Preview Mode)
+### Selection (Editor View)
 
 v0 interaction contract:
 - **Editor View:** click-to-select by default; clicks do not trigger app interaction in the editor session.
-- **Preview Mode:** clicks/links/buttons behave normally; inspect via <kbd>Alt/Option</kbd> (hover highlight) and <kbd>Alt/Option</kbd>+Click (select).
 - Clear selection: <kbd>Esc</kbd> clears the current selection (only when something is selected).
 
 - [ ] In Editor View, click a Button instance: Inspector activates and shows instance + props.
-- [ ] Start a Preview Mode session and confirm normal app interactions work (click a link navigates in the Preview Mode session only).
-- [ ] In Preview Mode, hold <kbd>Alt/Option</kbd> and hover: the instance under the cursor shows a highlight.
-- [ ] In Preview Mode, <kbd>Alt/Option</kbd>+Click a Button instance: Inspector activates and shows instance + props.
 
 ### Inspector semantics
 
@@ -175,12 +174,13 @@ v0 interaction contract:
 
 - [ ] Edit an editable prop: preview updates immediately and Inspector indicates the prop is overridden.
 - [ ] Reset/clear the override: preview returns to baseline and Inspector clears overridden state.
-- [ ] Verify app behavior still works when not selecting (e.g. normal clicks increment counters / navigate).
+- [ ] Verify selection highlight tracks selection, and clicks do not trigger app navigation/handlers in the editor session.
 
-### Persistence
+### Save to Disk
 
-- [ ] Persisted overrides update deterministically at `<workspace>/.scaffa/overrides.v0.json`.
-- [ ] Restart Scaffa, reopen the workspace, and start preview: persisted overrides are restored without manual file/DB hacking.
+- [ ] Edit an editable prop (draft override): preview updates immediately and Inspector indicates the prop is overridden.
+- [ ] Click Save: Scaffa writes working-tree edits and the running app reflects the change.
+- [ ] Clear draft overrides: verify the saved change remains (it is now code baseline).
 
 ---
 

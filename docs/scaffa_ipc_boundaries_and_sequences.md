@@ -93,7 +93,7 @@ sequenceDiagram
 
 ---
 
-## 5. Apply Override (Inspector Edit → Preview Update)
+## 5. Apply Draft Override (Inspector Edit → Preview Update)
 
 ```mermaid
 sequenceDiagram
@@ -104,7 +104,7 @@ sequenceDiagram
 
   UI->>PL: overrides.set({sessionId, instanceId, path, value})
   PL->>Main: IPC overrides.set(request)
-  Main->>Main: persist override transaction
+  Main->>Main: record draft override transaction
   Main-->>RT: host.applyOverrides({sessionId, ops:[{op:"set", ...}]})
   RT->>RT: apply override + re-render
   Main-->>PL: IPC overrides.changed(state)
@@ -114,7 +114,35 @@ sequenceDiagram
 
 ---
 
-## 6. Graph Patch Propagation (Adapter → Consumers)
+## 6. Save Changes to Disk (Promote Draft Overrides → Code)
+
+Saving converts draft overrides into workspace edits (working tree) and clears the saved draft overrides.
+
+```mermaid
+sequenceDiagram
+  participant UI as Renderer (Workbench)
+  participant PL as Preload (scaffa.*)
+  participant Main as Main Process (Host)
+  participant Ext as Extension Host (Framework Save Logic)
+  participant RT as Runtime Adapter (in Preview)
+
+  UI->>PL: workspace.save()
+  PL->>Main: IPC workspace.save(request)
+  Main->>Ext: promoteDraftOverridesToEdits({target, overrides})
+  Ext-->>Main: workspace.applyEdits([{filePath, edits...}])
+  Main->>Main: apply edits transactionally (working tree)
+  Main-->>RT: host.clearOverrides({sessionId, cleared})
+  Main-->>PL: IPC workspace.saveCompleted({applied, failed})
+  PL-->>UI: window.scaffa.onSaveCompleted(cb)
+```
+
+Notes:
+- The framework-specific “promote to code” logic lives in extensions/adapters; core applies edits.
+- If promotion fails for some overrides, Scaffa keeps them as draft overrides and surfaces the failure (no silent dropping).
+
+---
+
+## 7. Graph Patch Propagation (Adapter → Consumers)
 
 ```mermaid
 sequenceDiagram
@@ -132,7 +160,7 @@ sequenceDiagram
 
 ---
 
-## 7. MCP Observability (External AI Tool ↔ Host State)
+## 8. MCP Observability (External AI Tool ↔ Host State)
 
 MCP clients are northbound consumers of the same canonical state as the renderer UI.
 
@@ -160,7 +188,7 @@ sequenceDiagram
 
 ---
 
-## 8. Notes / Alignment Constraints
+## 9. Notes / Alignment Constraints
 
 - Renderer never talks directly to extension host or preview runtime; it uses preload APIs.
 - Main is the broker/authority for sessions and cross-boundary routing.

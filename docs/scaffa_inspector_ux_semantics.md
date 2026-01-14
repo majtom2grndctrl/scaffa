@@ -25,8 +25,7 @@ Related:
 The Inspector operates on a **selected instance** in the preview (not a component type definition).
 
 Selection in v0 is explicit so the preview remains a high-fidelity runtime:
-- Default: interact with the app normally.
-- Inspect: <kbd>Alt/Option</kbd>+Click selects an instance (and prevents app interaction for that click).
+- Default: click-to-select in the Editor View canvas (app interaction is suppressed in the editor session).
 - <kbd>Esc</kbd> clears selection when something is selected.
 
 For each prop on that instance, the Inspector answers:
@@ -125,6 +124,13 @@ Reset does NOT mean “set to `uiDefaultValue`”; registry `uiDefaultValue` is 
 
 Reset MUST be reversible by re-applying the same override (undo/redo is a separate capability, but the model should allow it).
 
+### 4.4 Saving Changes to Disk (v0)
+
+v0 includes a “Save” action that converts draft overrides into concrete workspace edits (working tree):
+
+- Saving writes code changes to disk and clears draft overrides that were successfully applied.
+- If some overrides cannot be safely saved, Scaffa keeps them as draft overrides and surfaces an error (no silent dropping).
+
 ### 4.3 Orphaned Overrides
 
 If an override cannot be applied (instance moved/removed), the Inspector (or a dedicated Overrides panel) MUST surface it as **orphaned**:
@@ -143,10 +149,7 @@ Every prop MUST provide an escape hatch path:
 - If a `SourceRef` exists: **Open Source** (main process opens in user’s editor)
 - If no source: **Copy Instance/Prop Address** for engineers to debug
 
-Planned (not v0):
-- **Promote to code**: convert an override into an explicit code change (codemod / edit)
-
-The Inspector UX MUST reserve space for “Promote” without implying it exists in v0.
+v0 includes “Save” at the workspace level. Future versions may add per-prop “Promote” actions with finer-grained control.
 
 ---
 
@@ -167,4 +170,4 @@ Extensions may contribute Inspector sections (see `docs/scaffa_extension_api.md`
 
 - Multi-instance editing semantics (“mixed” values)
 - Arbitrary custom Inspector widgets per extension
-- Promoting overrides into source code automatically
+- git workflow automation (auto-commit/branch/PR)

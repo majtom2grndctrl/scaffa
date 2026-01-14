@@ -21,13 +21,15 @@ Related:
 
 ## 1. Definition
 
-An **override** is a non-destructive change applied to a preview runtime:
+An **override** is a draft, instance-scoped change applied to a preview runtime:
 
-- It does **not** rewrite source code.
+- It provides immediate visual feedback without rewriting source code on every edit.
 - It is **inspectable** and **reversible**.
 - It is addressed to a specific instance + prop path.
 
 Overrides power the v0 Inspector editing experience.
+
+In v0, Scaffa also supports **Save to Disk**: converting draft overrides into concrete workspace edits (working tree), and then clearing the draft overrides that were saved.
 
 ---
 
@@ -119,7 +121,22 @@ Precedence (highest wins):
 
 ---
 
-## 6. Conflicts and Orphaning
+## 6. Save to Disk (v0)
+
+“Save” converts draft overrides into source-level edits and writes them to the workspace (working tree).
+
+Principles:
+- Save is explicit (not on every keystroke).
+- Saved changes become the new **code baseline**; the corresponding draft overrides are cleared.
+- If an override cannot be safely converted into a code edit, it remains as a draft override and is surfaced as an error (no silent dropping).
+
+Implementation note:
+- The framework-specific “promote to code” logic lives in adapters/modules.
+- Scaffa core applies edits transactionally via a workspace edit API (see `WorkspaceAPI.applyEdits` in `docs/scaffa_extension_api.md`).
+
+---
+
+## 7. Conflicts and Orphaning
 
 Overrides can fail to apply when:
 - an instance no longer exists
@@ -133,7 +150,7 @@ v0 rules:
 
 ---
 
-## 7. Persistence / Serialization (v0)
+## 8. Persistence / Serialization (v0)
 
 v0 persists overrides to a local, diffable file.
 
@@ -184,7 +201,7 @@ Whether this file is committed to git is a **project policy** decision (document
 
 ---
 
-## 8. Transactionality and Diffability
+## 9. Transactionality and Diffability
 
 Override mutations must be:
 - **atomic**: the persisted file reflects a complete state after each operation batch
@@ -197,8 +214,8 @@ This enables:
 
 ---
 
-## 9. Non-Goals (v0)
+## 10. Non-Goals (v0)
 
-- Converting overrides into source code edits automatically
+- git workflow automation (auto-commit/branch/PR)
 - Persisting overrides across branches/commits with deep rebase-aware rebinding
 - Arbitrary non-JSON values (functions, classes, symbols)

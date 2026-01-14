@@ -7,7 +7,7 @@
 ## Agent TL;DR
 
 - Load when: implementing or modifying a **framework runtime adapter** (click-to-select, instance identity, apply/clear overrides).
-- Key invariants: `componentTypeId` is the **join key** across registry/graph/runtime/overrides; selection is explicit (inspect gesture).
+- Key invariants: `componentTypeId` is the **join key** across registry/graph/runtime/overrides; v0 selection is click-to-select in Editor View (Preview Mode is deferred).
 - Primary concerns: instance identity, selection events, override application, lifecycle hooks.
 - Also load: `docs/scaffa_runtime_adapter_integration_guide.md`, `docs/scaffa_preview_session_protocol.md`, `docs/scaffa_override_model.md`.
 
@@ -54,12 +54,15 @@ The adapter MUST emit selection events when the user clicks/taps in the preview:
 
 - selection carries `sessionId` + `InstanceDescriptor`
 - selection must feel immediate; throttle only if necessary
-- adapter must avoid breaking app behavior (do not swallow clicks unless configured)
+- adapter must follow Scaffa’s interaction policy for the session (Editor View vs Preview Mode)
 
-v0 standard (recommended):
-- Default to **interact** (normal app behavior).
-- Gate selection behind an explicit **inspect gesture** (e.g. <kbd>Alt/Option</kbd>+Click) so web apps remain usable (navigation, buttons, modals).
-- When performing the inspect gesture, prevent the underlying app interaction for that click (so “pick” does not also “activate”).
+v0 standard:
+- Default to **click-to-select** in the Editor View canvas.
+- Consume clicks so app navigation/handlers do not fire in the editor session.
+
+Deferred (post-v0):
+- Preview Mode as a separate interact-by-default session.
+- In Preview Mode, selection may be gated behind an explicit inspect gesture (e.g. <kbd>Alt/Option</kbd>+Click).
 
 ### 2.3 Override Application
 
@@ -229,10 +232,10 @@ The important part is that the contract remains framework-agnostic: React is one
 
 ## 7. Known Limitations (Visual Highlights)
 
-### 7.1 Inspect Mode Highlighting
+### 7.1 Editor View Highlighting
 
 The v0 runtime adapter uses CSS `outline` and `box-shadow` to visually indicate:
-- **Hover candidate** (Alt/Option held): 2px dashed outline
+- **Hover candidate** (optional): 2px dashed outline
 - **Selected instance**: 3px solid outline
 
 **Accessibility features:**

@@ -243,7 +243,7 @@ See also:
 - [Scaffa Component Registry Schema](./scaffa_component_registry_schema.md)
 - [Scaffa Override Model + Persistence](./scaffa_override_model.md)
 
-All edits are **non-destructive overrides** applied to preview sessions.
+Edits begin as **draft overrides** applied to preview sessions for immediate feedback, and can be **saved to disk** as working-tree code edits.
 
 ---
 
