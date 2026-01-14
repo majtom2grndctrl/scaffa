@@ -6,6 +6,7 @@ release/
 .vite/
 demo/extensions/**/index.js
 modules/**/index.js
+src/shared/config.js
 .DS_Store
 .env
 .env.*

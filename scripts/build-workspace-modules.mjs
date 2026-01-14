@@ -3,6 +3,7 @@ import { existsSync } from 'node:fs';
 import { resolve } from 'node:path';
 
 const entryPoints = [
+  'src/shared/config.ts',
   'modules/sample-graph-producer/index.ts',
   'modules/react-router-graph-producer/index.ts',
   'demo/extensions/demo-module/index.ts',
@@ -26,5 +27,6 @@ await build({
   platform: 'node',
   target: 'node18',
   packages: 'external',
+  allowOverwrite: true,
   logLevel: 'info',
 });
