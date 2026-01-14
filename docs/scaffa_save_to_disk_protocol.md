@@ -16,6 +16,7 @@ Related:
 - [Scaffa Override Model + Persistence](./scaffa_override_model.md)
 - [IPC Boundaries + Key Sequence Diagrams](./scaffa_ipc_boundaries_and_sequences.md)
 - [Scaffa Extension API – v0 Sketch](./scaffa_extension_api.md)
+- [Scaffa Workspace Edit Protocol](./scaffa_workspace_edit_protocol.md)
 - [Scaffa Runtime Adapter Contract](./scaffa_runtime_adapter_contract.md)
 
 ---
@@ -60,7 +61,7 @@ Validation is required because not all runtime changes can be mapped to code edi
 
 - Owns authoritative draft override store (and persistence if enabled).
 - Routes validation and promotion requests to the extension host.
-- Applies workspace file edits transactionally via a write capability (see `WorkspaceAPI.applyEdits` in `docs/scaffa_extension_api.md`).
+- Applies workspace file edits transactionally via a write capability (see `WorkspaceAPI.applyEdits` and `docs/scaffa_workspace_edit_protocol.md`).
 - Broadcasts save/validation results back to the renderer.
 
 ### 2.3 Extension Host (Framework Save Logic)

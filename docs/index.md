@@ -18,6 +18,7 @@
 - **Inspector behavior & editing semantics** → `docs/scaffa_inspector_ux_semantics.md`, `docs/scaffa_component_registry_schema.md`, `docs/scaffa_override_model.md`
 - **Override model (data + persistence)** → `docs/scaffa_override_model.md`, `docs/scaffa_preview_session_protocol.md`
 - **Save to disk (validation + promotion)** → `docs/scaffa_save_to_disk_protocol.md`, `docs/scaffa_override_model.md`, `docs/scaffa_inspector_ux_semantics.md`
+- **Workspace file edits** → `docs/scaffa_workspace_edit_protocol.md`, `docs/scaffa_extension_api.md`
 - **Preview sessions & selection flows** → `docs/scaffa_preview_session_protocol.md`, `docs/scaffa_ipc_boundaries_and_sequences.md`, `docs/scaffa_runtime_adapter_contract.md`
 - **Runtime adapter implementation** → `docs/scaffa_runtime_adapter_contract.md`, `docs/scaffa_runtime_adapter_integration_guide.md`
 - **Project configuration** → `docs/scaffa_project_configuration_scaffa_config.md`
@@ -34,6 +35,7 @@
 - Preview sessions: [Scaffa Preview Session Protocol](./scaffa_preview_session_protocol.md)
 - Override model + persistence: [Scaffa Override Model + Persistence](./scaffa_override_model.md)
 - Save-to-disk protocol: [Scaffa Save-to-Disk Protocol](./scaffa_save_to_disk_protocol.md)
+- Workspace edit protocol: [Scaffa Workspace Edit Protocol](./scaffa_workspace_edit_protocol.md)
 - Project graph + patch protocol: [Scaffa Project Graph Schema + Patch Protocol](./scaffa_project_graph_schema.md)
 - IPC boundaries + sequence diagrams: [IPC Boundaries + Key Sequence Diagrams](./scaffa_ipc_boundaries_and_sequences.md)
 - MCP server: [Scaffa MCP Server Contract](./scaffa_mcp_server_contract.md)

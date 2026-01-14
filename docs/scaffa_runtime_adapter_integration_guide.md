@@ -21,6 +21,10 @@ In v0, the runtime adapter is responsible for three things inside the preview ru
 
 For React preview runtimes in this repo, those responsibilities are implemented by `packages/react-runtime-adapter`.
 
+Editor View interaction policy (v0):
+- Scaffa uses the embedded runtime as an editor canvas: click-to-select is the default.
+- Clicks are consumed for selection (app navigation/handlers should not fire in the editor session).
+
 ---
 
 ## 2. The Three-Part Recipe (React)
@@ -97,4 +101,3 @@ If you see perf issues in larger apps:
 - Prefer smaller prop objects and stable references where possible.
 - Avoid passing large, deeply nested objects through `useScaffaInstance()` unless you expect to override them.
 - Consider limiting which components are wrapped as instances during early integration.
-

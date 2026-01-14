@@ -11,6 +11,7 @@ Related:
 - [Scaffa Extension Authoring Guide](./scaffa_extension_authoring_guide.md)
 - [Scaffa Project Graph Schema + Patch Protocol](./scaffa_project_graph_schema.md)
 - [Scaffa Component Registry Schema](./scaffa_component_registry_schema.md)
+- [Scaffa Workspace Edit Protocol](./scaffa_workspace_edit_protocol.md)
 
 ---
 
@@ -79,6 +80,8 @@ interface WorkspaceAPI {
 ```
 
 All mutations are transactional and diffable.
+
+See also: [Scaffa Workspace Edit Protocol](./scaffa_workspace_edit_protocol.md)
 
 ---
 
