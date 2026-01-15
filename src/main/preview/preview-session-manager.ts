@@ -146,13 +146,16 @@ class PreviewSessionManager {
 
     this.viewportBounds = bounds;
 
-    // If this session is active, update its bounds
+    // If this session is active, attach it to the window with the new bounds
     if (this.activeSessionId === sessionId) {
       const session = this.sessions.get(sessionId);
       const mainWindow = this.getMainWindow();
 
       if (session && mainWindow) {
-        session.setBounds(bounds);
+        // Use attachToWindow instead of just setBounds
+        // This ensures the BrowserView is added to the window if not already
+        session.attachToWindow(mainWindow, bounds);
+        console.log(`[SessionManager] Attached active session ${sessionId} to window`);
       }
     }
   }

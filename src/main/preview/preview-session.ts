@@ -86,12 +86,18 @@ export class PreviewSession {
     }
 
     // Add the BrowserView to the window if not already added
-    if (!window.getBrowserViews().includes(this.view)) {
+    const existingViews = window.getBrowserViews();
+    if (!existingViews.includes(this.view)) {
+      console.log(`[PreviewSession] Adding BrowserView to window (${existingViews.length} views currently attached)`);
       window.addBrowserView(this.view);
+      console.log(`[PreviewSession] BrowserView added (now ${window.getBrowserViews().length} views attached)`);
+    } else {
+      console.log(`[PreviewSession] BrowserView already attached to window`);
     }
 
     // Set bounds
     this.view.setBounds(bounds);
+    console.log(`[PreviewSession] Set BrowserView bounds:`, bounds);
 
     console.log(`[PreviewSession] Attached session ${this.sessionId} to window with bounds:`, bounds);
   }
@@ -136,7 +142,7 @@ export class PreviewSession {
       const __dirname = fileURLToPath(new URL('.', import.meta.url));
       const runtimeTransportPreload = join(
         __dirname,
-        '../../../dist/runtime-transport-preload/runtime-transport-preload.js'
+        '../runtime-transport-preload/runtime-transport-preload.js'
       );
 
       this.view = new BrowserView({
@@ -146,6 +152,17 @@ export class PreviewSession {
           // Runtime transport preload enables communication with runtime adapter
           preload: runtimeTransportPreload,
         },
+      });
+
+      // Set background color so BrowserView is visible even when loading
+      this.view.setBackgroundColor('#1e1e1e');
+
+      // Disable auto-resize - we'll manage bounds manually
+      this.view.setAutoResize({
+        width: false,
+        height: false,
+        horizontal: false,
+        vertical: false,
       });
 
       // Setup WebContents event handlers
