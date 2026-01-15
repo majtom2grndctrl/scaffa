@@ -87,11 +87,17 @@ These shapes are “contract intent”. Exact IPC schemas may differ, but the se
 export type DraftOverrideAddress = {
   sessionId: string;
   instanceId: string;
-  propPath: string; // JSON Pointer
+  path: string; // JSON Pointer (prop path)
 };
 
 export type DraftOverride = DraftOverrideAddress & {
   value: unknown; // JSON-only values in v0 override model
+  /**
+   * Optional metadata to help promotion locate the correct source site.
+   * v0 promoters MAY require this (and fail with `unpromotable` if missing).
+   */
+  componentTypeId?: string;
+  instanceLocator?: unknown; // JSON-only, adapter-defined
 };
 
 export type ValidationState = "idle" | "validating" | "valid" | "error";
@@ -184,6 +190,16 @@ On failure (all-or-nothing):
 ---
 
 ## 6. v0 React Promotion Constraints
+
+### 6.1 Instance → Source Mapping Prerequisites (v0)
+
+Core does not mandate a single mapping strategy in v0; the save promoter defines what metadata it needs to locate the correct source edit site.
+
+In practice, v0 promoters SHOULD rely on one (or more) of:
+- `DraftOverride.componentTypeId` + a stable, adapter-provided `instanceLocator` (demo promoter uses `{ kind: "renderIndex", index: number }`)
+- a `SourceRef` on the selected instance (when available) plus promoter-specific rules to find the prop origin
+
+v0 does not require a compile-time transform (Babel/SWC/Vite plugin), but a future “general React promoter” may introduce one to reliably annotate callsites/prop origins.
 
 v0 React promotion should intentionally start narrow:
 

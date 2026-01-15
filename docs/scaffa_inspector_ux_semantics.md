@@ -25,7 +25,7 @@ Related:
 The Inspector operates on a **selected instance** in the preview (not a component type definition).
 
 Selection in v0 is explicit so the preview remains a high-fidelity runtime:
-- Default: click-to-select in the Editor View canvas (app interaction is suppressed in the editor session).
+- Default: the preview remains interactable; hold <kbd>Alt/Option</kbd> and click-to-inspect/select in the Editor View canvas (that click is consumed).
 - <kbd>Esc</kbd> clears selection when something is selected.
 
 For each prop on that instance, the Inspector answers:
@@ -38,6 +38,18 @@ For each prop on that instance, the Inspector answers:
 The Inspector is the primary UX manifestation of Scaffa’s guiding principle:
 
 > Scaffa edits what it can prove is safe to edit, displays what it cannot, and always provides an escape hatch to code.
+
+### 1.1 “Current Value” Source of Truth (v0)
+
+In v0, the Inspector’s displayed “current value” for a prop is derived in this order:
+
+1. **Draft override value**, if an override exists for `instanceId + propPath`.
+2. **Runtime-provided JSON snapshot**, if the runtime adapter includes `InstanceDescriptor.props` for the selected instance.
+3. **Unknown baseline**, if neither is available.
+
+Notes:
+- `uiDefaultValue` (in the component registry) is UI metadata; it is not a reliable baseline value.
+- Any value sent from runtime → host for Inspector display MUST be JSON-serializable; non-serializable values are omitted and should be treated as “unknown baseline” (or rendered as **Opaque** if the registry marks them opaque).
 
 ---
 

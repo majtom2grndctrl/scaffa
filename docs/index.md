@@ -297,7 +297,7 @@ Each Scaffa project defines a manifest (e.g. `scaffa.config.js`) that:
 
 Framework-specific runtime adapters handle:
 - instance identification
-- click-to-select
+- inspection + selection (v0: <kbd>Alt/Option</kbd>+Click)
 - applying prop overrides
 
 See also: [Scaffa Runtime Adapter Contract](./scaffa_runtime_adapter_contract.md)
