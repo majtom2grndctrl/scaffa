@@ -55,8 +55,8 @@ export const RoutesPanel = () => {
   // Empty state
   if (isLoading) {
     return (
-      <div className="rounded-lg border border-line bg-bg-base p-6">
-        <h2 className="mb-4 text-lg font-semibold text-fg-base">Routes</h2>
+      <div className="p-4">
+        <h2 className="mb-3 text-sm font-semibold text-fg">Routes</h2>
         <div className="flex items-center justify-center py-8 text-fg-muted">
           <span>Loading routes...</span>
         </div>
@@ -66,11 +66,11 @@ export const RoutesPanel = () => {
 
   if (routes.length === 0) {
     return (
-      <div className="rounded-lg border border-line bg-bg-base p-6">
-        <h2 className="mb-4 text-lg font-semibold text-fg-base">Routes</h2>
+      <div className="p-4">
+        <h2 className="mb-3 text-sm font-semibold text-fg">Routes</h2>
         <div className="flex flex-col items-center justify-center gap-2 py-8">
-          <p className="text-fg-muted">No routes discovered</p>
-          <p className="text-sm text-fg-muted">
+          <p className="text-xs text-fg-muted">No routes discovered</p>
+          <p className="text-xs text-fg-subtle">
             Configure a graph producer to populate routes from your router.
           </p>
         </div>
@@ -81,20 +81,17 @@ export const RoutesPanel = () => {
   // No active session state
   if (!activeSession) {
     return (
-      <div className="rounded-lg border border-line bg-bg-base p-6">
-        <h2 className="mb-4 text-lg font-semibold text-fg-base">Routes</h2>
-        <div className="flex flex-col gap-2">
+      <div className="p-4">
+        <h2 className="mb-3 text-sm font-semibold text-fg">Routes</h2>
+        <div className="flex flex-col gap-1">
           {routes.map((route) => (
-            <div
-              key={route.id}
-              className="rounded-md border border-line bg-bg-muted px-3 py-2 opacity-50"
-            >
-              <div className="font-mono text-sm text-fg-base">{route.path}</div>
+            <div key={route.id} className="px-3 py-2 opacity-50">
+              <div className="font-mono text-xs text-fg">{route.path}</div>
               {route.source && <div className="text-xs text-fg-muted">{route.source}</div>}
             </div>
           ))}
         </div>
-        <div className="mt-4 text-sm text-fg-muted">
+        <div className="mt-4 text-xs text-fg-muted">
           Start a preview session to enable navigation.
         </div>
       </div>
@@ -103,9 +100,9 @@ export const RoutesPanel = () => {
 
   // Routes list with navigation
   return (
-    <div className="rounded-lg border border-line bg-bg-base p-6">
-      <h2 className="mb-4 text-lg font-semibold text-fg-base">Routes</h2>
-      <div className="flex flex-col gap-2">
+    <div className="p-4">
+      <h2 className="mb-3 text-sm font-semibold text-fg">Routes</h2>
+      <div className="flex flex-col gap-1">
         {routes.map((route) => {
           const isActive = activeRoutePath === route.path;
 
@@ -113,19 +110,13 @@ export const RoutesPanel = () => {
             <button
               key={route.id}
               onClick={() => handleRouteClick(route.path)}
-              className={`group rounded-md border px-3 py-2 text-left transition-all ${
-                isActive
-                  ? 'border-cyan-500 bg-cyan-50 dark:bg-cyan-950'
-                  : 'border-line bg-bg-muted hover:border-line-hover hover:bg-bg-hover'
+              className={`px-3 py-2 text-left transition-colors ${
+                isActive ? 'bg-selected text-selected-fg' : 'hover:bg-hover'
               }`}
             >
               <div className="flex items-center justify-between">
-                <div className="font-mono text-sm text-fg-base">{route.path}</div>
-                {isActive && (
-                  <div className="text-xs font-semibold text-cyan-600 dark:text-cyan-400">
-                    Active
-                  </div>
-                )}
+                <div className="font-mono text-xs text-fg">{route.path}</div>
+                {isActive && <div className="text-xs font-semibold text-selected-fg">Active</div>}
               </div>
               {route.source && <div className="text-xs text-fg-muted">{route.source}</div>}
             </button>

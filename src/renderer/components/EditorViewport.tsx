@@ -65,7 +65,7 @@ export const EditorViewport = () => {
 
   if (!activeSession) {
     return (
-      <div className="flex h-full items-center justify-center rounded border border-default bg-surface-card p-6 text-center text-sm text-fg-muted">
+      <div className="flex h-full items-center justify-center bg-surface-card p-6 text-center text-sm text-fg-muted">
         <p>No preview session active. Start an app session to see your application here.</p>
       </div>
     );
@@ -74,7 +74,7 @@ export const EditorViewport = () => {
   return (
     <div
       ref={containerRef}
-      className="relative h-full w-full rounded border border-default bg-surface-inset"
+      className="relative h-full w-full bg-surface-inset"
       data-preview-viewport
     >
       {/* The BrowserView will be overlaid here by the main process */}
