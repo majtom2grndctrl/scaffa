@@ -4,6 +4,7 @@
 // Manages preview session lifecycle and coordinates with override store.
 
 import { randomBytes } from 'node:crypto';
+import { BrowserWindow } from 'electron';
 import type {
   PreviewSessionId,
   PreviewSessionTarget,
@@ -31,6 +32,8 @@ class PreviewSessionManager {
     sessionId: PreviewSessionId;
     selected: InstanceDescriptor | null;
   } | null = null;
+  private activeSessionId: PreviewSessionId | null = null;
+  private viewportBounds: { x: number; y: number; width: number; height: number } | null = null;
 
   /**
    * Start a new preview session.
@@ -83,7 +86,20 @@ class PreviewSessionManager {
     }
 
     console.log(`[SessionManager] Stopping session ${sessionId}`);
-    await session.stop();
+
+    // Detach from window if this is the active session
+    if (this.activeSessionId === sessionId) {
+      const mainWindow = this.getMainWindow();
+      if (mainWindow) {
+        await session.stop(mainWindow);
+      } else {
+        await session.stop();
+      }
+      this.activeSessionId = null;
+    } else {
+      await session.stop();
+    }
+
     this.sessions.delete(sessionId);
 
     // Clear selection if it was for this session
@@ -117,6 +133,28 @@ class PreviewSessionManager {
     selected: InstanceDescriptor | null;
   } | null {
     return this.currentSelection;
+  }
+
+  /**
+   * Set viewport bounds and attach the active session if available.
+   */
+  setViewportBounds(
+    sessionId: PreviewSessionId,
+    bounds: { x: number; y: number; width: number; height: number }
+  ): void {
+    console.log(`[SessionManager] Setting viewport bounds for session ${sessionId}:`, bounds);
+
+    this.viewportBounds = bounds;
+
+    // If this session is active, update its bounds
+    if (this.activeSessionId === sessionId) {
+      const session = this.sessions.get(sessionId);
+      const mainWindow = this.getMainWindow();
+
+      if (session && mainWindow) {
+        session.setBounds(bounds);
+      }
+    }
   }
 
   /**
@@ -227,6 +265,17 @@ class PreviewSessionManager {
       return;
     }
 
+    // v0 policy: First app session that reaches ready becomes the active session
+    if (session.target.type === 'app' && !this.activeSessionId) {
+      this.activeSessionId = sessionId;
+
+      // Attach to main window if viewport bounds are available
+      const mainWindow = this.getMainWindow();
+      if (mainWindow && this.viewportBounds) {
+        session.attachToWindow(mainWindow, this.viewportBounds);
+      }
+    }
+
     // Broadcast session ready event
     broadcastSessionReady({
       sessionId,
@@ -255,6 +304,14 @@ class PreviewSessionManager {
 
     // TODO: Broadcast selection to renderer (will be implemented with selection IPC)
     // broadcastSelectionChanged({ sessionId, selected });
+  }
+
+  /**
+   * Get the main workbench window.
+   */
+  private getMainWindow(): BrowserWindow | null {
+    const windows = BrowserWindow.getAllWindows();
+    return windows.length > 0 ? windows[0] : null;
   }
 
   /**

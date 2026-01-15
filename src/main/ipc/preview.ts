@@ -5,6 +5,7 @@ import {
   StopSessionRequestSchema,
   GetLaunchersRequestSchema,
   GetLaunchersResponseSchema,
+  SetPreviewViewportRequestSchema,
   SessionReadyEventSchema,
   SessionErrorEventSchema,
   SessionStoppedEventSchema,
@@ -13,6 +14,7 @@ import {
   type StopSessionRequest,
   type GetLaunchersRequest,
   type GetLaunchersResponse,
+  type SetPreviewViewportRequest,
   type SessionReadyEvent,
   type SessionErrorEvent,
   type SessionStoppedEvent,
@@ -64,6 +66,18 @@ export function registerPreviewHandlers() {
         console.log('[IPC] preview:getLaunchers');
         const launchers = launcherRegistry.getAllLaunchers();
         return { launchers };
+      }
+    )
+  );
+
+  ipcMain.handle(
+    'preview:setViewport',
+    validated(
+      SetPreviewViewportRequestSchema,
+      z.void(),
+      async (_event, request: SetPreviewViewportRequest): Promise<void> => {
+        console.log('[IPC] preview:setViewport', request);
+        previewSessionManager.setViewportBounds(request.sessionId, request.bounds);
       }
     )
   );

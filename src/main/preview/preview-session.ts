@@ -3,7 +3,7 @@
 // ─────────────────────────────────────────────────────────────────────────────
 // Manages a single preview session's WebContents, state, and runtime communication.
 
-import { BrowserView, WebContents } from 'electron';
+import { BrowserView, BrowserWindow, WebContents } from 'electron';
 import type {
   PreviewSessionId,
   PreviewSessionTarget,
@@ -70,6 +70,59 @@ export class PreviewSession {
   }
 
   /**
+   * Get the BrowserView for this session.
+   */
+  getBrowserView(): BrowserView | null {
+    return this.view;
+  }
+
+  /**
+   * Attach the preview BrowserView to a BrowserWindow and set its bounds.
+   */
+  attachToWindow(window: BrowserWindow, bounds: { x: number; y: number; width: number; height: number }): void {
+    if (!this.view) {
+      console.warn(`[PreviewSession] Cannot attach: no BrowserView for session ${this.sessionId}`);
+      return;
+    }
+
+    // Add the BrowserView to the window if not already added
+    if (!window.getBrowserViews().includes(this.view)) {
+      window.addBrowserView(this.view);
+    }
+
+    // Set bounds
+    this.view.setBounds(bounds);
+
+    console.log(`[PreviewSession] Attached session ${this.sessionId} to window with bounds:`, bounds);
+  }
+
+  /**
+   * Update the bounds of the preview BrowserView.
+   */
+  setBounds(bounds: { x: number; y: number; width: number; height: number }): void {
+    if (!this.view) {
+      console.warn(`[PreviewSession] Cannot set bounds: no BrowserView for session ${this.sessionId}`);
+      return;
+    }
+
+    this.view.setBounds(bounds);
+  }
+
+  /**
+   * Detach the preview BrowserView from its parent window.
+   */
+  detachFromWindow(window: BrowserWindow): void {
+    if (!this.view) {
+      return;
+    }
+
+    if (window.getBrowserViews().includes(this.view)) {
+      window.removeBrowserView(this.view);
+      console.log(`[PreviewSession] Detached session ${this.sessionId} from window`);
+    }
+  }
+
+  /**
    * Create the preview WebContents and load the target URL.
    */
   async start(): Promise<void> {
@@ -113,7 +166,7 @@ export class PreviewSession {
   /**
    * Stop the session and clean up.
    */
-  async stop(): Promise<void> {
+  async stop(window?: BrowserWindow): Promise<void> {
     if (this.state === 'stopped' || this.state === 'disposed') {
       return;
     }
@@ -123,7 +176,11 @@ export class PreviewSession {
 
     // Clean up WebContents
     if (this.view) {
-      // Remove from parent window if attached
+      // Detach from window if provided
+      if (window) {
+        this.detachFromWindow(window);
+      }
+
       const webContents = this.view.webContents;
       if (!webContents.isDestroyed()) {
         webContents.closeDevTools();

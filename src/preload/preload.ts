@@ -5,6 +5,7 @@ import type {
   StopSessionRequest,
   GetLaunchersRequest,
   GetLaunchersResponse,
+  SetPreviewViewportRequest,
   SetOverrideRequest,
   ClearOverrideRequest,
   ClearInstanceOverridesRequest,
@@ -152,6 +153,10 @@ const scaffaApi = {
 
     getLaunchers: (request: GetLaunchersRequest): Promise<GetLaunchersResponse> => {
       return ipcRenderer.invoke('preview:getLaunchers', request);
+    },
+
+    setViewport: (request: SetPreviewViewportRequest): Promise<void> => {
+      return ipcRenderer.invoke('preview:setViewport', request);
     },
 
     onSessionReady: (callback: EventCallback<SessionReadyEvent>): Unsubscribe => {

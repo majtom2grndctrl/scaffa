@@ -3,6 +3,7 @@ import { ProjectGraphTable } from '../components/ProjectGraphTable';
 import { PreviewSessionList } from '../components/PreviewSessionList';
 import { InspectorPanel } from '../components/InspectorPanel';
 import { RoutesPanel } from '../components/RoutesPanel';
+import { EditorViewport } from '../components/EditorViewport';
 import { useInspectorStore } from '../state/inspectorStore';
 import { Button } from '../components/ui/button';
 
@@ -42,7 +43,7 @@ export const Workbench = () => {
   };
 
   return (
-    <div className="space-y-4">
+    <div className="flex h-full flex-col gap-4">
       <div className="flex flex-wrap items-center gap-3">
         <Button
           type="button"
@@ -66,8 +67,9 @@ export const Workbench = () => {
           <span className="text-xs text-fg-muted">No overrides to save.</span>
         ) : null}
       </div>
-      <div className="grid gap-6 lg:grid-cols-[2fr_1fr]">
-        <section className="space-y-6">
+      <div className="grid flex-1 gap-6 lg:grid-cols-[2fr_1fr]">
+        <section className="flex flex-col gap-6">
+          <EditorViewport />
           <RoutesPanel />
           <ProjectGraphTable />
           <PreviewSessionList />

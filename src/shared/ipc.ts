@@ -52,6 +52,18 @@ export const GetLaunchersResponseSchema = z.object({
 
 export type GetLaunchersResponse = z.infer<typeof GetLaunchersResponseSchema>;
 
+export const SetPreviewViewportRequestSchema = z.object({
+  sessionId: PreviewSessionIdSchema,
+  bounds: z.object({
+    x: z.number(),
+    y: z.number(),
+    width: z.number(),
+    height: z.number(),
+  }),
+});
+
+export type SetPreviewViewportRequest = z.infer<typeof SetPreviewViewportRequestSchema>;
+
 // ─────────────────────────────────────────────────────────────────────────────
 // Override APIs
 // ─────────────────────────────────────────────────────────────────────────────
