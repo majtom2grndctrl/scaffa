@@ -15,6 +15,7 @@
 
 - **UI visual language / theme tokens** → `docs/design/visual-language.md`, `docs/design/colors.md`
 - **Add/normalize UI components (shadcn)** → `.claude/skills/add-shadcn-component/SKILL.md`, `docs/design/colors.md`
+- **Engineering conventions / code style** → `docs/scaffa_engineering_conventions.md`, `docs/scaffa_development_guide.md`
 - **Inspector behavior & editing semantics** → `docs/scaffa_inspector_ux_semantics.md`, `docs/scaffa_component_registry_schema.md`, `docs/scaffa_override_model.md`
 - **Override model (data + persistence)** → `docs/scaffa_override_model.md`, `docs/scaffa_preview_session_protocol.md`
 - **Save to disk (validation + promotion)** → `docs/scaffa_save_to_disk_protocol.md`, `docs/scaffa_override_model.md`, `docs/scaffa_inspector_ux_semantics.md`
@@ -47,6 +48,7 @@
 
 **Implementation guides (v0):**
 - Extension authoring: [Scaffa Extension Authoring Guide](./scaffa_extension_authoring_guide.md)
+- Engineering conventions: [Scaffa Engineering Conventions](./scaffa_engineering_conventions.md)
 - Runtime adapter integration: [Scaffa Runtime Adapter Integration Guide](./scaffa_runtime_adapter_integration_guide.md)
 - Development setup + pitfalls: [Scaffa Development Guide](./scaffa_development_guide.md)
 
@@ -384,6 +386,7 @@ State domains:
 
 - Prefer code that is clear and understandable over clever code.
 - Prefer accessible markup with semantic HTML.
+- Follow: [Scaffa Engineering Conventions](./scaffa_engineering_conventions.md)
 
 ---
 

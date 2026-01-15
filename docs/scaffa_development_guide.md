@@ -7,6 +7,7 @@
 Related:
 - [Architecture Plan](./index.md)
 - [IPC Boundaries & Sequences](./scaffa_ipc_boundaries_and_sequences.md)
+- [Scaffa Engineering Conventions](./scaffa_engineering_conventions.md)
 
 ---
 
