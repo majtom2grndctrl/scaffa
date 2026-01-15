@@ -70,7 +70,7 @@ export const AppShell = () => {
   }, [currentWorkspace, navigate, pathname]);
 
   return (
-    <div className="min-h-screen bg-surface-app text-fg">
+    <div className="flex h-screen flex-col bg-surface-app text-fg">
       <header className="border-b border-subtle px-6 py-4">
         <div className="flex flex-wrap items-center justify-between gap-4">
           <div>
@@ -89,7 +89,7 @@ export const AppShell = () => {
         </div>
       </header>
       {currentWorkspace ? <ConfigHealthBanner /> : null}
-      <main className="px-6 py-6">
+      <main className="flex-1 overflow-hidden">
         <Outlet />
       </main>
       {showDevtools ? <ReactQueryDevtools initialIsOpen={false} /> : null}

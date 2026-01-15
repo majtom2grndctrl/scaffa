@@ -65,7 +65,7 @@ export const Launcher = () => {
   };
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 p-6">
       {error ? (
         <div className="rounded-lg border border-danger bg-danger-subtle px-4 py-3">
           <div className="flex flex-wrap items-start justify-between gap-3">
