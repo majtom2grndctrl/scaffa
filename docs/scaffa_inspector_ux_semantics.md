@@ -25,7 +25,7 @@ Related:
 The Inspector operates on a **selected instance** in the preview (not a component type definition).
 
 Selection in v0 is explicit so the preview remains a high-fidelity runtime:
-- Default: the preview remains interactable; hold <kbd>Alt/Option</kbd> and click-to-inspect/select in the Editor View canvas (that click is consumed).
+- Default: click-to-select in the Editor View canvas (app interaction is suppressed in the editor session).
 - <kbd>Esc</kbd> clears selection when something is selected.
 
 For each prop on that instance, the Inspector answers:

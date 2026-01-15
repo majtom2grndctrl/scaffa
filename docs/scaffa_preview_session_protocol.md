@@ -39,11 +39,11 @@ In v0, preview targets are treated as external runtimes (typically an HTTP serve
 
 In v0, Scaffa focuses on **Editor View**:
 
-- **Editor View**: embedded in the center Workbench workspace. The runtime remains interactable, and inspection uses an explicit gesture:
-  - **Alt/Option + hover** highlights what would be selected
-  - **Alt/Option + click** selects (and is consumed so app handlers don’t fire for that click)
+- **Editor View**: embedded in the center Workbench workspace. It is an editor canvas:
+  - clicks are **consumed for selection** (click-to-select by default)
+  - app interaction does not fire in the editor session
 
-**Preview Mode** (a distinct mode/session policy with interact-by-default *and* different inspection affordances) is deferred until after v0 “save to disk” workflows are established.
+**Preview Mode** (a distinct mode/session policy with interact-by-default) is deferred until after v0 “save to disk” workflows are established. In Preview Mode, inspection is modifier-gated (e.g. <kbd>Alt/Option</kbd>+Click).
 
 ---
 
@@ -158,12 +158,12 @@ This guarantees:
 
 ## 5. Selection Flow (Pick-to-Select)
 
-### 5.0 Interaction Model (v0): Editor View Inspect Gesture
+### 5.0 Interaction Model (v0): Editor View Click-to-Select
 
-In v0, the embedded runtime is an editor surface with an explicit inspection gesture:
+In v0, the embedded runtime is an editor canvas:
 
-- **Alt/Option + hover** highlights the nearest resolvable instance under the cursor.
-- **Alt/Option + click** selects the nearest resolvable instance, and MUST NOT trigger app interaction for that click.
+- Any click selects the nearest resolvable instance.
+- Clicks MUST NOT trigger app interaction (no navigation, no button handlers) in the editor session.
 - <kbd>Esc</kbd> clears selection when something is selected.
 
 Recommended affordances:
@@ -172,25 +172,26 @@ Recommended affordances:
 
 #### 5.0.3 Input Policy Details (v0)
 
-Pass-through by default:
-- Scrolling/wheel, dragging, text selection, focus, typing, keyboard shortcuts, and context menus are all owned by the app runtime by default.
+Suppressed by default:
+- Pointer interaction is consumed for selection (click-to-select).
+- App interaction should not occur (no click handlers, no navigation).
 
 Intercepted by Scaffa (runtime adapter):
-- <kbd>Alt/Option</kbd>+Click is consumed for selection (prevent default + stop propagation).
-- <kbd>Alt/Option</kbd>+Hover may be used for candidate highlighting (no need to prevent default).
+- Click is consumed for selection (prevent default + stop propagation).
+- Hover highlighting is optional (no need to prevent default).
 - <kbd>Esc</kbd> clears selection only when something is currently selected.
 
 #### 5.0.4 Navigation Policy (v0)
 
-- Navigation driven by normal app interaction is allowed (since Scaffa does not consume clicks by default).
-- The inspect click (<kbd>Alt/Option</kbd>+Click) MUST NOT navigate.
+- Navigation driven by normal app interaction is not applicable in Editor View (clicks are consumed).
+- Editor View clicks MUST NOT navigate.
 - New-window behavior (`window.open`, target="_blank") should be denied or redirected to the system browser (host-owned policy), never spawned as a new Electron window by the guest runtime.
 
 #### 5.0.1 Discoverability Hint
 
 When a preview session becomes ready, Scaffa displays a **non-intrusive discoverability hint** explaining the inspect controls:
 
-- **Content:** "Alt/Option + Click to inspect" and "Esc clears selection"
+- **Content:** "Click to inspect" and "Esc clears selection"
 - **Display duration:** ~3-4 seconds with fade animation
 - **Position:** Upper-left of Workbench UI, near preview controls
 - **Ownership:** Hint is rendered by Scaffa UI (not injected into the guest app DOM)

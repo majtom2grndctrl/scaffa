@@ -22,8 +22,8 @@ In v0, the runtime adapter is responsible for three things inside the preview ru
 For React preview runtimes in this repo, those responsibilities are implemented by `packages/react-runtime-adapter`.
 
 Editor View interaction policy (v0):
-- Scaffa keeps the embedded runtime interactable by default.
-- Inspection uses an explicit gesture: <kbd>Alt/Option</kbd>+Click selects and is consumed (so app handlers don’t fire for that click).
+- Scaffa uses the embedded runtime as an editor canvas: click-to-select is the default.
+- Clicks are consumed for selection (app navigation/handlers should not fire in the editor session).
 
 ---
 

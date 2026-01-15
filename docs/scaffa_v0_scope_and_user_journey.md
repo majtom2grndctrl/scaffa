@@ -20,7 +20,7 @@ v0 is successful when a designer (within explicit guardrails) can:
 
 1. Launch Scaffa and open a workspace from the Launcher
 2. Start an **Editor View** session (embedded runtime in the Workbench)
-3. Select a UI instance via **Alt/Option+click-to-inspect** in Editor View
+3. Select a UI instance via click-to-select in Editor View
 4. Use the Inspector to edit approved props (draft overrides)
 5. **Save changes to the project** (writes working-tree code edits)
 6. Reset/clear draft overrides confidently
@@ -115,9 +115,9 @@ In addition to `docs/index.md` “Deferred” items, v0 explicitly excludes:
 - Runtime adapter handshakes and announces readiness.
 - Scaffa replays any persisted overrides relevant to this session target.
 
-### Step 3: Inspect and Select
+### Step 3: Click-to-Select
 
-- In **Editor View**, user holds <kbd>Alt/Option</kbd> and clicks a button/card in the embedded runtime to select it (that click is consumed for selection).
+- In **Editor View**, user clicks a button/card in the embedded runtime to select it (clicks are consumed for selection).
 - Runtime adapter resolves the click to `{ instanceId, componentTypeId }`.
 - Selection updates in the renderer (Inspector shows “Button” instance).
 
@@ -164,10 +164,10 @@ Use this checklist to validate the v0 “first user journey” end-to-end. This 
 ### Selection (Editor View)
 
 v0 interaction contract:
-- **Editor View:** app interaction is enabled by default; <kbd>Alt/Option</kbd>+Click selects and is consumed.
+- **Editor View:** click-to-select by default; clicks do not trigger app interaction in the editor session.
 - Clear selection: <kbd>Esc</kbd> clears the current selection (only when something is selected).
 
-- [ ] In Editor View, <kbd>Alt/Option</kbd>+Click a Button instance: Inspector activates and shows instance + props.
+- [ ] In Editor View, click a Button instance: Inspector activates and shows instance + props.
 
 ### Inspector semantics
 

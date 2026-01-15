@@ -7,7 +7,7 @@
 ## Agent TL;DR
 
 - Load when: implementing or modifying a **framework runtime adapter** (click-to-select, instance identity, apply/clear overrides).
-- Key invariants: `componentTypeId` is the **join key** across registry/graph/runtime/overrides; v0 selection uses an explicit inspect gesture (<kbd>Alt/Option</kbd>+Click) in Editor View.
+- Key invariants: `componentTypeId` is the **join key** across registry/graph/runtime/overrides; v0 selection is click-to-select in Editor View (Preview Mode is deferred).
 - Primary concerns: instance identity, selection events, override application, lifecycle hooks.
 - Also load: `docs/scaffa_runtime_adapter_integration_guide.md`, `docs/scaffa_preview_session_protocol.md`, `docs/scaffa_override_model.md`.
 
@@ -57,13 +57,12 @@ The adapter MUST emit selection events when the user clicks/taps in the preview:
 - adapter must follow Scaffa’s interaction policy for the session (Editor View vs Preview Mode)
 
 v0 standard:
-- Default to an explicit inspection gesture in the Editor View canvas:
-  - **Alt/Option+hover** highlights what would be selected.
-  - **Alt/Option+click** selects and is consumed (so app handlers don’t fire for that click).
+- Default to **click-to-select** in the Editor View canvas.
+- Consume clicks so app navigation/handlers do not fire in the editor session.
 
 Deferred (post-v0):
 - Preview Mode as a separate interact-by-default session.
-- A dedicated “click-to-select by default” editor mode (full interaction suppression) is deferred.
+- In Preview Mode, selection should be gated behind an explicit inspect gesture (e.g. <kbd>Alt/Option</kbd>+Click).
 
 ### 2.3 Override Application
 
@@ -227,8 +226,8 @@ A React adapter can implement this contract by combining:
 2. **Click-to-select**  
    - Capture pointer events at the document root.
    - Walk up the DOM to find the nearest `data-scaffa-instance-id`.
-   - On inspect gesture, emit `runtime.selectionChanged` with `{ sessionId, instanceId, componentTypeId }`.
-   - Prevent default only for the inspect click (so normal app interaction remains possible).
+   - Emit `runtime.selectionChanged` with `{ sessionId, instanceId, componentTypeId }`.
+   - Prevent default for editor clicks (so app interaction remains suppressed in Editor View).
 
 3. **Applying overrides**  
    - Maintain an override map keyed by `instanceId`.

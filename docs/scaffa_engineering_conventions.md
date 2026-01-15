@@ -108,7 +108,8 @@ Keep them in `src/shared/` and re-export through `src/shared/index.ts` when appr
 - Never allow guest content to spawn new Electron windows.
 - Use `setWindowOpenHandler` (or equivalent) to **deny** or **redirect to system browser**.
 - Decide navigation policy explicitly:
-  - allow in-app navigation by default, but never for the inspect gesture click
+  - in Editor View, clicks are consumed (so app interaction doesn’t navigate)
+  - in Preview Mode (deferred), allow in-app navigation; gate inspect behind a modifier gesture
   - optionally restrict cross-origin navigation (future hardening)
 
 ---
@@ -146,4 +147,3 @@ Keep them in `src/shared/` and re-export through `src/shared/index.ts` when appr
 - Log actionable failures once at the boundary; avoid spamming logs in hot paths.
 - Prefer structured errors for user-facing failures (code + message + details).
 - Make “happy path” easy to follow in code; keep failure branches explicit.
-

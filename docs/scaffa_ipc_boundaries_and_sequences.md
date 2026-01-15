@@ -57,9 +57,9 @@ sequenceDiagram
 
 ---
 
-## 3. Selection Flow (Inspect Gesture → Inspector)
+## 3. Selection Flow (Click-to-Select → Inspector)
 
-See: `docs/scaffa_preview_session_protocol.md` for the v0 inspect gesture (<kbd>Alt/Option</kbd>+Click).
+See: `docs/scaffa_preview_session_protocol.md` for the v0 Editor View interaction contract (click-to-select).
 
 ```mermaid
 sequenceDiagram
