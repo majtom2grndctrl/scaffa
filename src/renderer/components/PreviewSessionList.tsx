@@ -12,10 +12,13 @@ export const PreviewSessionList = () => {
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [showHint, setShowHint] = useState(false);
 
-  // Show hint when first session becomes ready
+  // Show hint when first preview session (non-app) becomes ready
+  // For app sessions (Editor View), normal clicks inspect - no hint needed
   useEffect(() => {
-    const hasReadySession = sessions.some((s) => s.state === 'ready');
-    if (hasReadySession && !showHint) {
+    const hasReadyPreviewSession = sessions.some(
+      (s) => s.state === 'ready' && s.type !== 'app'
+    );
+    if (hasReadyPreviewSession && !showHint) {
       setShowHint(true);
     }
   }, [sessions, showHint]);
