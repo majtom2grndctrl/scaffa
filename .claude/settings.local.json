@@ -23,7 +23,8 @@
       "Bash(pnpm dev:*)",
       "Bash(bd dep add:*)",
       "Skill(implement-ticket)",
-      "Skill(add-shadcn-component)"
+      "Skill(add-shadcn-component)",
+      "Bash(pnpm run build:*)"
     ]
   }
 }

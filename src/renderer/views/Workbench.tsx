@@ -43,8 +43,9 @@ export const Workbench = () => {
   };
 
   return (
-    <div className="flex h-full flex-col gap-4">
-      <div className="flex flex-wrap items-center gap-3">
+    <div className="flex h-full flex-col bg-surface-app">
+      {/* Top toolbar */}
+      <div className="flex flex-wrap items-center gap-3 border-b border-default bg-surface-panel p-3">
         <Button
           type="button"
           onClick={handleSave}
@@ -67,16 +68,31 @@ export const Workbench = () => {
           <span className="text-xs text-fg-muted">No overrides to save.</span>
         ) : null}
       </div>
-      <div className="grid flex-1 gap-6 lg:grid-cols-[2fr_1fr]">
-        <section className="flex flex-col gap-6">
-          <EditorViewport />
-          <RoutesPanel />
-          <ProjectGraphTable />
-          <PreviewSessionList />
-        </section>
-        <section>
-          <InspectorPanel />
-        </section>
+
+      {/* Docked IDE layout */}
+      <div className="flex flex-1 overflow-hidden">
+        {/* Left sidebar: project navigation */}
+        <aside className="flex w-64 flex-col border-r border-default bg-surface-panel">
+          <div className="flex flex-col gap-6 overflow-y-auto p-4">
+            <RoutesPanel />
+            <ProjectGraphTable />
+            <PreviewSessionList />
+          </div>
+        </aside>
+
+        {/* Center workspace: primary editing surface */}
+        <main className="flex flex-1 flex-col bg-surface-app">
+          <div className="h-full p-4">
+            <EditorViewport />
+          </div>
+        </main>
+
+        {/* Right sidebar: inspectors + tools */}
+        <aside className="flex w-80 flex-col border-l border-default bg-surface-panel">
+          <div className="h-full overflow-y-auto p-4">
+            <InspectorPanel />
+          </div>
+        </aside>
       </div>
     </div>
   );
