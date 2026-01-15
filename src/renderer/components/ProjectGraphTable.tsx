@@ -84,11 +84,9 @@ export const ProjectGraphTable = () => {
   });
 
   return (
-    <div className="rounded-lg border border-default bg-surface-panel p-4">
+    <div className="p-4">
       <div className="flex items-center justify-between">
-        <h2 className="text-sm font-semibold uppercase tracking-wide text-fg-muted">
-          Project Graph Snapshot
-        </h2>
+        <h2 className="text-sm font-semibold text-fg">Project Graph Snapshot</h2>
         {snapshot && (
           <span className="text-xs text-fg-muted">
             Revision {snapshot.revision} · {snapshot.nodes.length} nodes ·{' '}
@@ -98,15 +96,15 @@ export const ProjectGraphTable = () => {
       </div>
 
       {isLoading ? (
-        <div className="mt-4 py-8 text-center text-sm text-fg-muted">
+        <div className="mt-4 py-8 text-center text-xs text-fg-muted">
           Loading graph snapshot...
         </div>
       ) : !snapshot || snapshot.nodes.length === 0 ? (
-        <div className="mt-4 py-8 text-center text-sm text-fg-muted">
+        <div className="mt-4 py-8 text-center text-xs text-fg-muted">
           No graph data available. Waiting for producers to emit patches...
         </div>
       ) : (
-        <table className="mt-4 w-full text-left text-sm">
+        <table className="mt-4 w-full text-left text-xs">
           <thead className="border-b border-subtle text-fg-muted">
             {table.getHeaderGroups().map((headerGroup) => (
               <tr key={headerGroup.id}>

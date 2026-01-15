@@ -50,11 +50,11 @@ export const PreviewSessionList = () => {
   const getStatusInfo = (state: string) => {
     switch (state) {
       case 'creating':
-        return { label: 'Starting', color: 'text-yellow-500' };
+        return { label: 'Starting', color: 'text-warning' };
       case 'ready':
-        return { label: 'Ready', color: 'text-green-500' };
+        return { label: 'Ready', color: 'text-success' };
       case 'error':
-        return { label: 'Error', color: 'text-red-500' };
+        return { label: 'Error', color: 'text-danger' };
       case 'stopped':
         return { label: 'Stopped', color: 'text-fg-subtle' };
       default:
@@ -65,26 +65,24 @@ export const PreviewSessionList = () => {
   return (
     <>
       <PreviewHint show={showHint} onComplete={() => setShowHint(false)} />
-      <div className="rounded-lg border border-default bg-surface-panel p-4">
-        <div className="flex items-center justify-between">
-          <h2 className="text-sm font-semibold uppercase tracking-wide text-fg-muted">
-            Preview Sessions
-          </h2>
+      <div className="p-4">
+        <div className="mb-3 flex items-center justify-between">
+          <h2 className="text-sm font-semibold text-fg">Preview Sessions</h2>
           <button
             onClick={() => setIsDialogOpen(true)}
-            className="rounded-md border border-accent bg-accent px-3 py-1 text-xs font-medium text-white hover:bg-accent/90"
+            className="px-3 py-1 text-xs font-medium text-fg hover:bg-hover"
           >
             Start Session
           </button>
         </div>
         <div
           ref={parentRef}
-          className="mt-4 h-56 overflow-auto rounded-md border border-subtle bg-surface-inset"
+          className="h-56 overflow-auto border-t border-subtle bg-surface-inset"
         >
           {sessions.length === 0 ? (
             <div className="flex h-full items-center justify-center p-4 text-center">
               <div>
-                <p className="text-sm text-fg-subtle">No active sessions</p>
+                <p className="text-xs text-fg-subtle">No active sessions</p>
                 <p className="mt-1 text-xs text-fg-subtle">
                   Click "Start Session" to begin
                 </p>
@@ -104,7 +102,7 @@ export const PreviewSessionList = () => {
                 return (
                   <div
                     key={session.sessionId}
-                    className="flex items-center justify-between border-b border-subtle px-3 text-sm"
+                    className="flex items-center justify-between border-b border-subtle px-3 text-xs"
                     style={{
                       position: 'absolute',
                       top: 0,
@@ -118,7 +116,7 @@ export const PreviewSessionList = () => {
                       <span className="text-fg">{session.type}</span>
                       {session.error && (
                         <span
-                          className="text-xs text-red-500"
+                          className="text-xs text-danger"
                           title={session.error}
                         >
                           ({session.error})
@@ -126,15 +124,13 @@ export const PreviewSessionList = () => {
                       )}
                     </div>
                     <div className="flex items-center gap-2">
-                      <span
-                        className={`text-xs uppercase tracking-wide ${statusInfo.color}`}
-                      >
+                      <span className={`text-xs font-medium ${statusInfo.color}`}>
                         {statusInfo.label}
                       </span>
                       {session.state === 'ready' && (
                         <button
                           onClick={() => handleStopSession(session.sessionId)}
-                          className="rounded px-2 py-0.5 text-xs text-fg-subtle hover:bg-surface-2 hover:text-fg"
+                          className="px-2 py-0.5 text-xs text-fg-subtle hover:bg-hover hover:text-fg"
                           title="Stop session"
                         >
                           Stop

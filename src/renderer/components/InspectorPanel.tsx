@@ -98,12 +98,10 @@ export const InspectorPanel = () => {
   // No selection state
   if (!selectedInstance) {
     return (
-      <div className="rounded-lg border border-default bg-surface-panel p-4">
-        <h2 className="text-sm font-semibold uppercase tracking-wide text-fg-muted">
-          Inspector
-        </h2>
+      <div className="p-4">
+        <h2 className="mb-3 text-sm font-semibold text-fg">Inspector</h2>
         <div className="mt-4">
-          <p className="text-sm text-fg-subtle">No instance selected</p>
+          <p className="text-xs text-fg-subtle">No instance selected</p>
           <p className="mt-2 text-xs text-fg-subtle">
             Hold Alt/Option and click a component in the preview to inspect and edit its properties.
           </p>
@@ -132,14 +130,12 @@ export const InspectorPanel = () => {
   };
 
   return (
-    <div className="rounded-lg border border-default bg-surface-panel p-4">
-      <h2 className="text-sm font-semibold uppercase tracking-wide text-fg-muted">
-        Inspector
-      </h2>
+    <div className="p-4">
+      <h2 className="mb-3 text-sm font-semibold text-fg">Inspector</h2>
 
       {/* Orphaned Overrides Warning */}
       {orphanedOverrides.length > 0 && (
-        <div className="mt-4 rounded border border-warning bg-warning-subtle px-3 py-2">
+        <div className="mt-4 border border-warning bg-warning-subtle px-3 py-2">
           <div className="flex items-start justify-between">
             <div>
               <p className="text-xs font-medium text-warning">
@@ -151,7 +147,7 @@ export const InspectorPanel = () => {
             </div>
             <button
               onClick={handleClearOrphanedOverrides}
-              className="text-[10px] text-warning hover:text-warning-hover underline"
+              className="text-[10px] text-warning underline hover:text-warning-strong"
             >
               Clear all
             </button>
@@ -159,7 +155,7 @@ export const InspectorPanel = () => {
           {/* List orphaned overrides */}
           <ul className="mt-2 space-y-1">
             {orphanedOverrides.map((override, index) => (
-              <li key={index} className="text-xs text-fg-muted font-mono">
+              <li key={index} className="font-mono text-xs text-fg-muted">
                 {override.instanceId} → {override.path}
               </li>
             ))}
@@ -168,28 +164,24 @@ export const InspectorPanel = () => {
       )}
 
       {/* Instance Descriptor Section */}
-      <div className="mt-4 space-y-4 text-sm">
+      <div className="mt-4 space-y-3 text-xs">
         {/* Component Type */}
         <div>
-          <p className="text-xs uppercase tracking-wide text-fg-subtle">
-            Component Type
-          </p>
-          <p className="text-fg font-medium">
+          <p className="text-xs font-medium text-fg-subtle">Component Type</p>
+          <p className="font-medium text-fg">
             {isRegistryLoading
               ? 'Loading...'
               : registryEntry?.displayName ?? selectedInstance.componentTypeId}
           </p>
-          <p className="mt-1 text-xs text-fg-muted font-mono">
+          <p className="mt-1 font-mono text-xs text-fg-muted">
             {selectedInstance.componentTypeId}
           </p>
         </div>
 
         {/* Instance ID */}
         <div>
-          <p className="text-xs uppercase tracking-wide text-fg-subtle">
-            Instance ID
-          </p>
-          <p className="text-fg font-mono text-xs">
+          <p className="text-xs font-medium text-fg-subtle">Instance ID</p>
+          <p className="font-mono text-xs text-fg">
             {selectedInstance.instanceId}
           </p>
         </div>
@@ -197,32 +189,26 @@ export const InspectorPanel = () => {
         {/* Display Name (if available) */}
         {selectedInstance.displayName && (
           <div>
-            <p className="text-xs uppercase tracking-wide text-fg-subtle">
-              Display Name
-            </p>
+            <p className="text-xs font-medium text-fg-subtle">Display Name</p>
             <p className="text-fg">{selectedInstance.displayName}</p>
           </div>
         )}
 
         {/* Session ID */}
         <div>
-          <p className="text-xs uppercase tracking-wide text-fg-subtle">
-            Session
-          </p>
-          <p className="text-fg font-mono text-xs">
+          <p className="text-xs font-medium text-fg-subtle">Session</p>
+          <p className="font-mono text-xs text-fg">
             {selectedInstance.sessionId}
           </p>
         </div>
 
         {/* Override State */}
         <div>
-          <p className="text-xs uppercase tracking-wide text-fg-subtle">
-            Override State
-          </p>
+          <p className="text-xs font-medium text-fg-subtle">Override State</p>
           <div className="mt-1 flex items-center gap-2">
             {instanceOverrideCount > 0 ? (
               <>
-                <span className="inline-flex items-center rounded-full bg-accent-subtle px-2 py-0.5 text-xs font-medium text-accent">
+                <span className="inline-flex items-center bg-selected px-2 py-0.5 text-xs font-medium text-selected-fg">
                   {instanceOverrideCount} override{instanceOverrideCount !== 1 ? 's' : ''}
                 </span>
               </>
@@ -234,7 +220,7 @@ export const InspectorPanel = () => {
 
         {/* Registry Status */}
         {!isRegistryLoading && !registryEntry && (
-          <div className="rounded border border-warning bg-warning-subtle px-3 py-2">
+          <div className="border border-warning bg-warning-subtle px-3 py-2">
             <p className="text-xs font-medium text-warning">
               Missing Registry Entry
             </p>
@@ -247,7 +233,7 @@ export const InspectorPanel = () => {
               instance metadata only.
             </p>
             <details className="mt-2">
-              <summary className="cursor-pointer text-xs text-warning hover:text-warning-hover">
+              <summary className="cursor-pointer text-xs text-warning hover:text-warning-strong">
                 Debugging hints
               </summary>
               <div className="mt-2 space-y-1 text-[10px] text-fg-muted">
@@ -276,15 +262,13 @@ export const InspectorPanel = () => {
         {/* Registry-driven prop list */}
         {registryEntry && propGroups.size > 0 && (
           <div className="border-t border-subtle pt-4">
-            <h3 className="text-xs font-semibold uppercase tracking-wide text-fg-muted mb-3">
-              Properties
-            </h3>
+            <h3 className="mb-3 text-xs font-semibold text-fg">Properties</h3>
 
             {Array.from(propGroups.entries()).map(([groupKey, props]) => (
               <div key={groupKey ?? 'ungrouped'} className="mb-4">
                 {/* Group header */}
                 {groupKey && (
-                  <h4 className="text-xs font-medium text-fg-subtle mb-2">
+                  <h4 className="mb-2 text-xs font-medium text-fg-subtle">
                     {groupKey}
                   </h4>
                 )}
@@ -398,14 +382,14 @@ const PropField = ({ propDef, instanceId, overrides }: PropFieldProps) => {
         <label className="text-xs font-medium text-fg">
           {displayLabel}
           {isOverridden && (
-            <span className="ml-2 inline-flex items-center rounded-full bg-accent-subtle px-1.5 py-0.5 text-[10px] font-medium text-accent">
+            <span className="ml-2 inline-flex items-center bg-selected px-1.5 py-0.5 text-[10px] font-medium text-selected-fg">
               overridden
             </span>
           )}
         </label>
 
         {/* Editability indicator */}
-        <span className="text-[10px] uppercase tracking-wide text-fg-subtle">
+        <span className="text-[10px] text-fg-subtle">
           {exposure.kind === 'editable' && 'Editable'}
           {exposure.kind === 'inspectOnly' && 'Read-only'}
           {exposure.kind === 'opaque' && 'Opaque'}
@@ -430,7 +414,7 @@ const PropField = ({ propDef, instanceId, overrides }: PropFieldProps) => {
           {isOverridden && (
             <button
               onClick={handleReset}
-              className="text-[10px] text-accent hover:text-accent-hover underline"
+              className="text-[10px] text-fg-muted underline hover:text-fg"
             >
               Reset to default
             </button>
@@ -439,7 +423,7 @@ const PropField = ({ propDef, instanceId, overrides }: PropFieldProps) => {
       )}
 
       {exposure.kind === 'inspectOnly' && (
-        <div className="rounded bg-surface-2 px-2 py-1.5 text-xs text-fg-muted">
+        <div className="bg-surface-card px-2 py-1.5 text-xs text-fg-muted">
           {/* Read-only value display */}
           {isOverridden && override ? (
             <span className="font-mono">{JSON.stringify(override.value)}</span>
@@ -447,20 +431,20 @@ const PropField = ({ propDef, instanceId, overrides }: PropFieldProps) => {
             <span className="italic">Value not available</span>
           )}
           {/* Escape hatch placeholder */}
-          <button className="ml-2 text-[10px] text-fg-subtle hover:text-fg underline">
+          <button className="ml-2 text-[10px] text-fg-subtle underline hover:text-fg">
             View source →
           </button>
         </div>
       )}
 
       {exposure.kind === 'opaque' && (
-        <div className="rounded border border-warning bg-warning-subtle px-2 py-1.5">
+        <div className="border border-warning bg-warning-subtle px-2 py-1.5">
           <p className="text-xs text-warning">
             Opaque value
             {exposure.reason && `: ${exposure.reason}`}
           </p>
           {/* Escape hatch */}
-          <button className="mt-1 text-[10px] text-fg-subtle hover:text-fg underline">
+          <button className="mt-1 text-[10px] text-fg-subtle underline hover:text-fg">
             View source →
           </button>
         </div>
