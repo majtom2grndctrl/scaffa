@@ -4,6 +4,7 @@ import type {
   WorkspaceOpenError,
   WorkspacePath,
 } from '../../shared/index.js';
+import { useSessionStore } from './sessionStore';
 
 interface WorkspaceState {
   currentWorkspace: WorkspaceInfo | null;
@@ -140,6 +141,10 @@ export const useWorkspaceStore = create<WorkspaceState>((set, get) => ({
   },
 
   openDemo: async () => {
+    useSessionStore.getState().setAutoStartTarget({
+      type: 'app',
+      launcherId: 'vite-launcher',
+    });
     await runWorkspaceOpen(async () => window.scaffa.workspace.openDemo({}), set, get);
   },
 
