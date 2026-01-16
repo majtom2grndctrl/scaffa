@@ -103,15 +103,15 @@ export class ExtensionHostManager {
     // Setup event handlers
     this.setupProcessHandlers();
 
-    // Wait for process to be ready
-    await this.waitForReady();
-
     // Send init message
     this.sendToExtHost({
       type: 'init',
       workspacePath: this.workspacePath,
       config: this.config!,
     });
+
+    // Wait for process to be ready
+    await this.waitForReady();
   }
 
   /**

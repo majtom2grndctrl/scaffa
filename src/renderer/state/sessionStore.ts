@@ -2,6 +2,7 @@ import { create } from 'zustand';
 import type {
   PreviewSessionId,
   PreviewSessionType,
+  PreviewSessionTarget,
   SessionReadyEvent,
   SessionErrorEvent,
   SessionStoppedEvent,
@@ -25,9 +26,19 @@ interface SessionStore {
   sessions: PreviewSession[];
 
   /**
+   * Pending session target to auto-start when Workbench loads.
+   */
+  autoStartTarget: PreviewSessionTarget | null;
+
+  /**
    * Add a new session (called when starting a session).
    */
   addSession: (sessionId: PreviewSessionId, type: PreviewSessionType) => void;
+
+  /**
+   * Set the target for auto-starting a session.
+   */
+  setAutoStartTarget: (target: PreviewSessionTarget | null) => void;
 
   /**
    * Mark a session as ready.
@@ -61,6 +72,7 @@ interface SessionStore {
 
 export const useSessionStore = create<SessionStore>((set, get) => ({
   sessions: [],
+  autoStartTarget: null,
 
   addSession: (sessionId, type) => {
     set((state) => ({
@@ -73,6 +85,10 @@ export const useSessionStore = create<SessionStore>((set, get) => ({
         },
       ],
     }));
+  },
+
+  setAutoStartTarget: (target) => {
+    set({ autoStartTarget: target });
   },
 
   markSessionReady: (event) => {
@@ -106,7 +122,7 @@ export const useSessionStore = create<SessionStore>((set, get) => ({
   },
 
   reset: () => {
-    set({ sessions: [] });
+    set({ sessions: [], autoStartTarget: null });
   },
 }));
 

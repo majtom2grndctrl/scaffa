@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { ChevronDown, ChevronRight } from 'lucide-react';
 import type { PreviewLauncherDescriptor } from '../../shared/index.js';
 
 interface StartPreviewDialogProps {
@@ -19,12 +20,13 @@ export const StartPreviewDialog = ({
   onClose,
   onStartSession,
 }: StartPreviewDialogProps) => {
-  const [mode, setMode] = useState<PreviewMode>('attached');
+  const [mode, setMode] = useState<PreviewMode>('managed');
   const [url, setUrl] = useState('http://localhost:5173');
   const [selectedLauncher, setSelectedLauncher] = useState<string>('');
   const [launchers, setLaunchers] = useState<PreviewLauncherDescriptor[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [showAdvanced, setShowAdvanced] = useState(false);
 
   // Load available launchers when dialog opens
   useEffect(() => {
@@ -116,48 +118,11 @@ export const StartPreviewDialog = ({
         <h2 className="text-lg font-semibold text-fg">Start Preview Session</h2>
 
         <form onSubmit={handleSubmit} className="mt-4 space-y-4">
-          {/* Mode Selection */}
-          <div>
-            <label className="mb-2 block text-sm font-medium text-fg-muted">
-              Preview Mode
-            </label>
-            <div className="flex gap-2">
-              <button
-                type="button"
-                onClick={() => setMode('attached')}
-                className={`flex-1 rounded-md border px-4 py-2 text-sm font-medium transition-colors ${
-                  mode === 'attached'
-                    ? 'border-accent bg-accent/10 text-accent'
-                    : 'border-subtle bg-surface-inset text-fg-subtle hover:border-default hover:text-fg'
-                }`}
-              >
-                Attached
-              </button>
-              <button
-                type="button"
-                onClick={() => setMode('managed')}
-                disabled={launchers.length === 0}
-                className={`flex-1 rounded-md border px-4 py-2 text-sm font-medium transition-colors disabled:cursor-not-allowed disabled:opacity-50 ${
-                  mode === 'managed'
-                    ? 'border-accent bg-accent/10 text-accent'
-                    : 'border-subtle bg-surface-inset text-fg-subtle hover:border-default hover:text-fg'
-                }`}
-              >
-                Managed
-              </button>
-            </div>
-            <p className="mt-1 text-xs text-fg-subtle">
-              {mode === 'attached'
-                ? 'Attached (view mode): Connect to an existing dev server you started manually'
-                : 'Managed (edit mode): Let Scaffa start and manage the dev server for you'}
-            </p>
-          </div>
-
-          {/* Attached Mode: URL Input */}
+          {/* Main Inputs based on Mode */}
           {mode === 'attached' && (
             <div>
               <label htmlFor="url" className="mb-2 block text-sm font-medium text-fg-muted">
-                Preview URL (Attached Mode)
+                Preview URL
               </label>
               <input
                 id="url"
@@ -174,7 +139,6 @@ export const StartPreviewDialog = ({
             </div>
           )}
 
-          {/* Managed Mode: Launcher Selection */}
           {mode === 'managed' && (
             <div>
               <label
@@ -212,6 +176,64 @@ export const StartPreviewDialog = ({
               )}
             </div>
           )}
+
+          {/* Advanced Options Toggle */}
+          <div>
+            <button
+              type="button"
+              onClick={() => setShowAdvanced(!showAdvanced)}
+              className="flex items-center gap-1 text-xs font-medium text-fg-muted hover:text-fg"
+            >
+              {showAdvanced ? (
+                <ChevronDown className="h-3 w-3" />
+              ) : (
+                <ChevronRight className="h-3 w-3" />
+              )}
+              Advanced Options
+            </button>
+
+            {/* Advanced Content */}
+            {showAdvanced && (
+              <div className="mt-2 space-y-4 rounded-md border border-subtle bg-surface-inset p-3">
+                {/* Mode Selection */}
+                <div>
+                  <label className="mb-2 block text-xs font-medium text-fg-muted">
+                    Preview Mode
+                  </label>
+                  <div className="flex gap-2">
+                    <button
+                      type="button"
+                      onClick={() => setMode('attached')}
+                      className={`flex-1 rounded-md border px-3 py-1.5 text-xs font-medium transition-colors ${
+                        mode === 'attached'
+                          ? 'border-accent bg-accent/10 text-accent'
+                          : 'border-subtle bg-surface-panel text-fg-subtle hover:border-default hover:text-fg'
+                      }`}
+                    >
+                      Attached
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => setMode('managed')}
+                      disabled={launchers.length === 0}
+                      className={`flex-1 rounded-md border px-3 py-1.5 text-xs font-medium transition-colors disabled:cursor-not-allowed disabled:opacity-50 ${
+                        mode === 'managed'
+                          ? 'border-accent bg-accent/10 text-accent'
+                          : 'border-subtle bg-surface-panel text-fg-subtle hover:border-default hover:text-fg'
+                      }`}
+                    >
+                      Managed
+                    </button>
+                  </div>
+                  <p className="mt-1 text-[10px] text-fg-subtle">
+                    {mode === 'attached'
+                      ? 'Connect to an existing dev server you started manually.'
+                      : 'Let Scaffa start and manage the dev server for you.'}
+                  </p>
+                </div>
+              </div>
+            )}
+          </div>
 
           {/* Error Message */}
           {error && (

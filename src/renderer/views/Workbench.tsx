@@ -1,10 +1,34 @@
+import { useEffect } from 'react';
 import { ProjectGraphTable } from '../components/ProjectGraphTable';
 import { PreviewSessionList } from '../components/PreviewSessionList';
 import { InspectorPanel } from '../components/InspectorPanel';
 import { RoutesPanel } from '../components/RoutesPanel';
 import { EditorViewport } from '../components/EditorViewport';
+import { useSessionStore } from '../state/sessionStore';
 
 export const Workbench = () => {
+  const { autoStartTarget, setAutoStartTarget } = useSessionStore((state) => ({
+    autoStartTarget: state.autoStartTarget,
+    setAutoStartTarget: state.setAutoStartTarget,
+  }));
+
+  useEffect(() => {
+    // If there's a pending auto-start target (from the Launcher), start the session
+    if (autoStartTarget) {
+      console.log('[Workbench] Auto-starting session for target:', autoStartTarget);
+      
+      window.scaffa.preview
+        .startSession({ target: autoStartTarget })
+        .catch((err) => {
+          console.error('[Workbench] Failed to auto-start session:', err);
+        })
+        .finally(() => {
+          // Clear the target so we don't try again on re-renders
+          setAutoStartTarget(null);
+        });
+    }
+  }, [autoStartTarget, setAutoStartTarget]);
+
   return (
     <div className="flex h-full overflow-hidden bg-surface-app">
       {/* Left sidebar: project navigation */}

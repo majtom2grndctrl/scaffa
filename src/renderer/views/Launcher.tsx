@@ -1,5 +1,8 @@
 import { useMemo, useState } from 'react';
 import { useWorkspaceStore } from '../state/workspaceStore';
+import { useSessionStore } from '../state/sessionStore';
+import { StartPreviewDialog } from '../components/StartPreviewDialog';
+import type { WorkspaceInfo } from '../../shared/index.js';
 
 export const Launcher = () => {
   const {
@@ -7,7 +10,9 @@ export const Launcher = () => {
     error,
     isLoading,
     clearError,
-    selectWorkspace,
+    pickWorkspace,
+    activateWorkspace,
+    cancelPick,
     openDemo,
     openRecent,
     removeRecent,
@@ -16,13 +21,21 @@ export const Launcher = () => {
     error: state.error,
     isLoading: state.isLoading,
     clearError: state.clearError,
-    selectWorkspace: state.selectWorkspace,
+    pickWorkspace: state.pickWorkspace,
+    activateWorkspace: state.activateWorkspace,
+    cancelPick: state.cancelPick,
     openDemo: state.openDemo,
     openRecent: state.openRecent,
     removeRecent: state.removeRecent,
   }));
 
+  const setAutoStartTarget = useSessionStore((state) => state.setAutoStartTarget);
+
   const [isBusy, setIsBusy] = useState(false);
+  
+  // State for the configuration flow
+  const [isConfiguringSession, setIsConfiguringSession] = useState(false);
+
   const showDemo = import.meta.env.DEV;
 
   const errorPath = useMemo(() => {
@@ -64,8 +77,50 @@ export const Launcher = () => {
     }
   };
 
+  // Intercept Open Workspace
+  const handleOpenWorkspace = async () => {
+    setIsBusy(true);
+    try {
+      const workspace = await pickWorkspace();
+      if (workspace) {
+        setIsConfiguringSession(true);
+      }
+    } finally {
+      setIsBusy(false);
+    }
+  };
+
+  // Handle Session Configuration Confirmation
+  const handleStartSession = async (target: {
+    type: 'app';
+    url?: string;
+    launcherId?: string;
+    launcherOptions?: Record<string, unknown>;
+  }) => {
+    // 1. Set the auto-start target for the workbench
+    setAutoStartTarget(target);
+    
+    // 2. Activate the workspace (promotes staging -> current -> transitions route)
+    activateWorkspace();
+    
+    // Reset local state
+    setIsConfiguringSession(false);
+  };
+
+  const handleCancelSession = () => {
+    cancelPick();
+    setIsConfiguringSession(false);
+  };
+
   return (
     <div className="space-y-6 p-6">
+      {/* Session Configuration Dialog */}
+      <StartPreviewDialog
+        isOpen={isConfiguringSession}
+        onClose={handleCancelSession}
+        onStartSession={handleStartSession}
+      />
+
       {error ? (
         <div className="rounded-lg border border-danger bg-danger-subtle px-4 py-3">
           <div className="flex flex-wrap items-start justify-between gap-3">
@@ -121,7 +176,7 @@ export const Launcher = () => {
           <div className="mt-6 flex flex-wrap gap-3">
             <button
               type="button"
-              onClick={() => handleAction(selectWorkspace)}
+              onClick={handleOpenWorkspace}
               disabled={isBusy}
               className="rounded-md border border-default bg-surface-2 px-4 py-2 text-sm font-medium text-fg hover:border-strong hover:bg-hover disabled:cursor-not-allowed disabled:opacity-60"
             >
