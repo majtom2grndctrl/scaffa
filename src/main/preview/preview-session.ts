@@ -3,7 +3,7 @@
 // ─────────────────────────────────────────────────────────────────────────────
 // Manages a single preview session's WebContents, state, and runtime communication.
 
-import { BrowserView, BrowserWindow, WebContents } from 'electron';
+import { BrowserView, BrowserWindow, WebContents, shell } from 'electron';
 import type {
   PreviewSessionId,
   PreviewSessionTarget,
@@ -288,6 +288,50 @@ export class PreviewSession {
     webContents.on('render-process-gone', (_event, details) => {
       this.handleError(new Error(`Render process gone: ${details.reason}`));
     });
+
+    // ─────────────────────────────────────────────────────────────────────────
+    // Navigation Policy (v0)
+    // ─────────────────────────────────────────────────────────────────────────
+    // Prevent preview content from spawning new Electron windows or navigating
+    // to external origins. See: scaffa-0rp, docs/scaffa_preview_session_protocol.md
+
+    // Block window.open() and <a target="_blank"> from creating new Electron windows
+    webContents.setWindowOpenHandler((details) => {
+      const { url } = details;
+      console.log(`[PreviewSession] [Navigation Policy] window.open blocked: ${url}`);
+
+      // v0 policy: never create new Electron windows from preview content
+      // Future: In Preview Mode, open external URLs in system browser
+      if (this.isExternalUrl(url)) {
+        console.log(`[PreviewSession] [Navigation Policy] Opening external URL in system browser: ${url}`);
+        shell.openExternal(url).catch((error) => {
+          console.error(`[PreviewSession] [Navigation Policy] Failed to open external URL:`, error);
+        });
+      } else {
+        console.log(`[PreviewSession] [Navigation Policy] Same-origin window.open blocked (not navigating): ${url}`);
+      }
+
+      // Always deny window creation
+      return { action: 'deny' as const };
+    });
+
+    // Block top-frame navigation to external origins
+    webContents.on('will-navigate', (event, url) => {
+      // Allow same-origin navigation
+      if (!this.isExternalUrl(url)) {
+        console.log(`[PreviewSession] [Navigation Policy] Allowing same-origin navigation: ${url}`);
+        return;
+      }
+
+      // Block external navigation and open in system browser
+      console.log(`[PreviewSession] [Navigation Policy] Blocking external navigation: ${url}`);
+      event.preventDefault();
+
+      console.log(`[PreviewSession] [Navigation Policy] Opening external URL in system browser: ${url}`);
+      shell.openExternal(url).catch((error) => {
+        console.error(`[PreviewSession] [Navigation Policy] Failed to open external URL:`, error);
+      });
+    });
   }
 
   /**
@@ -358,6 +402,23 @@ export class PreviewSession {
         return this.target.harnessUrl;
       case 'variant':
         throw new Error('Variant sessions not supported in v0');
+    }
+  }
+
+  /**
+   * Check if a URL is external to the session's origin.
+   * Returns true if the URL has a different origin than the session target.
+   */
+  private isExternalUrl(url: string): boolean {
+    try {
+      const targetUrl = new URL(this.getTargetUrl());
+      const candidateUrl = new URL(url);
+
+      // Compare origin (protocol + host + port)
+      return targetUrl.origin !== candidateUrl.origin;
+    } catch {
+      // If URL parsing fails, treat as external for safety
+      return true;
     }
   }
 
