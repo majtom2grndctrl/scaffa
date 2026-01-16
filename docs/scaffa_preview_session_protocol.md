@@ -185,7 +185,8 @@ Intercepted by Scaffa (runtime adapter):
 
 - Navigation driven by normal app interaction is not applicable in Editor View (clicks are consumed).
 - Editor View clicks MUST NOT navigate.
-- New-window behavior (`window.open`, target="_blank") should be denied or redirected to the system browser (host-owned policy), never spawned as a new Electron window by the guest runtime.
+- New-window behavior (`window.open`, target="_blank") MUST NOT spawn a new Electron window.
+  - In Preview Mode (deferred), external links SHOULD open in the system default browser (host-owned policy).
 
 #### 5.0.1 Discoverability Hint
 
