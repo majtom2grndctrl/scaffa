@@ -113,10 +113,7 @@ You MUST follow these steps in order:
    # 2. Stage code changes
    git add <files>
 
-   # 3. Commit beads changes
-   bd sync
-
-   # 4. Commit code with descriptive message
+   # 3. Commit code with descriptive message
    git commit -m "feat: description
 
    Detailed explanation of changes.
@@ -125,13 +122,13 @@ You MUST follow these steps in order:
 
    Co-Authored-By: Claude Sonnet 4.5 <noreply@anthropic.com>"
 
-   # 5. Sync beads again (captures new changes)
+   # 4. Sync beads changes
    bd sync
 
-   # 6. Push to remote
+   # 5. Push to remote
    git push
 
-   # 7. Verify push succeeded
+   # 6. Verify push succeeded
    git status  # MUST show "up to date with origin"
    ```
 
@@ -176,7 +173,6 @@ Assistant: Completes landing protocol:
   ```bash
   git status
   git add src/extension-host/extension-context.ts
-  bd sync
   git commit -m "feat(extensions): type GraphProducer.initialize() as Promise<GraphSnapshot>"
   bd sync
   git push
