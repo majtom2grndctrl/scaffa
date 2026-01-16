@@ -118,6 +118,27 @@ export interface GraphAPI {
 // ─────────────────────────────────────────────────────────────────────────────
 
 /**
+ * Context provided to the launcher when starting a session.
+ * Contains project-level configuration from scaffa.config.js.
+ */
+export interface PreviewLauncherContext {
+  /**
+   * Path to the app entry point (e.g. "./src/App.tsx").
+   */
+  readonly projectEntry?: string;
+
+  /**
+   * List of style files to import (e.g. ["./src/index.css"]).
+   */
+  readonly projectStyles?: string[];
+
+  /**
+   * Environment variables or configuration.
+   */
+  readonly environment?: Record<string, unknown>;
+}
+
+/**
  * Preview launcher interface.
  * Modules implement this to provide toolchain-specific managed previews.
  */
@@ -130,9 +151,13 @@ export interface PreviewLauncher {
   /**
    * Start the preview runtime.
    * @param options - Launcher-specific options (e.g. port, env)
+   * @param context - Project-level context (entry, styles)
    * @returns Promise resolving to launch result (URL + optional PID)
    */
-  start(options: PreviewLauncherOptions): Promise<PreviewLaunchResult>;
+  start(
+    options: PreviewLauncherOptions,
+    context: PreviewLauncherContext
+  ): Promise<PreviewLaunchResult>;
 
   /**
    * Stop the preview runtime.

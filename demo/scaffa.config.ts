@@ -29,4 +29,8 @@ export default defineScaffaConfig({
       path: './extensions/vite-launcher/index.js',
     },
   ],
+  preview: {
+    entry: './app/src/App.tsx',
+    styles: ['./app/src/index.css'],
+  },
 });

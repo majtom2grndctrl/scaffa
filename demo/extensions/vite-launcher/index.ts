@@ -4,10 +4,12 @@
 // Launches and manages the Vite dev server for the demo app.
 
 import { spawn, type ChildProcess } from 'node:child_process';
-import { join } from 'node:path';
+import { join, dirname, resolve } from 'node:path';
+import { fileURLToPath } from 'node:url';
 import type {
   ExtensionContext,
   PreviewLauncher,
+  PreviewLauncherContext,
   Disposable,
 } from '../../../src/extension-host/extension-context.js';
 import type {
@@ -31,36 +33,59 @@ class ViteLauncher implements PreviewLauncher {
   private process: ChildProcess | null = null;
   private logListeners: Array<(entry: PreviewLogEntry) => void> = [];
   private appPath: string;
+  private workspaceRoot: string | null;
 
   constructor(workspaceRoot: string | null) {
+    this.workspaceRoot = workspaceRoot;
     // Resolve demo/app path relative to workspace root
     this.appPath = workspaceRoot
       ? join(workspaceRoot, 'app')
       : join(process.cwd(), 'demo', 'app');
   }
 
-  async start(options: PreviewLauncherOptions): Promise<PreviewLaunchResult> {
+  async start(
+    options: PreviewLauncherOptions,
+    context: PreviewLauncherContext
+  ): Promise<PreviewLaunchResult> {
     if (this.process) {
       throw new Error('Launcher already running');
     }
 
     console.log('[ViteLauncher] Starting Vite dev server at:', this.appPath);
 
-    // Spawn pnpm dev:local in demo/app directory
-    return new Promise((resolve, reject) => {
+    const runnerPath = join(
+      dirname(fileURLToPath(import.meta.url)),
+      'runner.js'
+    );
+
+    // Prepare absolute paths for runner
+    const entry = context.projectEntry
+      ? (this.workspaceRoot ? resolve(this.workspaceRoot, context.projectEntry) : resolve(context.projectEntry))
+      : undefined;
+      
+    const styles = context.projectStyles?.map(s => 
+      this.workspaceRoot ? resolve(this.workspaceRoot, s) : resolve(s)
+    );
+
+    return new Promise((resolvePromise, reject) => {
       const timeout = setTimeout(() => {
         this.cleanup();
         reject(new Error('Vite dev server start timeout (30s)'));
       }, 30000);
 
       try {
-        this.process = spawn('pnpm', ['dev:local'], {
+        const env = {
+          ...process.env,
+          FORCE_COLOR: '0',
+          SCAFFA_ROOT: this.appPath, // Runner runs in app dir
+          SCAFFA_ENTRY: entry || '',
+          SCAFFA_STYLES: JSON.stringify(styles || []),
+        };
+
+        this.process = spawn('node', [runnerPath], {
           cwd: this.appPath,
           stdio: ['ignore', 'pipe', 'pipe'],
-          env: {
-            ...process.env,
-            FORCE_COLOR: '0', // Disable color codes for easier parsing
-          },
+          env,
         });
 
         let urlResolved = false;

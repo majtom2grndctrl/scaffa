@@ -41,8 +41,26 @@ export type PreviewDecorator = z.infer<typeof PreviewDecoratorSchema>;
  * Preview configuration.
  */
 export const PreviewConfigSchema = z.object({
+  /**
+   * Harness Model: module specifier for the preview root component.
+   * Example: "./src/App.tsx"
+   */
+  entry: z.string().optional(),
+  /**
+   * Harness Model: list of style module specifiers to import before mounting.
+   * Example: ["./src/index.css"]
+   */
+  styles: z.array(z.string()).optional(),
   decorators: z.array(PreviewDecoratorSchema).optional(),
   environment: z.record(z.unknown()).optional(),
+  /**
+   * Optional default launcher preference for `app` sessions.
+   * The Preview Session Target still carries the authoritative `launcherId`.
+   */
+  launcher: z.object({
+    id: z.string(),
+    options: z.record(z.unknown()).optional(),
+  }).optional(),
 });
 
 export type PreviewConfig = z.infer<typeof PreviewConfigSchema>;

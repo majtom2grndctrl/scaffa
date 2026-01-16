@@ -354,7 +354,14 @@ export class ModuleLoader {
 
     try {
       console.log(`[ModuleLoader] Starting preview launcher: ${launcherId}`);
-      const result = await launcher.start(options);
+      
+      const context = {
+        projectEntry: this.config.preview?.entry,
+        projectStyles: this.config.preview?.styles,
+        environment: this.config.preview?.environment,
+      };
+
+      const result = await launcher.start(options, context);
 
       this.sendToMain({
         type: 'preview-launcher-started',
