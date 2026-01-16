@@ -46,8 +46,12 @@ const launchExtensionHost = async () => {
 };
 
 app.whenReady().then(async () => {
+  // Check for CLI flags to skip restoring the last workspace
+  const skipRestore =
+    process.argv.includes('--no-restore') || process.argv.includes('--launcher');
+
   // Load persisted workspace state (also loads config)
-  await workspaceManager.load();
+  await workspaceManager.load({ skipRestore });
 
   // Register all IPC handlers before creating windows
   registerAllIpcHandlers();

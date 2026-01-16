@@ -29,6 +29,15 @@ pnpm build:electron
 pnpm build:renderer
 ```
 
+### Skipping Auto-Restore
+
+By default, Scaffa restores the last opened project on startup. For development or testing the launcher view, you can skip this behavior:
+
+```bash
+# Skip restoring the last project (show launcher)
+pnpm dev -- --no-restore
+```
+
 ### UI Components (shadcn/ui)
 
 Use shadcn/ui (BaseUI variant) as the default source of renderer components.

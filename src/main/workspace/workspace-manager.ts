@@ -31,11 +31,18 @@ class WorkspaceManager {
   /**
    * Load persisted workspace state from disk.
    */
-  async load(): Promise<void> {
+  async load(options?: { skipRestore?: boolean }): Promise<void> {
     try {
       const data = await fs.readFile(this.stateFilePath, 'utf-8');
       const state: WorkspaceState = JSON.parse(data);
-      this.currentWorkspace = state.currentWorkspace;
+
+      if (options?.skipRestore) {
+        console.log('[Workspace] Skipping restore of previous workspace (requested via flag)');
+        this.currentWorkspace = null;
+      } else {
+        this.currentWorkspace = state.currentWorkspace;
+      }
+
       this.recentWorkspaces = (state.recentWorkspaces ?? []).sort((a, b) =>
         (b.lastOpened ?? '').localeCompare(a.lastOpened ?? '')
       );
