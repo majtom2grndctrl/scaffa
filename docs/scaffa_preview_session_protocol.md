@@ -17,6 +17,7 @@ Related:
 - [Scaffa Override Model + Persistence](./scaffa_override_model.md)
 - [IPC Boundaries + Key Sequence Diagrams](./scaffa_ipc_boundaries_and_sequences.md)
 - [Scaffa MCP Server Contract](./scaffa_mcp_server_contract.md)
+- [Scaffa Harness Model](./scaffa_harness_model.md)
 
 ---
 
@@ -33,7 +34,11 @@ Sessions exist so Scaffa can:
 - isolate state per preview
 - route selection and overrides to the correct runtime
 
-In v0, preview targets are treated as external runtimes (typically an HTTP server you start separately). Scaffa attaches to them via the session target.
+In v0, preview targets are treated as external runtimes (typically a framework dev server). Scaffa can either:
+- **attach** to an already-running runtime (`{ type: "app", url }`), or
+- **manage** a runtime via a launcher module (`{ type: "app", launcherId }`, recommended for the Harness Model on Vite).
+
+Note: When Scaffa needs to guarantee harness/instrumentation behavior (virtual harness entry + registry-driven transforms), it MUST use managed mode so the runtime is started with Scaffa’s injected tooling.
 
 ### 1.1 Editor View (v0) and Preview Mode (Deferred)
 

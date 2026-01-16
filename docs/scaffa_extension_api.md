@@ -135,9 +135,31 @@ Preview is session‑based.
 
 ```ts
 interface PreviewAPI {
+  /**
+   * Registers a managed preview launcher (e.g. "vite").
+   * Launchers are referenced by `PreviewSessionTarget.launcherId`.
+   */
+  registerLauncher(launcher: PreviewLauncherContribution): Disposable
   startSession(options: PreviewSessionOptions): Promise<PreviewSession>
   updateOverrides(sessionId: string, overrides: PropOverrides): void
   onSelection(cb: (selection: PreviewSelection) => void): Disposable
+}
+
+type PreviewLauncherContribution = {
+  id: string
+  displayName: string
+
+  /**
+   * Starts (and later stops) an external dev server used as a preview runtime.
+   * The launcher runs outside the renderer and never manipulates WebContents directly.
+   */
+  startApp(options: {
+    workspaceRoot: string
+    launcherOptions?: Record<string, unknown>
+  }): Promise<{
+    url: string
+    stop(): Promise<void>
+  }>
 }
 ```
 

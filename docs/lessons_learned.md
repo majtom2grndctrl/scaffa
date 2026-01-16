@@ -80,8 +80,7 @@ The demo app is a separate Vite dev server that must run independently. Scaffa p
 
 ### Architectural Implication
 - Preview target is not "bundled" with Scaffa
-- Requires two processes: Scaffa + demo app dev server
-- Dev workflow requires starting app separately
+- Requires an external dev server runtime (but Scaffa may manage it via a preview launcher)
 
 ### Observation
 This is the correct architecture (separation of concerns), but it's not explicitly called out in docs. First-time users might expect:
@@ -91,7 +90,7 @@ This is the correct architecture (separation of concerns), but it's not explicit
 
 ### Recommendation
 - Add a "Dev Workflow" section to architecture docs explaining multi-process model
-- Document that preview targets are independent HTTP servers
+- Document that preview targets are independent HTTP servers, but can be started in **managed mode** via preview launcher modules
 - Clarify when/why this is beneficial (matches production reality, framework-agnostic)
 
 ---
@@ -122,6 +121,8 @@ function DemoButtonInner(props) {
   // Use effectiveProps instead of props
 }
 ```
+
+**Update:** This “in-app wrapper + hook” integration is now considered a legacy escape hatch. The preferred v0 direction is the Harness Model (managed launcher + virtual harness + registry-driven instrumentation), which avoids Scaffa imports in app production code.
 
 ### Observation
 - All three parts are required for the system to work

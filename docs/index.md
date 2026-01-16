@@ -22,6 +22,7 @@
 - **Workspace file edits** → `docs/scaffa_workspace_edit_protocol.md`, `docs/scaffa_extension_api.md`
 - **Preview sessions & selection flows** → `docs/scaffa_preview_session_protocol.md`, `docs/scaffa_ipc_boundaries_and_sequences.md`, `docs/scaffa_runtime_adapter_contract.md`
 - **Runtime adapter implementation** → `docs/scaffa_runtime_adapter_contract.md`, `docs/scaffa_runtime_adapter_integration_guide.md`
+- **Harness model (managed Vite previews)** → `docs/scaffa_harness_model.md`, `docs/scaffa_preview_session_protocol.md`, `docs/scaffa_project_configuration_scaffa_config.md`
 - **Project configuration** → `docs/scaffa_project_configuration_scaffa_config.md`
 - **Extension API / modules** → `docs/scaffa_extension_api.md`, `docs/scaffa_extension_authoring_guide.md`
 - **Cross-process IPC debugging** → `docs/scaffa_ipc_boundaries_and_sequences.md`, `docs/scaffa_development_guide.md`
@@ -50,6 +51,7 @@
 - Extension authoring: [Scaffa Extension Authoring Guide](./scaffa_extension_authoring_guide.md)
 - Engineering conventions: [Scaffa Engineering Conventions](./scaffa_engineering_conventions.md)
 - Runtime adapter integration: [Scaffa Runtime Adapter Integration Guide](./scaffa_runtime_adapter_integration_guide.md)
+- Harness model: [Scaffa Harness Model](./scaffa_harness_model.md)
 - Development setup + pitfalls: [Scaffa Development Guide](./scaffa_development_guide.md)
 
 ## 1. Product Definition
@@ -253,7 +255,11 @@ See also: [Scaffa Preview Session Protocol](./scaffa_preview_session_protocol.md
 
 This abstraction is required from day one.
 
-In v0, preview targets are treated as **independent runtimes** (typically an HTTP server you start separately). Scaffa attaches by URL; it does not “bundle” or auto-start framework dev servers.
+In v0, preview targets are treated as **independent runtimes** (typically a framework dev server). Scaffa can either:
+- **attach** by URL (`{ type: "app", url }`), or
+- **manage** a dev server via a preview launcher module (`{ type: "app", launcherId }`, recommended for Vite Harness Model).
+
+Scaffa core does not bundle frameworks; toolchain-specific launchers own server startup and injection behavior.
 
 ### 4.3 Inspector
 

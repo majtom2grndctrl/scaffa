@@ -213,9 +213,55 @@ export type ProjectRegistryOverrides = {
 
 ---
 
-## 5. Examples
+## 5. Optional: Resolution & Instrumentation Hints (Harness Model)
 
-### 5.1 Example: `ui.button`
+Registries are primarily Inspector metadata, but in the Harness Model they may also carry **optional hints** used by preview launchers/adapters to decide what code to instrument for selection/overrides.
+
+Key rule:
+- `ComponentTypeId` remains the stable join key; source/implementation hints are **not** identifiers and may change without changing `typeId`.
+
+Conceptual hint shape (v0):
+
+```ts
+export type ComponentImplementationHint =
+  | {
+      kind: "file";
+      /**
+       * Workspace-relative path to the module that exports the component.
+       * Example: "src/components/DemoButton.tsx"
+       */
+      filePath: string;
+      /**
+       * Optional named export. If omitted, defaults to "default".
+       * Example: "DemoButton"
+       */
+      exportName?: string;
+    }
+  | {
+      kind: "package";
+      /**
+       * Bare module specifier for a third-party component module.
+       * Example: "@mui/material/Button"
+       */
+      specifier: string;
+      /**
+       * Optional named export. If omitted, defaults to "default".
+       */
+      exportName?: string;
+    };
+```
+
+Launchers may translate these hints into “instrumentation matchers” (file/module filters) that drive a dev-time transform.
+
+Notes:
+- Third-party package instrumentation can require Vite `optimizeDeps` tuning (e.g. excluding specific packages) so transforms run on the intended sources.
+- Teams can ship pre-defined registries for libraries (e.g. MUI), and project config can override/extend them.
+
+---
+
+## 6. Examples
+
+### 6.1 Example: `ui.button`
 
 ```ts
 const buttonEntry: ComponentRegistryEntry = {
@@ -291,7 +337,7 @@ const buttonEntry: ComponentRegistryEntry = {
 };
 ```
 
-### 5.2 Example: `ui.card`
+### 6.2 Example: `ui.card`
 
 ```ts
 const cardEntry: ComponentRegistryEntry = {

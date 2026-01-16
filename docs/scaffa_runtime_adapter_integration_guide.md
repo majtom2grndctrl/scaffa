@@ -30,84 +30,50 @@ Editor View interaction policy (v0):
 Scaffa integration should not be required for your app to build and run in production.
 
 Recommended approach:
-- Keep Scaffa runtime instrumentation **dev-only** (or Scaffa-only) via a small project-local shim module.
-- In production builds, the shim exports **no-op** implementations so your app runs normally without Scaffa.
-- In Scaffa-enabled dev builds, the shim re-exports the real adapter from `@scaffa/react-runtime-adapter`.
-- Keep Scaffa-specific packages in `devDependencies` and ensure production build entrypoints do not import `@scaffa/*` modules.
+- Use the **Harness Model** for managed previews: Scaffa mounts the app via a launcher-injected harness entrypoint, so your app code has **zero Scaffa imports**.
+- Keep all Scaffa runtime logic **dev-only** and scoped to preview sessions started by Scaffa (managed mode).
 
-This lets Scaffa work against real app code without making Scaffa a production dependency.
+See: `docs/scaffa_harness_model.md`.
 
 ---
 
-## 2. The Three-Part Recipe (React)
+## 2. Harness Model Recipe (Recommended)
 
-All three parts are required.
+In the Harness Model, the “three parts” still exist, but they are injected by the launcher/runtime adapter rather than authored in the app code.
 
-### 2.1 Wrap the app root with `ScaffaProvider`
+### 2.1 Mount via a virtual harness entry
 
-Configure the adapter and install its event wiring:
+- The preview launcher (e.g. Vite launcher) serves a virtual module entry (e.g. `"/@scaffa/harness.tsx"`).
+- That entry imports the project’s preview root and styles from `scaffa.config.js` and mounts to the DOM.
+- The harness installs the runtime adapter provider/event wiring (equivalent of “wrap the app root with `ScaffaProvider`”).
 
-```tsx
-import { ScaffaProvider } from './scaffa-runtime';
+### 2.2 Instrument registry-listed components
 
-export function Root() {
-  return (
-    <ScaffaProvider config={{ adapterId: 'react', adapterVersion: 'v0', debug: false }}>
-      <App />
-    </ScaffaProvider>
-  );
-}
-```
+- Only component types in the composed registry are intended to be selectable/editable in v0.
+- The launcher applies a dev-time transform to instrument the modules that correspond to those registry entries (including optional third-party packages like MUI).
+- Instrumentation is responsible for associating a stable `componentTypeId` with runtime instances in a way the adapter can hit-test.
 
-### 2.2 Wrap each selectable instance with `ScaffaInstance`
+### 2.3 Apply overrides via adapter-owned boundaries
 
-Mark a rendered subtree as a concrete instance of a stable component type:
+- Overrides must be applied non-destructively in the preview runtime.
+- The adapter owns the override map and rerender mechanism; app source files are not rewritten at runtime.
 
-```tsx
-import { ScaffaInstance } from './scaffa-runtime';
-
-export function DemoButton(props: DemoButtonProps) {
-  return (
-    <ScaffaInstance typeId="demo.button" displayName="Demo Button">
-      <DemoButtonInner {...props} />
-    </ScaffaInstance>
-  );
-}
-```
-
-Notes:
-- `typeId` MUST match the component registry and (when present) the project graph.
-- `ScaffaInstance` currently renders a wrapper element to attach identity attributes; ensure that wrapper does not break layout/styling.
-
-### 2.3 Use `useScaffaInstance()` to apply overrides
-
-Inside the instance subtree, replace incoming props with “effective” props:
-
-```tsx
-import { useScaffaInstance } from './scaffa-runtime';
-
-function DemoButtonInner(props: DemoButtonProps) {
-  const effectiveProps = useScaffaInstance(props);
-  return <button>{effectiveProps.label}</button>;
-}
-```
-
-If you forget this step, the Inspector can still emit overrides, but the preview won’t reflect them.
+For the full decision record and constraints, see: `docs/scaffa_harness_model.md`.
 
 ---
 
 ## 3. Common Pitfalls
 
 - **`typeId` mismatch**: selection works, but Inspector lacks metadata (registry ↔ runtime mismatch).
-- **Missing `useScaffaInstance()`**: overrides are sent, but rendered output never changes.
 - **Incorrect preview URL**: preview sessions require a full URL with protocol (see `docs/scaffa_preview_session_protocol.md:30`).
-- **Assuming Scaffa starts your dev server**: v0 preview targets are independent HTTP servers; you run them separately.
+- **Attached mode mismatch**: attaching to an arbitrary dev server does not guarantee harness/instrumentation is installed; use managed mode for Harness Model behavior.
+- **Third-party instrumentation not running**: selected `node_modules` packages may be prebundled; the launcher may need Vite `optimizeDeps` tuning to ensure transforms run on intended sources.
 
 ---
 
-## Appendix: Project-Local Shim (Illustrative)
+## Appendix: Project-Local Shim (Legacy / Escape Hatch)
 
-Create a small module in your app (e.g. `src/scaffa-runtime.ts`) and import Scaffa primitives from there throughout your codebase.
+If you cannot use managed mode (or need an incremental migration), a project-local shim can provide a dev-only integration path. This is not the preferred v0 direction for Scaffa-managed previews.
 
 Then, switch that module between:
 - **No-op exports** for production (and/or normal dev).

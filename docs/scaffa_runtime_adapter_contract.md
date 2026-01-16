@@ -37,6 +37,7 @@ This is distinct from:
 Production expectation:
 - Projects SHOULD be able to build and run in production without Scaffa installed or enabled.
 - Runtime adapter integration is intended to be dev-only (or Scaffa-only) instrumentation of the preview runtime.
+- Recommended v0 integration path is the Harness Model (managed launcher + virtual harness entry), so projects do not need Scaffa imports in production code.
 
 ---
 
@@ -205,7 +206,9 @@ export type OverrideOp =
 - Registry answers: “What does `ui.button` expose to the Inspector?” (type-level)
 - Runtime adapter answers: “Which instance is this click?” and “How do I apply `/variant='primary'` to that instance?” (instance-level)
 
-Registry data MUST NOT be required to perform selection. Selection is derived from runtime identity.
+Registry data MUST NOT be required to *interpret* selection. Selection is derived from runtime identity.
+
+v0 policy note (Harness Model): a launcher/adapter may choose to only instrument registry-listed component types. In that case, clicks that do not resolve to an instrumented instance will produce `selected: null` (or the nearest instrumented ancestor, if supported).
 
 ### 5.2 Runtime Adapter vs Extension Host
 

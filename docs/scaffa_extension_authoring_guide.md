@@ -148,7 +148,7 @@ const typeId = ComponentTypeIdSchema.parse('demo.button');
 
 1. Component registry entry key (`components['demo.button']`)
 2. Project graph component type node id (`{ kind: 'componentType', id: 'demo.button' }`)
-3. Runtime wrapper type id (`<ScaffaInstance typeId="demo.button" />`)
+3. Preview runtime instance identity (e.g. harness-model instrumentation that associates instances to `componentTypeId`)
 
 If these don’t match, Scaffa can still select an instance, but the Inspector won’t have type-level metadata.
 
@@ -168,5 +168,5 @@ Recommended workflow:
 ## 7. Common Failure Modes (v0)
 
 - **Module loads but "does nothing"**: check DevTools for activation errors and confirm the module path in `scaffa.config.js`.
-- **Registry contributed but Inspector shows raw props**: confirm `ComponentTypeId` matches registry ↔ graph ↔ runtime wrapper.
+- **Registry contributed but Inspector shows raw props**: confirm `ComponentTypeId` matches registry ↔ graph ↔ runtime identity.
 - **TypeScript friction in producers**: use the graph construction helpers (`createRouteNode`, `createComponentTypeNode`, etc.) from the Extension SDK to avoid `as any` casts. See section 4 for examples.

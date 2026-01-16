@@ -71,6 +71,7 @@ pnpm dev
 ```
 
 This prints a URL like `http://localhost:5173`. Scaffa attaches to this URL for `app` preview sessions.
+If a Vite preview launcher is enabled, Scaffa can also start/manage the dev server in managed mode; attached-by-URL remains an escape hatch.
 
 2) **Scaffa** (the editor)
 

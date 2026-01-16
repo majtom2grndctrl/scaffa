@@ -109,8 +109,8 @@ In addition to `docs/index.md` “Deferred” items, v0 explicitly excludes:
 
 - User starts an `app` preview session for **Editor View**.
 - In v0, session start UX lives in the **Preview Sessions** panel: click **Start Session** to open a modal where you either:
-  - enter a dev-server URL (attached mode), or
-  - pick a launcher (managed mode, if a launcher module is installed)
+  - pick a launcher (managed mode, recommended for Vite Harness Model), or
+  - enter a dev-server URL (attached mode, escape hatch)
 - Main process creates and loads the preview runtime.
 - Runtime adapter handshakes and announces readiness.
 - Scaffa replays any persisted overrides relevant to this session target.
@@ -151,14 +151,13 @@ Use this checklist to validate the v0 “first user journey” end-to-end. This 
 
 ### Pre-flight
 
-- [ ] Start the demo app dev server (e.g. `demo/app` via `pnpm dev`) and note its URL (usually `http://localhost:5173`).
 - [ ] Start Scaffa (`pnpm dev` from repo root).
 - [ ] From the Launcher, open a workspace configured for Scaffa (use `demo/` for the reference walkthrough).
 
 ### Preview session
 
-- [ ] Start an `app` preview session by URL (attached mode) for **Editor View**: the center workspace shows the running demo app.
-- [ ] (Note) In v0, Scaffa primarily attaches to an already-running dev server; managed preview launchers are future module contributions.
+- [ ] Start an `app` preview session via a launcher (managed mode) for **Editor View**: the center workspace shows the running demo app.
+- [ ] (Fallback) If you start a dev server manually, you can attach by URL (attached mode), but Harness Model guarantees (virtual harness + instrumentation) are not provided unless the server is started with Scaffa’s injected tooling.
 - [ ] Confirm the runtime adapter handshake completes (preview is “ready”).
 
 ### Selection (Editor View)

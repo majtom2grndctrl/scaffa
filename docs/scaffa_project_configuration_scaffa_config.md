@@ -46,6 +46,9 @@ export default defineScaffaConfig({
   ],
 
   preview: {
+    // Harness Model (managed launchers) uses these to mount the app in preview.
+    entry: './src/App.tsx',
+    styles: ['./src/index.css'],
     decorators: [ThemeProvider, RouterProvider],
   },
 
@@ -122,12 +125,27 @@ Common uses:
 
 ## 6. Preview Configuration
 
-Defines shared preview context.
+Defines shared preview context and (for managed launchers) what to mount.
 
 ```ts
 preview: {
+  /**
+   * Harness Model: module specifier for the preview root component.
+   * Example: "./src/App.tsx"
+   */
+  entry?: string
+  /**
+   * Harness Model: list of style module specifiers to import before mounting.
+   * Example: ["./src/index.css"]
+   */
+  styles?: string[]
   decorators?: PreviewDecorator[]
   environment?: Record<string, unknown>
+  /**
+   * Optional default launcher preference for `app` sessions.
+   * The Preview Session Target still carries the authoritative `launcherId`.
+   */
+  launcher?: { id: string; options?: Record<string, unknown> }
 }
 ```
 
