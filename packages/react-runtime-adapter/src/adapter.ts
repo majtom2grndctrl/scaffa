@@ -53,7 +53,6 @@ export class ScaffaReactAdapter {
   private isReady = false;
   private selectedInstanceId: string | null = null;
   private hoveredInstanceId: string | null = null;
-  private isAltHeld = false;
 
   constructor(config: ScaffaAdapterConfig) {
     this.config = config;
@@ -298,21 +297,19 @@ export class ScaffaReactAdapter {
   }
 
   /**
-   * Setup input handlers for v0:
-   * - Default: interact with the app normally
-   * - Alt/Option+hover: show what will be selected
-   * - Alt/Option+click: select instance (prevents app interaction)
+   * Setup input handlers for v0 Editor View:
+   * - Click: select instance (prevents app interaction)
+   * - Hover: show what will be selected
    * - Esc: clears selection (only when something is selected)
+   *
+   * Note: Alt/Option modifier is reserved for Preview Mode (deferred).
+   * In Editor View, clicks always select without modifier.
    */
   private setupPreviewInputHandlers(): void {
+    // Esc to clear selection
     window.addEventListener(
       'keydown',
       (event) => {
-        if (event.key === 'Alt') {
-          this.isAltHeld = true;
-          return;
-        }
-
         if (event.key === 'Escape' && this.selectedInstanceId) {
           event.preventDefault();
           event.stopPropagation();
@@ -322,22 +319,12 @@ export class ScaffaReactAdapter {
       true
     );
 
-    window.addEventListener(
-      'keyup',
-      (event) => {
-        if (event.key === 'Alt') {
-          this.isAltHeld = false;
-          this.setHoveredInstanceId(null);
-        }
-      },
-      true
-    );
-
+    // Hover to show selection candidate
     document.addEventListener(
       'mousemove',
       (event) => {
         const target = event.target as HTMLElement | null;
-        if (!this.isAltHeld || !target) {
+        if (!target) {
           if (this.hoveredInstanceId) this.setHoveredInstanceId(null);
           return;
         }
@@ -349,16 +336,14 @@ export class ScaffaReactAdapter {
       true
     );
 
+    // Click to select (always, no modifier required)
     document.addEventListener(
       'click',
       (event) => {
-        if (!event.altKey) {
-          return;
-        }
-
         const target = event.target as HTMLElement | null;
         const instanceElement = target?.closest?.('[data-scaffa-instance-id]') as HTMLElement | null;
 
+        // Always prevent default and stop propagation to suppress app interaction
         event.preventDefault();
         event.stopPropagation();
 

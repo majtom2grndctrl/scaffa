@@ -14,9 +14,9 @@ export interface PreviewHintProps {
  * ensuring it cannot conflict with app styling or layout.
  *
  * Design:
- * - Appears when a preview session (non-app) becomes ready
- * - Shows Alt+Click instruction (needed for component/variant preview mode)
- * - For app sessions (Editor View), normal clicks inspect, so no hint needed
+ * - Appears when a preview session becomes ready
+ * - Shows click-to-select instruction (Editor View, v0)
+ * - Alt/Option modifier is reserved for Preview Mode (deferred)
  * - Displays for ~4s and fades out
  * - Never captures pointer events
  * - Positioned in top-left corner
@@ -46,13 +46,8 @@ export const PreviewHint = ({ show, onComplete }: PreviewHintProps) => {
       aria-live="polite"
     >
       <div className="flex flex-col gap-1.5">
-        <div className="font-medium opacity-90">Preview Mode</div>
-        <div>
-          <kbd className="rounded border border-white/20 bg-white/10 px-1.5 py-0.5 font-mono text-[11px]">
-            Alt
-          </kbd>
-          +Click to inspect
-        </div>
+        <div className="font-medium opacity-90">Editor View</div>
+        <div>Click to inspect</div>
         <div className="opacity-85">
           <kbd className="rounded border border-white/20 bg-white/10 px-1.5 py-0.5 font-mono text-[11px]">
             Esc
