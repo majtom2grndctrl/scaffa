@@ -27,6 +27,8 @@ interface WorkspaceState {
   clearError: () => void;
   
   pickWorkspace: () => Promise<WorkspaceInfo | null>;
+  pickRecent: (path: WorkspacePath) => Promise<WorkspaceInfo | null>;
+  pickDemo: () => Promise<WorkspaceInfo | null>;
   activateWorkspace: () => void;
   cancelPick: () => void;
 }
@@ -104,6 +106,58 @@ export const useWorkspaceStore = create<WorkspaceState>((set, get) => ({
         error: {
           code: 'UNKNOWN_ERROR',
           message: error instanceof Error ? error.message : 'Failed to pick workspace',
+        },
+      });
+      return null;
+    }
+  },
+
+  pickRecent: async (path) => {
+    set({ isLoading: true, error: null, isPicking: true, stagingWorkspace: null });
+    try {
+      const response = await window.scaffa.workspace.openRecent({ path });
+
+      if (response.error) {
+        set({ error: response.error, isLoading: false, isPicking: false });
+        return null;
+      }
+
+      set({ isLoading: false });
+      return response.workspace;
+    } catch (error) {
+      console.error('[WorkspaceStore] Pick recent failed:', error);
+      set({
+        isLoading: false,
+        isPicking: false,
+        error: {
+          code: 'UNKNOWN_ERROR',
+          message: error instanceof Error ? error.message : 'Failed to pick recent',
+        },
+      });
+      return null;
+    }
+  },
+
+  pickDemo: async () => {
+    set({ isLoading: true, error: null, isPicking: true, stagingWorkspace: null });
+    try {
+      const response = await window.scaffa.workspace.openDemo({});
+
+      if (response.error) {
+        set({ error: response.error, isLoading: false, isPicking: false });
+        return null;
+      }
+
+      set({ isLoading: false });
+      return response.workspace;
+    } catch (error) {
+      console.error('[WorkspaceStore] Pick demo failed:', error);
+      set({
+        isLoading: false,
+        isPicking: false,
+        error: {
+          code: 'UNKNOWN_ERROR',
+          message: error instanceof Error ? error.message : 'Failed to pick demo',
         },
       });
       return null;
