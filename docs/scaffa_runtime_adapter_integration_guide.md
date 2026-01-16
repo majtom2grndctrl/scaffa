@@ -116,6 +116,84 @@ Then, switch that module between:
 How you switch is toolchain-specific (Vite alias, conditional entrypoints, environment-flagged builds). The important invariant is:
 - your production build must not require `@scaffa/*` packages to be installed.
 
+### Example: Vite-based Implementation
+
+For Vite projects, use mode-based aliases to switch between dev and production shims:
+
+**1. Create dev shim** (`src/scaffa-runtime.dev.ts`):
+```ts
+export {
+  ScaffaProvider,
+  ScaffaInstance,
+  useScaffaInstance,
+} from '@scaffa/react-runtime-adapter';
+```
+
+**2. Create production shim** (`src/scaffa-runtime.prod.ts`):
+```ts
+import type { ReactNode } from 'react';
+
+export function ScaffaProvider({ children }: { children: ReactNode; config?: unknown }) {
+  return children;
+}
+
+export function ScaffaInstance({ children }: { children: ReactNode; typeId?: string; displayName?: string }) {
+  return children;
+}
+
+export function useScaffaInstance<T>(props: T): T {
+  return props;
+}
+```
+
+**3. Configure Vite alias** (`vite.config.ts`):
+```ts
+import { defineConfig } from 'vite';
+import path from 'path';
+
+export default defineConfig(({ mode }) => ({
+  resolve: {
+    alias: {
+      '@/scaffa-runtime': path.resolve(
+        __dirname,
+        `src/scaffa-runtime.${mode === 'production' ? 'prod' : 'dev'}.ts`
+      ),
+    },
+  },
+}));
+```
+
+**4. Configure TypeScript** (`tsconfig.json`):
+```json
+{
+  "compilerOptions": {
+    "baseUrl": ".",
+    "paths": {
+      "@/scaffa-runtime": ["./src/scaffa-runtime.dev.ts"]
+    }
+  }
+}
+```
+
+**5. Move adapter to devDependencies** (`package.json`):
+```json
+{
+  "devDependencies": {
+    "@scaffa/react-runtime-adapter": "workspace:*"
+  }
+}
+```
+
+**6. Import from shim everywhere**:
+```tsx
+import { ScaffaProvider, ScaffaInstance, useScaffaInstance } from '@/scaffa-runtime';
+```
+
+With this setup:
+- `pnpm dev` uses the real adapter (mode='development')
+- `pnpm build` uses no-ops (mode='production')
+- Production builds have zero runtime dependency on @scaffa/* packages
+
 ---
 
 ## 4. Performance Notes (v0)

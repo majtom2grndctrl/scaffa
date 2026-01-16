@@ -1,5 +1,5 @@
 import React from 'react';
-import { ScaffaInstance, useScaffaInstance } from '@scaffa/react-runtime-adapter';
+import { ScaffaInstance, useScaffaInstance } from '@/scaffa-runtime';
 
 interface DemoButtonProps {
   label: string;
