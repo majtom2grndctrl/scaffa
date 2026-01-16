@@ -20,7 +20,7 @@ const vite = spawn(
   },
 );
 
-const electron = spawn("pnpm", ["electron", ".", "--enable-logging"], {
+const electron = spawn("pnpm", ["electron", ".", "--enable-logging", ...process.argv.slice(2)], {
   stdio: "inherit",
   shell: useShell,
   env: {
