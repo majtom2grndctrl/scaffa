@@ -11,6 +11,8 @@ export const Launcher = () => {
     isLoading,
     clearError,
     pickWorkspace,
+    pickRecent,
+    pickDemo,
     activateWorkspace,
     cancelPick,
     openDemo,
@@ -22,6 +24,8 @@ export const Launcher = () => {
     isLoading: state.isLoading,
     clearError: state.clearError,
     pickWorkspace: state.pickWorkspace,
+    pickRecent: state.pickRecent,
+    pickDemo: state.pickDemo,
     activateWorkspace: state.activateWorkspace,
     cancelPick: state.cancelPick,
     openDemo: state.openDemo,
@@ -82,6 +86,30 @@ export const Launcher = () => {
     setIsBusy(true);
     try {
       const workspace = await pickWorkspace();
+      if (workspace) {
+        setIsConfiguringSession(true);
+      }
+    } finally {
+      setIsBusy(false);
+    }
+  };
+
+  const handleOpenRecent = async (path: string) => {
+    setIsBusy(true);
+    try {
+      const workspace = await pickRecent(path);
+      if (workspace) {
+        setIsConfiguringSession(true);
+      }
+    } finally {
+      setIsBusy(false);
+    }
+  };
+
+  const handleOpenDemo = async () => {
+    setIsBusy(true);
+    try {
+      const workspace = await pickDemo();
       if (workspace) {
         setIsConfiguringSession(true);
       }
@@ -185,7 +213,7 @@ export const Launcher = () => {
             {showDemo ? (
               <button
                 type="button"
-                onClick={() => handleAction(openDemo)}
+                onClick={handleOpenDemo}
                 disabled={isBusy}
                 className="rounded-md border border-subtle bg-surface-inset px-4 py-2 text-sm font-medium text-fg-muted hover:text-fg disabled:cursor-not-allowed disabled:opacity-60"
               >
@@ -239,7 +267,7 @@ export const Launcher = () => {
               >
                 <button
                   type="button"
-                  onClick={() => handleAction(() => openRecent(workspace.path))}
+                  onClick={() => handleOpenRecent(workspace.path)}
                   disabled={isBusy}
                   className="min-w-0 flex-1 text-left disabled:cursor-not-allowed disabled:opacity-60"
                 >
