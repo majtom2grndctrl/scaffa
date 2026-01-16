@@ -127,11 +127,13 @@ function DemoButtonInner(props) {
 - All three parts are required for the system to work
 - Missing any part breaks click-to-select or override application
 - This recipe is scattered across multiple doc sections
+- Without explicit guidance, teams may assume Scaffa runtime code must ship in production builds
 
 ### Recommendation
 - Create a "Runtime Adapter Integration Guide" with complete recipe
 - Include common pitfalls (forgetting the hook, wrong wrapper order)
 - Add diagram showing data flow through these three layers
+- Recommend a project-local “shim” module so production builds do not require Scaffa dependencies
 
 ---
 

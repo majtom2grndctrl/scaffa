@@ -25,6 +25,18 @@ Editor View interaction policy (v0):
 - Scaffa uses the embedded runtime as an editor canvas: click-to-select is the default.
 - Clicks are consumed for selection (app navigation/handlers should not fire in the editor session).
 
+### 1.1 Production Compatibility (Recommended)
+
+Scaffa integration should not be required for your app to build and run in production.
+
+Recommended approach:
+- Keep Scaffa runtime instrumentation **dev-only** (or Scaffa-only) via a small project-local shim module.
+- In production builds, the shim exports **no-op** implementations so your app runs normally without Scaffa.
+- In Scaffa-enabled dev builds, the shim re-exports the real adapter from `@scaffa/react-runtime-adapter`.
+- Keep Scaffa-specific packages in `devDependencies` and ensure production build entrypoints do not import `@scaffa/*` modules.
+
+This lets Scaffa work against real app code without making Scaffa a production dependency.
+
 ---
 
 ## 2. The Three-Part Recipe (React)
@@ -36,7 +48,7 @@ All three parts are required.
 Configure the adapter and install its event wiring:
 
 ```tsx
-import { ScaffaProvider } from '@scaffa/react-runtime-adapter';
+import { ScaffaProvider } from './scaffa-runtime';
 
 export function Root() {
   return (
@@ -52,7 +64,7 @@ export function Root() {
 Mark a rendered subtree as a concrete instance of a stable component type:
 
 ```tsx
-import { ScaffaInstance } from '@scaffa/react-runtime-adapter';
+import { ScaffaInstance } from './scaffa-runtime';
 
 export function DemoButton(props: DemoButtonProps) {
   return (
@@ -72,7 +84,7 @@ Notes:
 Inside the instance subtree, replace incoming props with “effective” props:
 
 ```tsx
-import { useScaffaInstance } from '@scaffa/react-runtime-adapter';
+import { useScaffaInstance } from './scaffa-runtime';
 
 function DemoButtonInner(props: DemoButtonProps) {
   const effectiveProps = useScaffaInstance(props);
@@ -90,6 +102,19 @@ If you forget this step, the Inspector can still emit overrides, but the preview
 - **Missing `useScaffaInstance()`**: overrides are sent, but rendered output never changes.
 - **Incorrect preview URL**: preview sessions require a full URL with protocol (see `docs/scaffa_preview_session_protocol.md:30`).
 - **Assuming Scaffa starts your dev server**: v0 preview targets are independent HTTP servers; you run them separately.
+
+---
+
+## Appendix: Project-Local Shim (Illustrative)
+
+Create a small module in your app (e.g. `src/scaffa-runtime.ts`) and import Scaffa primitives from there throughout your codebase.
+
+Then, switch that module between:
+- **No-op exports** for production (and/or normal dev).
+- **Real adapter exports** for Scaffa-enabled dev.
+
+How you switch is toolchain-specific (Vite alias, conditional entrypoints, environment-flagged builds). The important invariant is:
+- your production build must not require `@scaffa/*` packages to be installed.
 
 ---
 

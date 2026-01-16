@@ -34,6 +34,10 @@ This is distinct from:
 - **Project graph producers:** workspace analysis that populates routes/types/relationships and emits graph patches
 - **Extension host code:** runs in a separate process and never directly mutates the renderer or preview DOM
 
+Production expectation:
+- Projects SHOULD be able to build and run in production without Scaffa installed or enabled.
+- Runtime adapter integration is intended to be dev-only (or Scaffa-only) instrumentation of the preview runtime.
+
 ---
 
 ## 2. Required Responsibilities (v0)
