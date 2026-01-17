@@ -92,13 +92,34 @@ export const useSessionStore = create<SessionStore>((set, get) => ({
   },
 
   markSessionReady: (event) => {
-    set((state) => ({
-      sessions: state.sessions.map((session) =>
-        session.sessionId === event.sessionId
-          ? { ...session, type: event.type, state: 'ready' }
-          : session
-      ),
-    }));
+    set((state) => {
+      const existingSession = state.sessions.find(
+        (session) => session.sessionId === event.sessionId
+      );
+
+      if (existingSession) {
+        // Update existing session
+        return {
+          sessions: state.sessions.map((session) =>
+            session.sessionId === event.sessionId
+              ? { ...session, type: event.type, state: 'ready' }
+              : session
+          ),
+        };
+      } else {
+        // Add new session (handles case where addSession wasn't called)
+        return {
+          sessions: [
+            ...state.sessions,
+            {
+              sessionId: event.sessionId,
+              type: event.type,
+              state: 'ready',
+            },
+          ],
+        };
+      }
+    });
   },
 
   markSessionError: (event) => {

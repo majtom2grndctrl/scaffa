@@ -223,16 +223,9 @@ export class PreviewSession {
       return;
     }
 
-    // Send command via executeJavaScript to deliver to window.scaffaRuntime
-    // The runtime adapter will listen for these commands
-    const script = `
-      if (window.__scaffaHostCommand) {
-        window.__scaffaHostCommand(${JSON.stringify(command)});
-      }
-    `;
-    webContents.executeJavaScript(script).catch((error) => {
-      console.error('[PreviewSession] Failed to send command to runtime:', error);
-    });
+    // Send command via IPC to the runtime adapter
+    // The preload's ipcRenderer.on('host:command') will receive this
+    webContents.send('host:command', command);
   }
 
   /**

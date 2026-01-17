@@ -1,5 +1,5 @@
 import React from 'react';
-import { ScaffaInstance, useScaffaInstance } from '@/scaffa-runtime';
+import { ScaffaInstance, useScaffaInstance } from '../scaffa-shim';
 
 interface DemoCardProps {
   title: string;

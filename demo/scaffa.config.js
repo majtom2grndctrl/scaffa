@@ -33,4 +33,8 @@ export default defineScaffaConfig({
       path: './extensions/demo-save-adapter/index.js',
     },
   ],
+  preview: {
+    entry: './app/src/App.tsx',
+    styles: ['./app/src/index.css'],
+  },
 });

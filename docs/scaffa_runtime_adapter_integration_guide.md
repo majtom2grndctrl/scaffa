@@ -62,7 +62,34 @@ For the full decision record and constraints, see: `docs/scaffa_harness_model.md
 
 ---
 
-## 3. Common Pitfalls
+## 3. Architecture: Pure Harness Model
+
+This clarifies the boundaries between production bootstrap and Scaffa preview bootstrap. In the pure harness model, Scaffa never loads your production entrypoint; it replaces it.
+
+See also: `docs/scaffa_harness_model.md` for the managed preview entrypoint and Vite plugin behavior.
+
+### 3.1 Production build
+
+`index.html` -> `src/main.tsx` (production bootstrap) -> `src/App.tsx` (router + UI) -> `src/pages/*.tsx` -> `src/components/*.tsx` (use `src/scaffa-shim.tsx`)
+
+Components import from `src/scaffa-shim.tsx`:
+- Production: no-op passthroughs
+- Exports: `ScaffaInstance`, `useScaffaInstance`
+
+### 3.2 Scaffa preview
+
+`index.html` (transformed by harness plugin) -> `.scaffa-harness.tsx` (generated) -> `ScaffaProvider` (real adapter) -> `src/App.tsx` (router + UI) -> components use shim (connects to provider)
+
+### 3.3 Key boundary
+
+`main.tsx` is NEVER loaded by Scaffa:
+- `main.tsx` is production-only
+- Scaffa's harness replaces it in `index.html`
+- `App.tsx` must be self-contained and include its own router
+
+---
+
+## 4. Common Pitfalls
 
 - **`typeId` mismatch**: selection works, but Inspector lacks metadata (registry ↔ runtime mismatch).
 - **Incorrect preview URL**: preview sessions require a full URL with protocol (see `docs/scaffa_preview_session_protocol.md:30`).
@@ -74,6 +101,8 @@ For the full decision record and constraints, see: `docs/scaffa_harness_model.md
 ## Appendix: Project-Local Shim (Legacy / Escape Hatch)
 
 If you cannot use managed mode (or need an incremental migration), a project-local shim can provide a dev-only integration path. This is not the preferred v0 direction for Scaffa-managed previews.
+
+Note: In the pure harness model, components still import from the shim. The difference is that Scaffa installs the real adapter in the harness, and `main.tsx` is never part of the preview boot chain.
 
 Then, switch that module between:
 - **No-op exports** for production (and/or normal dev).
@@ -162,7 +191,7 @@ With this setup:
 
 ---
 
-## 4. Performance Notes (v0)
+## 5. Performance Notes (v0)
 
 The React adapter recomputes “effective props” when overrides change. For small apps this is effectively instant.
 

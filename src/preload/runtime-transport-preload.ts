@@ -20,17 +20,15 @@ contextBridge.exposeInMainWorld('scaffaRuntimeTransport', {
 
   /**
    * Receive commands from the host (main process).
+   * Uses IPC listener instead of window globals to work with context isolation.
    */
   onCommand(callback: (command: HostCommand) => void): void {
-    // Store callback for host commands
-    (window as any).__scaffaHostCommandCallback = callback;
+    // Remove any existing listeners to avoid duplicates
+    ipcRenderer.removeAllListeners('host:command');
+
+    // Set up IPC listener for commands from host
+    ipcRenderer.on('host:command', (_event, command: HostCommand) => {
+      callback(command);
+    });
   },
 });
-
-// Make the callback receiver available for executeJavaScript injection
-(window as any).__scaffaHostCommand = (command: HostCommand) => {
-  const callback = (window as any).__scaffaHostCommandCallback;
-  if (callback) {
-    callback(command);
-  }
-};

@@ -1,4 +1,4 @@
-import { useEffect } from 'react';
+import { useEffect, useRef } from 'react';
 import { ProjectGraphTable } from '../components/ProjectGraphTable';
 import { PreviewSessionList } from '../components/PreviewSessionList';
 import { InspectorPanel } from '../components/InspectorPanel';
@@ -12,11 +12,15 @@ export const Workbench = () => {
     setAutoStartTarget: state.setAutoStartTarget,
   }));
 
+  // Track if we're already starting to prevent duplicate requests (StrictMode double-mount)
+  const isStartingRef = useRef(false);
+
   useEffect(() => {
     // If there's a pending auto-start target (from the Launcher), start the session
-    if (autoStartTarget) {
+    if (autoStartTarget && !isStartingRef.current) {
       console.log('[Workbench] Auto-starting session for target:', autoStartTarget);
-      
+      isStartingRef.current = true;
+
       window.scaffa.preview
         .startSession({ target: autoStartTarget })
         .catch((err) => {
@@ -25,6 +29,7 @@ export const Workbench = () => {
         .finally(() => {
           // Clear the target so we don't try again on re-renders
           setAutoStartTarget(null);
+          isStartingRef.current = false;
         });
     }
   }, [autoStartTarget, setAutoStartTarget]);

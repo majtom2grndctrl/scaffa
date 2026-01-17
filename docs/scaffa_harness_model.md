@@ -60,6 +60,20 @@ Mechanically, the launcher implements this as a Vite plugin that:
 - transforms `index.html` to load `"/@scaffa/harness.tsx"` (or an equivalent injected module)
 - serves `"/@scaffa/harness.tsx"` as a virtual module
 
+### 4.1 Preview Entry Structure (App vs main)
+
+Scaffa keeps production bootstrapping separate from the preview entry so it can control navigation and instrumentation without polluting production code.
+
+Example file structure (demo app):
+- Production entry: `demo/app/src/main.tsx` (no Scaffa deps; production-only providers like analytics/error boundaries/auth)
+- Preview entry: `demo/app/src/App.tsx` (UI + routing so Scaffa can control navigation)
+- Harness: `.scaffa-harness.tsx` (auto-generated, auto-cleaned) that wraps `App.tsx` with the Scaffa provider/adapter
+
+Why `App.tsx` owns the router:
+- `main.tsx` stays production-only and stable across environments
+- `App.tsx` remains the UI + routing boundary Scaffa can drive during preview sessions
+- The harness is where Scaffa-specific provider wiring lives, not production code
+
 ---
 
 ## 5. Registry-Driven Instrumentation (Selection + Overrides)
@@ -95,7 +109,24 @@ This avoids version skew between Scaffa and the project.
 
 ---
 
-## 7. Known Constraints (v0)
+## 7. Vite Plugin Conflicts (React Fast Refresh)
+
+**Problem: React Fast Refresh double-injection**
+- `vite:react-babel` injects the HMR preamble
+- When the harness imports `App.tsx`, the preamble appears twice
+- Results in "symbol already declared" errors
+
+**Solution (v0)**
+- Filter out React plugins and use `esbuild` for JSX
+- Trade-off: no Fast Refresh in preview (acceptable for Inspector-driven editing)
+- TODO: restore Fast Refresh for developer ergonomics
+
+**Known limitation**
+- Code changes require a manual refresh in the preview
+
+---
+
+## 8. Known Constraints (v0)
 
 - Instrumenting select third-party libraries may require Vite `optimizeDeps` tuning to ensure the transform runs on the intended sources.
 - “Selectable” is defined as “instrumented + resolvable to a stable `componentTypeId`”. Clicks that do not resolve to an instrumented instance result in `selected: null` (or selection of the nearest instrumented ancestor, if supported by the adapter).

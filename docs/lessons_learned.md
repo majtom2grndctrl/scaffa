@@ -6,7 +6,28 @@
 
 ---
 
-## 1. Extension Context API Naming
+## 0. Update: Pure Harness Model Boundaries (2026-01-11)
+
+The runtime adapter integration guide should explicitly show the production vs Scaffa preview boot chain and reinforce that Scaffa never loads `main.tsx`.
+
+Production build:
+`index.html` -> `src/main.tsx` (production bootstrap) -> `src/App.tsx` (router + UI) -> `src/pages/*.tsx` -> `src/components/*.tsx` (use `demo/app/src/scaffa-shim.tsx`)
+
+Components import from `demo/app/src/scaffa-shim.tsx`:
+- Production: no-op passthroughs
+- Exports: `ScaffaInstance`, `useScaffaInstance`
+
+Scaffa preview:
+`index.html` (transformed by harness plugin) -> `.scaffa-harness.tsx` (generated) -> `ScaffaProvider` (real adapter) -> `src/App.tsx` (router + UI) -> components use shim (connects to provider)
+
+Key boundary:
+- `main.tsx` is production-only
+- Scaffa's harness replaces it in `index.html`
+- `App.tsx` must be self-contained and include its own router
+
+---
+
+## 1. Extension Context API Naming (2026-01-11)
 
 ### Issue
 The `RegistryAPI` interface uses method name `contributeRegistry()`, but architectural thinking and initial implementations might assume `registerComponentRegistry()` based on the naming of `GraphAPI.registerProducer()`.
@@ -24,9 +45,9 @@ The verbs "contribute" vs "register" are inconsistent, which can cause confusion
 
 ---
 
-## 2. Import Path Complexity for Extension Authors
+## 2. Import Path Complexity for Extension Authors (2026-01-11)
 
-### Issue
+### Issue (historical)
 Extension modules need to import from multiple internal paths:
 
 ```typescript
@@ -35,19 +56,18 @@ import type { ComponentRegistry } from '../../../src/shared/registry.js';
 import type { GraphSnapshot, GraphPatch } from '../../../src/shared/project-graph.js';
 ```
 
-### Friction Points
+### Friction Points (historical)
 - No single "extension SDK" import
 - Relative paths depend on where the module lives
 - Not clear which types live where without exploring the codebase
 
-### Recommendation
-- Create a unified extension SDK export (e.g., `@scaffa/extension-api` or `scaffa/extensions`)
-- Document the type import map explicitly in extension authoring guide
-- Consider making extension-host export a re-export barrel of commonly needed types
+### ✅ RESOLVED (2026-01-11)
+- `extension-sdk.ts` provides a stable import surface for extension authors.
+- Extension authoring guide points to the SDK entrypoint.
 
 ---
 
-## 3. Workspace Config Relative Paths
+## 3. Workspace Config Relative Paths (2026-01-11)
 
 ### Issue
 Module paths in `scaffa.config.js` are relative to the config file location, not the project root:
@@ -73,7 +93,7 @@ This works well for workspace-local modules, but:
 
 ---
 
-## 4. Demo App as Separate Runnable
+## 4. Demo App as Separate Runnable (2026-01-11)
 
 ### Issue
 The demo app is a separate Vite dev server that must run independently. Scaffa previews it via HTTP URL.
@@ -95,7 +115,7 @@ This is the correct architecture (separation of concerns), but it's not explicit
 
 ---
 
-## 5. Runtime Adapter Integration Pattern (Recipe)
+## 5. Runtime Adapter Integration Pattern (Recipe) (2026-01-11)
 
 ### Issue
 Integrating the runtime adapter requires a three-part pattern:
@@ -130,15 +150,12 @@ function DemoButtonInner(props) {
 - This recipe is scattered across multiple doc sections
 - Without explicit guidance, teams may assume Scaffa runtime code must ship in production builds
 
-### Recommendation
-- Create a "Runtime Adapter Integration Guide" with complete recipe
-- Include common pitfalls (forgetting the hook, wrong wrapper order)
-- Add diagram showing data flow through these three layers
-- Recommend a project-local “shim” module so production builds do not require Scaffa dependencies
+### ✅ RESOLVED (2026-01-11)
+- `docs/scaffa_runtime_adapter_integration_guide.md` now documents the harness model recipe, common pitfalls, and shim usage.
 
 ---
 
-## 6. TypeScript Branded Types and Casting
+## 6. TypeScript Branded Types and Casting (2026-01-11)
 
 ### Issue
 The codebase uses Zod branded types extensively:
@@ -172,7 +189,7 @@ Extension authors hit friction when constructing graph snapshots:
 
 ---
 
-## 7. Override Persistence Directory
+## 7. Override Persistence Directory (2026-01-11)
 
 ### Issue
 Overrides persist to `<workspace>/.scaffa/overrides.v0.json`, but:
@@ -192,7 +209,7 @@ Overrides persist to `<workspace>/.scaffa/overrides.v0.json`, but:
 
 ---
 
-## 8. Module Activation Logging and Debugging
+## 8. Module Activation Logging and Debugging (2026-01-11)
 
 ### Issue
 `console.log()` from extension modules appears in Electron DevTools console, not terminal output.
@@ -209,7 +226,7 @@ Overrides persist to `<workspace>/.scaffa/overrides.v0.json`, but:
 
 ---
 
-## 9. Component Type ID Consistency Requirement
+## 9. Component Type ID Consistency Requirement (2026-01-11)
 
 ### Issue
 The `typeId` must match across three places:
@@ -232,7 +249,7 @@ If any mismatch, Inspector won't show metadata for selected instances.
 
 ---
 
-## 10. Preview Session URL Format
+## 10. Preview Session URL Format (2026-01-11)
 
 ### Issue
 Preview URLs must be full URLs with protocol:
@@ -253,7 +270,7 @@ Preview URLs must be full URLs with protocol:
 
 ---
 
-## 11. Dev Workflow: Two-Server Requirement
+## 11. Dev Workflow: Two-Server Requirement (2026-01-11)
 
 ### Issue
 Testing the v0 journey requires:
@@ -275,7 +292,7 @@ There's no single "start everything" command.
 
 ---
 
-## 12. Module Execution Context (Node.js)
+## 12. Module Execution Context (Node.js) (2026-01-11)
 
 ### Issue
 Extension modules run in the extension host process (Node.js), not the browser.
@@ -292,7 +309,7 @@ Extension modules run in the extension host process (Node.js), not the browser.
 
 ---
 
-## 13. Graph Producer `initialize()` Return Type
+## 13. Graph Producer `initialize()` Return Type (2026-01-11)
 
 ### Issue
 The `GraphProducer` interface shows:
@@ -314,7 +331,7 @@ But implementations must return `GraphSnapshot`.
 
 ---
 
-## 14. Override Application Performance
+## 14. Override Application Performance (2026-01-11)
 
 ### Issue (Potential)
 Overrides are applied by re-rendering React components with new props via context.
@@ -331,7 +348,7 @@ Overrides are applied by re-rendering React components with new props via contex
 
 ---
 
-## 15. Component Registry `uiDefaultValue` Semantics
+## 15. Component Registry `uiDefaultValue` Semantics (2026-01-11)
 
 ### Issue
 Registry entries have `uiDefaultValue` for editable props:
@@ -356,7 +373,7 @@ exposure: {
 
 ---
 
-## 16. Scaffa Config Schema Validation
+## 16. Scaffa Config Schema Validation (2026-01-11)
 
 ### Issue
 `scaffa.config.js` is loaded by extension host, but validation errors might not surface clearly.
@@ -373,49 +390,28 @@ exposure: {
 
 ---
 
-## Summary: Documentation Gaps to Address
+## Open Documentation Gaps (2026-01-11)
 
-1. **Extension Authoring Guide** (new doc)
-   - Import paths and SDK structure
-   - Complete integration recipes
-   - Debugging guide
-
-2. **Development Workflows** (new section in architecture)
+1. **Development Workflows** (new section in architecture)
    - Multi-process setup
    - Local dev best practices
    - Tooling recommendations
 
-3. **Type ID Consistency** (add to multiple docs)
+2. **Type ID Consistency** (add to multiple docs)
    - Cross-boundary consistency requirements
    - Validation and debugging
 
-4. **Runtime Adapter Integration** (expand existing doc)
-   - Complete three-part recipe
-   - Common pitfalls
-   - Performance considerations
-
-5. **Override Model Semantics** (clarify in existing doc)
+3. **Override Model Semantics** (clarify in existing doc)
    - uiDefaultValue vs code baseline
    - Reset behavior
    - Precedence rules
 
-6. **Process Model** (expand in architecture)
+4. **Process Model** (expand in architecture)
    - Where logs appear
    - What APIs are available in each process
    - Security boundaries
 
-7. **Config Schema** (expand existing doc)
+5. **Config Schema** (expand existing doc)
    - Path resolution behavior
    - Validation and error handling
    - Health checks
-
----
-
-## Next Steps
-
-These lessons should inform:
-1. Architecture doc updates (clarifications and expansions)
-2. New "Extension Authoring Guide" document
-3. Runtime adapter integration recipe/guide
-4. Dev workflow documentation
-5. Error messages and validation improvements in code

@@ -1,19 +1,17 @@
 import { defineConfig } from 'vite';
 import react from '@vitejs/plugin-react';
-import path from 'path';
 
-export default defineConfig(({ mode }) => ({
+// Demo App Vite Configuration
+// 
+// ARCHITECTURE NOTE:
+// This is the production Vite config. When Scaffa runs preview sessions,
+// the vite-launcher merges its own config (harness plugin) with this one.
+// 
+// No Scaffa-specific configuration needed here - the harness handles everything.
+
+export default defineConfig({
   plugins: [react()],
   server: {
     port: 3001,
   },
-  resolve: {
-    alias: {
-      // Production-safe Scaffa runtime shim: switches between real adapter (dev) and no-ops (prod)
-      '@/scaffa-runtime': path.resolve(
-        __dirname,
-        `src/scaffa-runtime.${mode === 'production' ? 'prod' : 'dev'}.ts`
-      ),
-    },
-  },
-}));
+});

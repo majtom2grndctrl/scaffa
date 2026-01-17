@@ -3,15 +3,22 @@
 // ─────────────────────────────────────────────────────────────────────────────
 // Runtime capture of active router state for React Router data-router API.
 
-import { useEffect } from 'react';
-import { useLocation, useMatches } from 'react-router-dom';
+import { useEffect, useContext } from 'react';
+import { useLocation, UNSAFE_DataRouterContext } from 'react-router-dom';
 import { useScaffaContext } from './provider.js';
+
+// Import useMatches separately so we can handle data router requirement
+import type { UIMatch } from 'react-router-dom';
 
 /**
  * Hook to capture and report React Router state changes to Scaffa.
  *
  * This hook should be placed in a component that is rendered within the router
  * (e.g., in your root route component or a layout component).
+ *
+ * Works with both component routers (MemoryRouter, BrowserRouter) and data routers
+ * (createBrowserRouter). When used with component routers, route matching info
+ * won't be available but location tracking will still work.
  *
  * @example
  * ```tsx
@@ -26,7 +33,12 @@ import { useScaffaContext } from './provider.js';
 export function useScaffaRouterState(): void {
   const { adapter } = useScaffaContext();
   const location = useLocation();
-  const matches = useMatches();
+
+  // Check if we're in a data router context (useMatches only works with data routers)
+  const dataRouterContext = useContext(UNSAFE_DataRouterContext);
+
+  // Get matches from data router context if available (avoids conditional hook call)
+  const matches: UIMatch[] = dataRouterContext?.router.state.matches ?? [];
 
   useEffect(() => {
     // Extract route IDs and paths from matched routes

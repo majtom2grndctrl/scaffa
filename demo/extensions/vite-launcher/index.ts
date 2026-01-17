@@ -93,6 +93,7 @@ class ViteLauncher implements PreviewLauncher {
         // Listen for URL in stdout
         this.process.stdout?.on('data', (data: Buffer) => {
           const output = data.toString();
+          console.log('[ViteLauncher] Runner stdout:', output.trim());
           this.emitLog('info', output);
 
           // Look for Vite's "Local: http://..." line
@@ -104,7 +105,7 @@ class ViteLauncher implements PreviewLauncher {
             const url = urlMatch[1].trim();
             console.log('[ViteLauncher] Vite dev server ready at:', url);
 
-            resolve({
+            resolvePromise({
               url,
               pid: this.process?.pid,
             });
