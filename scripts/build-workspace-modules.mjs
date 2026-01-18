@@ -8,7 +8,7 @@ const entryPoints = [
   'modules/react-router-graph-producer/index.ts',
   'demo/extensions/demo-module/index.ts',
   'demo/extensions/vite-launcher/index.ts',
-  'demo/extensions/vite-launcher/runner.ts',
+  // Note: runner.js is plain JavaScript (no compilation needed)
   'demo/extensions/demo-graph-producer/index.ts',
   'demo/extensions/demo-save-adapter/index.ts',
 ].filter((entry) => existsSync(resolve(entry)));

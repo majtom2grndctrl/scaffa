@@ -1,4 +1,15 @@
-// demo/extensions/vite-launcher/runner.ts
+// ─────────────────────────────────────────────────────────────────────────────
+// Vite Runner (v0) - Real File Approach
+// ─────────────────────────────────────────────────────────────────────────────
+// This script runs in a separate process to manage the Vite dev server.
+// It uses the PROJECT'S installed Vite version.
+//
+// KEY CHANGE: Instead of a virtual module, we write a real harness file to disk.
+// This avoids all the plugin interaction issues with React Fast Refresh.
+//
+// NOTE: This is a source file (not a build artifact). Previously this was
+// compiled from runner.ts, but since it used no TypeScript features, the
+// .ts file was removed to simplify the build process.
 import { createRequire } from "node:module";
 import { pathToFileURL } from "node:url";
 import path from "node:path";
