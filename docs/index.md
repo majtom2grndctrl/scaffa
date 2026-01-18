@@ -100,13 +100,11 @@ Editable vs non-editable is a first-class concept surfaced in the Inspector UI.
 
 Scaffa core ships with **minimal user-facing features**.
 
-Most functionality is delivered via **modules**:
-- framework adapters
-- component library registries (e.g. Shadcn)
-- internal company design systems
-- future tooling (e.g. Iteration Deck)
+Most functionality is delivered via **extensions**. An extension bundle may include:
+- a **module** (extension-host code: registries, graph producers, launchers)
+- optional **packages** (runtime libraries used by app/source code)
 
-Modules are expected to be authored both by Scaffa and by companies.
+Extensions are expected to be authored both by Scaffa and by companies.
 
 ### 2.4 Extension Host Architecture (Case 2)
 
@@ -280,16 +278,16 @@ Edits begin as **draft overrides** applied to preview sessions for immediate fee
 
 ---
 
-## 5. Registry & Module System
+## 5. Registry & Extension System
 
 ### 5.1 Component Registries
 
-Modules may contribute registries describing component libraries.
+Extension modules may contribute registries describing component libraries.
 
 See also: [Scaffa Component Registry Schema](./scaffa_component_registry_schema.md)
 
 Example:
-- Shadcn module maps Shadcn components to:
+- Shadcn extension module maps Shadcn components to:
   - stable type IDs
   - editable prop manifests
   - control metadata
@@ -297,7 +295,7 @@ Example:
 ### 5.2 Project Manifest
 
 Each Scaffa project defines a manifest (e.g. `scaffa.config.js`) that:
-- enables modules
+- enables extension modules (often from `extensions/<name>/module/`)
 - customizes or overrides registry entries
 - defines providers/decorators
 

@@ -29,6 +29,29 @@ If you’re unsure where a behavior belongs, consult:
 - `docs/index.md:88` (process model)
 - `docs/scaffa_ipc_boundaries_and_sequences.md:1` (canonical flows)
 
+### 1.1 Extension Bundle Layout (Recommended)
+
+Extensions are best organized as bundles so a single feature can ship:
+- an **extension-host module** (registry/graph/launcher code), and
+- optional **runtime packages** (UI components or helpers used by app code).
+
+Recommended layout:
+
+```text
+extensions/
+  layout/
+    module/
+      index.js           # extension-host entrypoint (referenced by scaffa.config.js)
+    packages/
+      layout-primitives/
+        src/
+        package.json
+```
+
+Notes:
+- `module/` runs in the extension host process.
+- `packages/` are regular workspace packages consumed by apps or preview runtimes.
+
 ---
 
 ## 2. The v0 Extension Context (Current Shape)

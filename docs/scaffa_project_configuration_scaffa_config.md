@@ -40,8 +40,8 @@ import { defineScaffaConfig } from '../src/shared/config.js'
 export default defineScaffaConfig({
   modules: [
     {
-      id: 'demo-module',
-      path: './extensions/demo-module/index.js',
+      id: 'layout-extension',
+      path: './extensions/layout/module/index.js',
     },
   ],
 
@@ -93,7 +93,11 @@ Rule:
 - Module entrypoints must be **runtime-loadable JavaScript** (e.g. `index.js`). If you author modules in TypeScript, compile/bundle them before Scaffa loads the workspace.
 
 Example:
-- `demo/scaffa.config.js` with `path: './extensions/demo-module/index.js'` resolves to `demo/extensions/demo-module/index.js`.
+- `demo/scaffa.config.js` with `path: './extensions/layout/module/index.js'` resolves to `demo/extensions/layout/module/index.js`.
+
+Extension bundles commonly live under `extensions/<name>/` and may include:
+- `module/` (extension-host entrypoint referenced by `scaffa.config.js`)
+- `packages/` (optional runtime libraries imported by app/source code)
 
 Also supported in v0:
 - **Workspace-anchored prefixes**:
