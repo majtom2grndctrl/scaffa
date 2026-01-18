@@ -13,8 +13,8 @@ import type {
   Disposable,
   GraphPatch,
   GraphSnapshot,
-} from '../../extension-sdk.js';
-import { createRouteNode, createRouteUsesComponentTypeEdge } from '../../extension-sdk.js';
+} from '../../../extension-sdk.js';
+import { createRouteNode, createRouteUsesComponentTypeEdge } from '../../../extension-sdk.js';
 
 interface RouteDefinition {
   id: string;

@@ -5,7 +5,7 @@ out/
 release/
 .vite/
 demo/extensions/**/index.js
-modules/**/index.js
+extensions/**/module/index.js
 src/shared/config.js
 .DS_Store
 .env

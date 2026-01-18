@@ -6,9 +6,6 @@ import { glob } from 'node:fs/promises';
 // Static entries that don't follow the extensions/<name>/module pattern
 const staticEntryPoints = [
   'src/shared/config.ts',
-  'modules/sample-graph-producer/index.ts',
-  'modules/react-router-graph-producer/index.ts',
-  'modules/mui-registry/index.ts',
   'demo/extensions/demo-module/index.ts',
   'demo/extensions/vite-launcher/index.ts',
   // Note: runner.js is plain JavaScript (no compilation needed)

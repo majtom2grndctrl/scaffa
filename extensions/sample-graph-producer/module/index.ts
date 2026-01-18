@@ -9,13 +9,13 @@ import type {
   Disposable,
   GraphPatch,
   GraphSnapshot,
-} from '../../extension-sdk.js';
+} from '../../../extension-sdk.js';
 import {
   createRouteNode,
   createComponentTypeNode,
   createRouteUsesComponentTypeEdge,
   createComponentTypeUsesComponentTypeEdge,
-} from '../../extension-sdk.js';
+} from '../../../extension-sdk.js';
 
 export function activate(context: ExtensionContext): void {
   console.log('[SampleGraphProducer] Activating...');

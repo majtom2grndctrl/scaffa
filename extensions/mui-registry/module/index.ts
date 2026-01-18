@@ -4,8 +4,7 @@
 // Provides component registry metadata for Material UI (@mui/material) components.
 // See: docs/scaffa_component_registry_schema.md
 
-import type { ExtensionContext } from '../../src/extension-host/extension-context.js';
-import type { ComponentRegistry } from '../../src/shared/registry.js';
+import type { ExtensionContext, ComponentRegistry } from '../../../extension-sdk.js';
 
 export function activate(context: ExtensionContext): void {
   console.log('[MUIRegistry] Activating...');
