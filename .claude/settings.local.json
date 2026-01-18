@@ -24,7 +24,12 @@
       "Bash(bd dep add:*)",
       "Skill(implement-ticket)",
       "Skill(add-shadcn-component)",
-      "Bash(pnpm run build:*)"
+      "Bash(pnpm run build:*)",
+      "Bash(node scripts/build-workspace-modules.mjs:*)",
+      "Bash(pnpm install)",
+      "Bash(ls:*)",
+      "Bash(pnpm build:modules:*)",
+      "Bash(tree:*)"
     ]
   }
 }
