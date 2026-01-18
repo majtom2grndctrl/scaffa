@@ -16,3 +16,10 @@ pnpm-debug.log*
 yarn-debug.log*
 yarn-error.log*
 electron-debug.log*
+
+# Test artifacts
+coverage/
+.vitest/
+playwright-report/
+test-results/
+tests/e2e/screenshots/

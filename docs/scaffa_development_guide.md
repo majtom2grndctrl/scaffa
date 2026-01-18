@@ -318,12 +318,52 @@ When adding new features, watch for:
 
 ---
 
-## 6. Next Steps (Post-v0)
+## 6. Testing
+
+Scaffa v0 includes comprehensive test infrastructure:
+
+- **Unit tests**: Vitest with support for both Node and jsdom environments
+- **Component tests**: @testing-library/react for UI components
+- **E2E tests**: Playwright for Electron smoke testing
+- **Build tests**: Fixtures for module discovery and extension host activation
+
+see also: [Testing section in README](../README.md#11-testing)
+
+### Running Tests
+
+```bash
+# Run all tests
+pnpm test
+
+# Run tests with UI
+pnpm test:ui
+
+# Generate coverage report
+pnpm test:coverage
+
+# Run Playwright E2E tests
+pnpm test:e2e
+```
+
+### Test Organization
+
+Tests are co-located with source files (`*.test.ts`, `*.test.tsx`) and supplemented by shared helpers in `tests/`:
+
+- `tests/setup/` - Global test configuration
+- `tests/helpers/` - Reusable testing utilities
+- `tests/fixtures/` - Test data and mock factories
+- `tests/e2e/` - Playwright E2E tests
+
+For detailed patterns and examples, see [Testing section in README](../README.md#11-testing).
+
+---
+
+## 7. Next Steps (Post-v0)
 
 Future improvements for the development experience:
 
 - [ ] Add TypeScript build verification (`tsc --noEmit`)
-- [ ] Set up test infrastructure (Vitest + @testing-library/react)
+- [x] Set up test infrastructure (Vitest + @testing-library/react) ✓ 
 - [ ] Add pre-commit hooks for linting/formatting
 - [ ] Create development extension/module for testing
 - [ ] Document hot-reload behavior for each process
