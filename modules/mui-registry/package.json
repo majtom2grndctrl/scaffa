@@ -1,0 +1,7 @@
+{
+  "name": "@scaffa-modules/mui-registry",
+  "version": "0.1.0",
+  "type": "module",
+  "description": "Scaffa component registry module for Material UI (@mui/material)",
+  "main": "index.js"
+}

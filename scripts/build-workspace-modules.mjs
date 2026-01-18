@@ -6,6 +6,7 @@ const entryPoints = [
   'src/shared/config.ts',
   'modules/sample-graph-producer/index.ts',
   'modules/react-router-graph-producer/index.ts',
+  'modules/mui-registry/index.ts',
   'demo/extensions/demo-module/index.ts',
   'demo/extensions/vite-launcher/index.ts',
   // Note: runner.js is plain JavaScript (no compilation needed)
