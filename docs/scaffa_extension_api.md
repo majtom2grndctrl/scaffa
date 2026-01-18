@@ -179,6 +179,9 @@ interface UIAPI {
 ```
 
 All UI is declarative. Extensions do not imperatively mutate renderer state.
+Design note (v0): the inspector UI API must remain **generic** and not be tailored to a single use case.
+Avoid encoding layout-specific affordances or assumptions into the core API; prefer extension-provided
+components, schema-driven controls, and composable sections that work for many domains.
 
 ---
 
