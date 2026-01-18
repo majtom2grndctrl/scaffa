@@ -1,200 +1,64 @@
----
-name: implement-ticket
-description: Implement a Beads ticket with documentation grounding and correction workflow
----
-
 # Implement Beads Ticket
 
-Implement a Beads ticket with documentation grounding and correction workflow.
+## Purpose
+Implement a Beads ticket with documentation grounding, correctness checks, and full landing protocol completion.
 
-## Usage
+## When to use
+- You are asked to implement a Beads ticket end-to-end.
+- You must follow the Beads workflow including docs review and landing protocol.
 
+## When NOT to use
+- There is no Beads ticket or the work is exploratory only.
+- The request is only for advice, triage, or code review.
+
+## Procedure
+1. Retrieve ticket details: run `bd show <ticket-id>` and read the full description, acceptance criteria, dependencies, and context.
+2. Claim the ticket: run `bd update <ticket-id> --status=in_progress`.
+3. Ground on relevant documentation before touching code: identify and read relevant `docs/` (start with `docs/index.md`; add `docs/scaffa_extension_authoring_guide.md`, `docs/scaffa_extension_api.md`, `docs/scaffa_ipc_boundaries_and_sequences.md`, or component docs as needed); note anything outdated or unclear.
+4. Create a todo list if the ticket has multiple subtasks (example below).
+5. Implement the solution: follow documented patterns, update the todo list, run builds/tests as needed, and keep scope tight to the ticket.
+6. Verify the implementation: run `pnpm run build`, run tests if applicable, and confirm acceptance criteria.
+7. Check for documentation issues: re-review the docs you read and identify misleading, contradictory, or now-outdated content or missing docs for new patterns.
+8. Correct documentation if needed: update or add docs and include doc fixes in the implementation commit or a separate commit.
+9. Invoke the Code Review skill after implementation and doc updates; address any findings before proceeding.
+10. Complete the landing protocol: `git status`, `git add <files>`, commit with a descriptive message that includes `Resolves <ticket-id>` and the co-author line, `bd sync`, `git push`, then `git status` must show "up to date with origin".
+11. Close the ticket: run `bd close <ticket-id>`.
+
+## Rules / Guardrails
+- Always ground on relevant docs before coding.
+- Always validate and correct documentation if issues are found.
+- Always run `bd sync` and then `git push`; work is not complete until `git status` shows "up to date with origin".
+- Never say "ready to push when you are"; you must push.
+- Never include `.beads/issues.jsonl` in code commits.
+
+## Examples
+### Example: implement a ticket
+Input:
 ```
-/implement-ticket <ticket-id>
+/implement-ticket scaffa-7iq.11
 ```
-
-Example: `/implement-ticket scaffa-7iq.11`
-
-## What This Skill Does
-
-This skill guides you through implementing a Beads ticket with proper workflow:
-
-1. **Retrieves ticket details** - Shows the ticket description, acceptance criteria, and dependencies
-2. **Grounds on documentation** - Reviews relevant architectural docs before starting work
-3. **Implements the solution** - Works through the ticket requirements systematically
-4. **Validates documentation** - Checks for and corrects any outdated or misleading docs
-5. **Completes landing protocol** - Commits, syncs, and pushes all changes
-
-## Instructions
-
-You MUST follow these steps in order:
-
-### Phase 1: Preparation
-
-1. **Retrieve ticket details**:
-   ```bash
-   bd show <ticket-id>
-   ```
-   - Read the full description, acceptance criteria, and context
-   - Note any dependencies or related tickets
-   - Understand the scope before proceeding
-
-2. **Claim the ticket**:
-   ```bash
-   bd update <ticket-id> --status=in_progress
-   ```
-
-3. **Ground on relevant documentation**:
-   - **CRITICAL**: Before touching any code, identify which architectural documents are relevant to this ticket
-   - Read the relevant docs from `docs/` directory to understand:
-     - Current architecture and design decisions
-     - Existing patterns and conventions
-     - Related systems and boundaries
-   - Common docs to review:
-     - `docs/index.md` - Main architecture reference
-     - `docs/scaffa_extension_authoring_guide.md` - For extension-related work
-     - `docs/scaffa_extension_api.md` - For extension API changes
-     - `docs/scaffa_ipc_boundaries_and_sequences.md` - For IPC/process boundary work
-     - Component-specific docs as relevant to the ticket
-   - **If you don't have recent recall of these docs, you MUST read them now**
-   - Take note of any information that might be outdated or unclear
-
-### Phase 2: Implementation
-
-4. **Create todo list** (if ticket has multiple subtasks):
-   ```typescript
-   TodoWrite({
-     todos: [
-       { content: "Subtask 1", status: "pending", activeForm: "Working on subtask 1" },
-       { content: "Subtask 2", status: "pending", activeForm: "Working on subtask 2" },
-       // ...
-     ]
-   })
-   ```
-
-5. **Implement the solution**:
-   - Work through requirements systematically
-   - Follow existing patterns and conventions from the docs
-   - Update todo list as you progress
-   - Run builds and tests as needed
-   - Keep changes focused on the ticket scope
-
-6. **Verify the implementation**:
-   - Run `npm run build` to ensure TypeScript compiles
-   - Test the changes if applicable
-   - Verify acceptance criteria are met
-
-### Phase 3: Documentation Validation
-
-7. **Check for documentation issues**:
-   - **CRITICAL**: Review the docs you read earlier
-   - Ask yourself:
-     - Did any documentation mislead you or contain incorrect information?
-     - Did you find contradictions between docs?
-     - Is anything now out of date due to your changes?
-     - Are there missing docs for the patterns you used?
-
-8. **Correct documentation** (if issues found):
-   - Update any outdated or incorrect documentation
-   - Add new documentation for new patterns or APIs
-   - Ensure docs accurately reflect the current implementation
-   - Commit doc fixes separately or with your implementation
-
-### Phase 4: Landing Protocol
-
-9. **Complete the landing protocol**:
-
-   **MANDATORY WORKFLOW** - Work is NOT complete until pushed:
-
-   ```bash
-   # 1. Check what changed
-   git status
-
-   # 2. Stage code changes
-   git add <files>
-
-   # 3. Commit code with descriptive message
-   git commit -m "feat: description
-
-   Detailed explanation of changes.
-
-   Resolves <ticket-id>
-
-   Co-Authored-By: Claude Sonnet 4.5 <noreply@anthropic.com>"
-
-   # 4. Sync beads changes
-   bd sync
-
-   # 5. Push to remote
-   git push
-
-   # 6. Verify push succeeded
-   git status  # MUST show "up to date with origin"
-   ```
-
-10. **Close the ticket**:
-    ```bash
-    bd close <ticket-id>
-    ```
-
-## Critical Rules
-
-- **NEVER skip documentation grounding** - Reading relevant docs prevents implementing wrong patterns
-- **NEVER skip documentation validation** - Keeping docs accurate saves future confusion
-- **NEVER say "ready to push when you are"** - YOU must push as part of landing protocol
-- **NEVER skip `bd sync`** - Beads changes must be persisted
-- **NEVER include `.beads/issues.jsonl` in code commits** - It's managed by `bd sync`
-- Work is NOT complete until `git push` succeeds and `git status` shows "up to date"
-
-## Example Session
-
+Output (abridged):
 ```
-User: /implement-ticket scaffa-7iq.11
+bd show scaffa-7iq.11
+bd update scaffa-7iq.11 --status=in_progress
+# Read docs/index.md and docs/scaffa_extension_api.md
+TodoWrite({
+  todos: [
+    { content: "Update GraphProducer.initialize() typing", status: "pending", activeForm: "Working on typing" },
+    { content: "Run build", status: "pending", activeForm: "Running build" }
+  ]
+})
+# Implement change, run npm run build, verify acceptance criteria
+# Check docs for accuracy; update if needed
+git status
+git add src/extension-host/extension-context.ts
+git commit -m "feat(extensions): type GraphProducer.initialize() as Promise<GraphSnapshot>
 
-Assistant: Retrieves ticket scaffa-7iq.11:
-  • Reads full context and acceptance criteria
-  • Claims ticket with `bd update scaffa-7iq.11 --status=in_progress`
-  
-Assistant: Grounds on relevant documentation:
-  • Reads docs/index.md for architecture overview
-  • Reads docs/scaffa_extension_api.md for Extension Context types
-  • Takes note: GraphProducer.initialize() shows Promise<unknown> with TODO
-  
-Assistant: Implements the solution:
-  • Updates extension-context.ts to properly type initialize() as Promise<GraphSnapshot>
-  • Removes TODO comment
-  • Runs build - passes successfully
-  
-Assistant: Validates documentation:
-  • Checks docs - no issues found related to this change
-  • Implementation matches existing patterns
-  
-Assistant: Completes landing protocol:
-  ```bash
-  git status
-  git add src/extension-host/extension-context.ts
-  git commit -m "feat(extensions): type GraphProducer.initialize() as Promise<GraphSnapshot>"
-  bd sync
-  git push
-  git status  # Shows "up to date with origin"
-  ```
-  
-Assistant: Closes ticket:
-  ```bash
-  bd close scaffa-7iq.11
-  ```
+Resolves scaffa-7iq.11
+
+Co-Authored-By: Claude Sonnet 4.5 <noreply@anthropic.com>"
+bd sync
+git push
+git status
+bd close scaffa-7iq.11
 ```
-
-## Benefits
-
-- **Prevents rework** - Documentation grounding ensures you implement the right patterns
-- **Maintains quality** - Documentation validation keeps docs accurate and trustworthy
-- **Complete workflow** - Nothing gets left behind (commits, syncs, pushes)
-- **Audit trail** - All changes properly tracked in git and beads
-
-## Notes
-
-- The skill enforces the full workflow but remains flexible for ticket complexity
-- Documentation grounding is required but the specific docs to read depend on the ticket
-- Documentation validation may find nothing to fix - that's fine!
-- Some tickets may warrant separate documentation commits, others can include docs with implementation
