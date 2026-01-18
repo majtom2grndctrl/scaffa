@@ -29,7 +29,8 @@
       "Bash(pnpm install)",
       "Bash(ls:*)",
       "Bash(pnpm build:modules:*)",
-      "Bash(tree:*)"
+      "Bash(tree:*)",
+      "Skill(code-review)"
     ]
   }
 }
