@@ -7,7 +7,7 @@ import { pathToFileURL } from 'node:url';
 import path from 'node:path';
 import { createRequire } from 'node:module';
 import type { ScaffaConfig, ScaffaModule } from '../shared/config.js';
-import type { ComponentRegistry } from '../shared/index.js';
+import type { ComponentRegistry, ComponentTypeId } from '../shared/index.js';
 import type { GraphPatch } from '../shared/project-graph.js';
 import type {
   ExtensionContext,
@@ -354,11 +354,15 @@ export class ModuleLoader {
 
     try {
       console.log(`[ModuleLoader] Starting preview launcher: ${launcherId}`);
-      
+
+      // Compose the registry snapshot for instrumentation
+      const registrySnapshot = this.composeRegistrySnapshot();
+
       const context = {
         projectEntry: this.config.preview?.entry,
         projectStyles: this.config.preview?.styles,
         environment: this.config.preview?.environment,
+        registrySnapshot,
       };
 
       const result = await launcher.start(options, context);
@@ -425,6 +429,27 @@ export class ModuleLoader {
         },
       });
     }
+  }
+
+  /**
+   * Compose all registry contributions into a single snapshot.
+   * Uses v0 composition rules: later modules overwrite earlier ones for same typeId.
+   * See: docs/scaffa_component_registry_schema.md (4.1)
+   */
+  private composeRegistrySnapshot(): ComponentRegistry {
+    const composed: ComponentRegistry = {
+      schemaVersion: 'v0',
+      components: {},
+    };
+
+    // Merge in order: later contributions win for same typeId
+    for (const registry of this.registryContributions) {
+      for (const [typeId, entry] of Object.entries(registry.components)) {
+        composed.components[typeId as ComponentTypeId] = entry;
+      }
+    }
+
+    return composed;
   }
 
   /**

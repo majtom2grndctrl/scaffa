@@ -68,6 +68,13 @@ export function activate(context: ExtensionContext): void {
             },
           },
         },
+        // Implementation hint for registry-driven instrumentation
+        // See: docs/scaffa_component_registry_schema.md (5.1)
+        implementation: {
+          kind: 'file',
+          filePath: 'app/src/components/DemoButton.tsx',
+          exportName: 'DemoButton',
+        },
       },
       'demo.card': {
         typeId: 'demo.card',
@@ -128,6 +135,13 @@ export function activate(context: ExtensionContext): void {
               uiDefaultValue: 'primary',
             },
           },
+        },
+        // Implementation hint for registry-driven instrumentation
+        // See: docs/scaffa_component_registry_schema.md (5.1)
+        implementation: {
+          kind: 'file',
+          filePath: 'app/src/components/DemoCard.tsx',
+          exportName: 'DemoCard',
         },
       },
     },

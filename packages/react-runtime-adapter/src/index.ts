@@ -5,7 +5,7 @@
 
 export { ScaffaReactAdapter } from './adapter.js';
 export { ScaffaProvider, useScaffaInstance } from './provider.js';
-export { ScaffaInstance, useInstanceId } from './instance.js';
+export { ScaffaInstance, useInstanceId, ScaffaInstanceBoundary } from './instance.js';
 export { useScaffaRouterState } from './router.js';
 export type {
   ScaffaAdapterConfig,

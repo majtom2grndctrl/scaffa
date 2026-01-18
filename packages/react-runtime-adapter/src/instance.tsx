@@ -52,3 +52,36 @@ export function ScaffaInstance({
     </InstanceIdContext.Provider>
   );
 }
+
+/**
+ * Higher-order component for registry-driven instrumentation.
+ * Wraps a component export to inject componentTypeId for selection/editing.
+ * 
+ * This is used by the vite-launcher's instrumentation plugin to wrap
+ * component exports that match registry implementation hints.
+ * 
+ * The adapter owns instanceId generation; this HOC only provides the typeId.
+ * See: docs/scaffa_harness_model.md (5.6), docs/scaffa_runtime_adapter_integration_guide.md (2.2.2)
+ * 
+ * @param WrappedComponent - The original component to wrap
+ * @param componentTypeId - The registry type ID for this component
+ * @returns A wrapped component with instrumentation
+ */
+export function ScaffaInstanceBoundary<P extends object>(
+  WrappedComponent: React.ComponentType<P>,
+  componentTypeId: string
+): React.FC<P> {
+  const displayName = WrappedComponent.displayName || WrappedComponent.name || 'Component';
+
+  const BoundaryComponent: React.FC<P> = (props) => {
+    return (
+      <ScaffaInstance typeId={componentTypeId} displayName={displayName}>
+        <WrappedComponent {...props} />
+      </ScaffaInstance>
+    );
+  };
+
+  BoundaryComponent.displayName = `ScaffaInstanceBoundary(${displayName})`;
+
+  return BoundaryComponent;
+}

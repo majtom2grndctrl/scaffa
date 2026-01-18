@@ -104,6 +104,48 @@ export const PropDefinitionSchema = z.object({
 export type PropDefinition = z.infer<typeof PropDefinitionSchema>;
 
 // ─────────────────────────────────────────────────────────────────────────────
+// Component Implementation Hints (Harness Model)
+// ─────────────────────────────────────────────────────────────────────────────
+// Optional hints used by preview launchers to decide what code to instrument.
+// See: docs/scaffa_component_registry_schema.md (5.1/5.2)
+
+export const FileImplementationHintSchema = z.object({
+  kind: z.literal('file'),
+  /**
+   * Workspace-relative path to the module that exports the component.
+   * Example: "src/components/DemoButton.tsx"
+   */
+  filePath: z.string(),
+  /**
+   * Optional named export. If omitted, defaults to "default".
+   * Example: "DemoButton"
+   */
+  exportName: z.string().optional(),
+});
+
+export const PackageImplementationHintSchema = z.object({
+  kind: z.literal('package'),
+  /**
+   * Bare module specifier for a third-party component module.
+   * Example: "@mui/material/Button"
+   */
+  specifier: z.string(),
+  /**
+   * Optional named export. If omitted, defaults to "default".
+   */
+  exportName: z.string().optional(),
+});
+
+export const ComponentImplementationHintSchema = z.discriminatedUnion('kind', [
+  FileImplementationHintSchema,
+  PackageImplementationHintSchema,
+]);
+
+export type FileImplementationHint = z.infer<typeof FileImplementationHintSchema>;
+export type PackageImplementationHint = z.infer<typeof PackageImplementationHintSchema>;
+export type ComponentImplementationHint = z.infer<typeof ComponentImplementationHintSchema>;
+
+// ─────────────────────────────────────────────────────────────────────────────
 // Component Registry Entry
 // ─────────────────────────────────────────────────────────────────────────────
 
@@ -113,6 +155,15 @@ export const ComponentRegistryEntrySchema = z.object({
   tags: z.array(z.string()).optional(),
   description: z.string().optional(),
   props: z.record(PropDefinitionSchema),
+  /**
+   * Optional instrumentation hints used by managed preview launchers.
+   * These hints are NOT identifiers; they can change without changing typeId.
+   * See: docs/scaffa_component_registry_schema.md (5.1/5.2)
+   */
+  implementation: z.union([
+    ComponentImplementationHintSchema,
+    z.array(ComponentImplementationHintSchema),
+  ]).optional(),
 });
 
 export type ComponentRegistryEntry = z.infer<typeof ComponentRegistryEntrySchema>;

@@ -136,6 +136,13 @@ export interface PreviewLauncherContext {
    * Environment variables or configuration.
    */
   readonly environment?: Record<string, unknown>;
+
+  /**
+   * Composed component registry snapshot.
+   * The launcher uses this to build instrumentation matchers from ComponentImplementationHint.
+   * See: docs/scaffa_component_registry_schema.md (5.1/5.2), docs/scaffa_harness_model.md (5.4-5.6)
+   */
+  readonly registrySnapshot?: ComponentRegistry;
 }
 
 /**

@@ -62,8 +62,8 @@ class ViteLauncher implements PreviewLauncher {
     const entry = context.projectEntry
       ? (this.workspaceRoot ? resolve(this.workspaceRoot, context.projectEntry) : resolve(context.projectEntry))
       : undefined;
-      
-    const styles = context.projectStyles?.map(s => 
+
+    const styles = context.projectStyles?.map(s =>
       this.workspaceRoot ? resolve(this.workspaceRoot, s) : resolve(s)
     );
 
@@ -80,6 +80,9 @@ class ViteLauncher implements PreviewLauncher {
           SCAFFA_ROOT: this.appPath, // Runner runs in app dir
           SCAFFA_ENTRY: entry || '',
           SCAFFA_STYLES: JSON.stringify(styles || []),
+          // Pass registry snapshot for instrumentation matchers
+          // See: docs/scaffa_harness_model.md (5.4-5.6)
+          SCAFFA_REGISTRY: JSON.stringify(context.registrySnapshot || { schemaVersion: 'v0', components: {} }),
         };
 
         this.process = spawn('node', [runnerPath], {
