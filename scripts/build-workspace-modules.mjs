@@ -16,19 +16,21 @@ const staticEntryPoints = [
   'demo/extensions/demo-save-adapter/index.ts',
 ];
 
-// Discover extension bundle modules from extensions/**/module/index.ts
+// Discover extension bundle modules from extensions/*/module/index.ts
+// Note: Using single-star glob to match extensions/<name>/module pattern precisely
 async function discoverExtensionModules() {
-  const discovered = [];
-  for await (const entry of glob('extensions/**/module/index.ts')) {
-    discovered.push(entry);
+  try {
+    return await Array.fromAsync(glob('extensions/*/module/index.ts'));
+  } catch (error) {
+    console.error('[WorkspaceModules] Failed to discover extension modules:', error);
+    throw error; // Fail-fast: glob failures should abort the build
   }
-  return discovered;
 }
 
+// Filter static entries (glob already returns only existing files)
+const validStaticEntries = staticEntryPoints.filter((entry) => existsSync(resolve(entry)));
 const extensionModules = await discoverExtensionModules();
-const entryPoints = [...staticEntryPoints, ...extensionModules].filter((entry) =>
-  existsSync(resolve(entry))
-);
+const entryPoints = [...validStaticEntries, ...extensionModules];
 
 if (extensionModules.length > 0) {
   console.log(`[WorkspaceModules] Discovered ${extensionModules.length} extension bundle module(s):`);
