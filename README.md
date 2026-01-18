@@ -200,115 +200,22 @@ Constraint is a feature, not a limitation.
 
 ## 11. Testing
 
-Scaffa uses a comprehensive test infrastructure to ensure code quality and prevent regressions.
-
-### Test Stack
-
-- **Vitest**: Unit and component testing framework
-- **@testing-library/react**: React component testing utilities
-- **@testing-library/jest-dom**: Custom matchers for DOM assertions
-- **Playwright**: End-to-end Electron smoke testing
-- **jsdom/happy-dom**: Browser environment simulation for React tests
+See `docs/testing_guide.md` for Scaffa’s testing philosophy, what to prioritize, and how tests should document system behavior for AI agents.
 
 ### Running Tests
 
 ```bash
-# Run all tests in watch mode
 pnpm test
-
-# Run tests with UI (Vitest UI)
 pnpm test:ui
-
-# Generate coverage report
 pnpm test:coverage
-
-# Run E2E Playwright tests
 pnpm test:e2e
-
-# Run tests before pushing (recommended)
 pnpm prepush
 ```
 
 **Note:** E2E tests require the app to be built first (`pnpm build`). If not built, E2E tests will be skipped with a helpful message.
-
-### Test Organization
-
-Tests are co-located with source files using the following patterns:
-
-```
-src/
-├── main/
-│   └── feature.test.ts
-├── renderer/
-│   └── components/
-│       └── Component.test.tsx      # @vitest-environment jsdom
-├── extension-host/
-│   └── module-loader.test.ts
-scripts/
-└── build-workspace-modules.test.mts
-
-tests/
-├── setup/
-│   └── vitest.setup.ts             # Global test setup
-├── helpers/
-│   └── react-testing.tsx           # Testing utilities
-├── fixtures/                       # Test fixtures
-└── e2e/
-    └── smoke.spec.ts               # Playwright E2E tests
-```
-
-### Environment Configuration
-
-Tests run in two environments:
-
-- **Node**: Default for scripts, main process, extension-host tests
-- **jsdom**: For React/renderer component tests (use `@vitest-environment jsdom` comment)
-
-### Writing Tests
-
-**Unit Test Example (Node environment):**
-
-```typescript
-import { describe, it, expect } from 'vitest';
-
-describe('myFunction', () => {
-  it('should do something', () => {
-    expect(myFunction()).toBe(expected);
-  });
-});
-```
-
-**React Component Test Example (jsdom environment):**
-
-```typescript
-/**
- * @vitest-environment jsdom
- */
-import { render, screen } from '@testing-library/react';
-import { MyComponent } from './MyComponent';
-
-describe('MyComponent', () => {
-  it('should render correctly', () => {
-    render(<MyComponent />);
-    expect(screen.getByText('Hello')).toBeInTheDocument();
-  });
-});
-```
-
-### Test Coverage
-
-Coverage reports are generated in the `coverage/` directory and include:
-
-- Line coverage
-- Branch coverage
-- Function coverage
-- Statement coverage
-
-View coverage reports by opening `coverage/index.html` in a browser after running `pnpm test:coverage`.
 
 ---
 
 ## 12. Guiding Statement
 
 **Scaffa is an environment for shaping real software through visible structure, explicit boundaries, and confident iteration—without severing the link to code.**
-
