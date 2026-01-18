@@ -53,6 +53,25 @@ In the Harness Model, the “three parts” still exist, but they are injected b
 - The launcher applies a dev-time transform to instrument the modules that correspond to those registry entries (including optional third-party packages like MUI).
 - Instrumentation is responsible for associating a stable `componentTypeId` with runtime instances in a way the adapter can hit-test.
 
+### 2.2.1 Mapping registry hints to transforms (v0)
+
+Use the optional `ComponentImplementationHint` data from the registry to build a minimal allowlist.
+
+- `kind: "file"`: resolve the workspace-relative path and match the exact module id.
+- `kind: "package"`: resolve the bare specifier and match that module id (and subpath export if used).
+- `exportName`: default to `"default"`; if missing, skip instrumentation and log a warning that includes `typeId` and the hint target.
+
+For third-party packages, ensure the transform runs on dependency sources:
+- add the instrumented specifiers to `optimizeDeps.exclude` to avoid prebundling
+- keep the list narrow (only packages referenced by hints)
+
+### 2.2.2 `componentTypeId` join key (v0)
+
+Instrumentation should wrap the target export with a boundary that provides the join key to the adapter:
+- The wrapper passes `componentTypeId` from the registry entry `typeId`.
+- The adapter owns `instanceId` generation; wrappers should not generate ids directly.
+- Selection events emitted by the adapter must include `{ instanceId, componentTypeId }`.
+
 ### 2.3 Apply overrides via adapter-owned boundaries
 
 - Overrides must be applied non-destructively in the preview runtime.

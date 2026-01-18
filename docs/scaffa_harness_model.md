@@ -97,6 +97,31 @@ Preferred strategies:
 - wrap exported components (export-level transform), or
 - inject a stable boundary component that owns hook usage
 
+### 5.4 Ownership and Data Flow (v0)
+
+- **Main process** composes the effective registry and passes it to the launcher when starting a managed preview session.
+- **Launcher runtime** derives instrumentation matchers from `ComponentImplementationHint` and wires a Vite plugin that performs the transforms.
+- **Runtime adapter** consumes the resulting instance metadata; it does not decide what to instrument.
+
+### 5.5 Matcher Construction (v0)
+
+Match only what the registry explicitly declares.
+
+- For `kind: "file"` hints, resolve the workspace-relative path to an absolute path and match that exact module id.
+- For `kind: "package"` hints, resolve the bare specifier to a module id and match that exact entry (and its subpath export if used).
+- No auto-discovery or repo-wide scanning in v0; the registry is the allowlist.
+
+If package instrumentation is needed, the launcher should adjust Vite settings so transforms run on those dependencies:
+- prefer `optimizeDeps.exclude` for the instrumented specifiers, so they are not prebundled
+- avoid global excludes; only touch packages in the registry
+
+### 5.6 Runtime Join Key (v0)
+
+Instrumentation must attach the registry `typeId` as the runtime `componentTypeId`:
+- The transform should wrap the target export in a boundary component (e.g. `ScaffaInstance` / `ScaffaInstanceBoundary`) and pass `componentTypeId`.
+- Instance identity is owned by the adapter; the wrapper should not invent ids.
+- Selection events emitted by the adapter must include `{ instanceId, componentTypeId }`.
+
 ---
 
 ## 6. Using the Project’s Vite (Compatibility)

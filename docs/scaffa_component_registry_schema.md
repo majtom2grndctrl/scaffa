@@ -80,6 +80,10 @@ export type ComponentRegistryEntry = {
 
   // Prop metadata keyed by prop name (as used at runtime)
   props: Record<string, PropDefinition>;
+
+  // Optional instrumentation hints used by managed preview launchers.
+  // These hints are NOT identifiers; they can change without changing typeId.
+  implementation?: ComponentImplementationHint | ComponentImplementationHint[];
 };
 
 export type PropDefinition = {
@@ -256,6 +260,36 @@ Launchers may translate these hints into “instrumentation matchers” (file/mo
 Notes:
 - Third-party package instrumentation can require Vite `optimizeDeps` tuning (e.g. excluding specific packages) so transforms run on the intended sources.
 - Teams can ship pre-defined registries for libraries (e.g. MUI), and project config can override/extend them.
+
+### 5.1 Matching Rules (v0)
+
+These rules define how a launcher should interpret the hints above.
+
+1) `kind: "file"`
+- `filePath` is workspace-relative and POSIX-style (use `/` separators).
+- The launcher resolves it to an absolute path and matches exactly (no globbing in v0).
+- The transform should run only when the resolved module id matches the resolved path.
+
+2) `kind: "package"`
+- `specifier` is a bare module specifier (e.g. `@mui/material/Button`).
+- The launcher matches:
+  - the resolved module id that corresponds to that specifier, and
+  - any subpath imports that resolve within the same package export entry.
+- Instrumentation is only applied to the matched module ids; no package-wide auto-scan.
+
+3) `exportName`
+- Defaults to `"default"` when omitted.
+- If the export is missing, the launcher should skip instrumentation and log a warning that includes `typeId`, `specifier` or `filePath`, and `exportName`.
+
+4) Multiple hints
+- If `implementation` is an array, each hint is treated independently.
+- Duplicates are allowed; the launcher may de-duplicate by resolved module id + exportName.
+
+### 5.2 Scoping Rules (v0)
+
+- **Workspace-only by default:** only `kind: "file"` hints inside the workspace root are instrumented.
+- **Third-party packages are opt-in:** only `kind: "package"` hints are considered for `node_modules`.
+- There is no auto-discovery in v0; the registry (plus project overrides) is the allowlist.
 
 ---
 
