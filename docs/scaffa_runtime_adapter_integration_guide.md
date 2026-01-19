@@ -68,14 +68,16 @@ For third-party packages, ensure the transform runs on dependency sources:
 ### 2.2.2 `componentTypeId` join key (v0)
 
 Instrumentation should wrap the target export with a boundary that provides the join key to the adapter:
-- The wrapper passes `componentTypeId` from the registry entry `typeId`.
+- The wrapper (`ScaffaInstanceBoundary`) passes `componentTypeId` from the registry entry `typeId`.
 - The adapter owns `instanceId` generation; wrappers should not generate ids directly.
+- **The boundary applies overrides automatically**: `ScaffaInstanceBoundary` retrieves overrides from the adapter and applies them to props before passing them to the wrapped component. App code does NOT need to import or use `ScaffaInstance` or `useScaffaInstance`.
 - Selection events emitted by the adapter must include `{ instanceId, componentTypeId }`.
 
 ### 2.3 Apply overrides via adapter-owned boundaries
 
 - Overrides must be applied non-destructively in the preview runtime.
 - The adapter owns the override map and rerender mechanism; app source files are not rewritten at runtime.
+- **Automatic override application**: `ScaffaInstanceBoundary` (injected by instrumentation) applies overrides to props transparently, so component code remains clean of Scaffa imports.
 
 For the full decision record and constraints, see: `docs/scaffa_harness_model.md`.
 
@@ -89,15 +91,13 @@ See also: `docs/scaffa_harness_model.md` for the managed preview entrypoint and 
 
 ### 3.1 Production build
 
-`index.html` -> `src/main.tsx` (production bootstrap) -> `src/App.tsx` (router + UI) -> `src/pages/*.tsx` -> `src/components/*.tsx` (use `src/scaffa-shim.tsx`)
+`index.html` -> `src/main.tsx` (production bootstrap) -> `src/App.tsx` (router + UI) -> `src/pages/*.tsx` -> `src/components/*.tsx`
 
-Components import from `src/scaffa-shim.tsx`:
-- Production: no-op passthroughs
-- Exports: `ScaffaInstance`, `useScaffaInstance`
+**No Scaffa imports required**: Components are written as standard React components with no Scaffa dependencies.
 
 ### 3.2 Scaffa preview
 
-`index.html` (transformed by harness plugin) -> `.scaffa-harness.tsx` (generated) -> `ScaffaProvider` (real adapter) -> `src/App.tsx` (router + UI) -> components use shim (connects to provider)
+`index.html` (transformed by harness plugin) -> `.scaffa-harness.tsx` (generated) -> `ScaffaProvider` (real adapter) -> `src/App.tsx` (router + UI) -> registry-listed components are automatically wrapped with `ScaffaInstanceBoundary` (injected by vite-launcher instrumentation plugin) -> overrides applied transparently
 
 ### 3.3 Key boundary
 

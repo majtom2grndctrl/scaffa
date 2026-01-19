@@ -118,8 +118,9 @@ If package instrumentation is needed, the launcher should adjust Vite settings s
 ### 5.6 Runtime Join Key (v0)
 
 Instrumentation must attach the registry `typeId` as the runtime `componentTypeId`:
-- The transform should wrap the target export in a boundary component (e.g. `ScaffaInstance` / `ScaffaInstanceBoundary`) and pass `componentTypeId`.
+- The transform should wrap the target export in a boundary component (`ScaffaInstanceBoundary`) and pass `componentTypeId`.
 - Instance identity is owned by the adapter; the wrapper should not invent ids.
+- **Override application is automatic**: `ScaffaInstanceBoundary` applies overrides to props before passing them to the wrapped component, so app code does NOT need to import or use `ScaffaInstance` or `useScaffaInstance`.
 - Selection events emitted by the adapter must include `{ instanceId, componentTypeId }`.
 
 ---

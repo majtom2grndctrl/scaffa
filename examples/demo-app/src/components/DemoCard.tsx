@@ -1,5 +1,4 @@
 import React from 'react';
-import { ScaffaInstance, useScaffaInstance } from '@scaffa/react-runtime-adapter';
 
 interface DemoCardProps {
   title: string;
@@ -7,11 +6,8 @@ interface DemoCardProps {
   variant: 'primary' | 'secondary' | 'accent';
 }
 
-function DemoCardInner(props: DemoCardProps) {
-  // Apply overrides to props (instanceId comes from ScaffaInstance context)
-  const effectiveProps = useScaffaInstance(props);
-
-  const { title, description, variant } = effectiveProps;
+export function DemoCard(props: DemoCardProps) {
+  const { title, description, variant } = props;
 
   const styles: Record<string, React.CSSProperties> = {
     primary: {
@@ -41,13 +37,5 @@ function DemoCardInner(props: DemoCardProps) {
       </h2>
       <p style={{ margin: 0, color: '#6b7280' }}>{description}</p>
     </div>
-  );
-}
-
-export function DemoCard(props: DemoCardProps) {
-  return (
-    <ScaffaInstance typeId="demo.card" displayName="Card">
-      <DemoCardInner {...props} />
-    </ScaffaInstance>
   );
 }

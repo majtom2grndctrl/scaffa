@@ -53,26 +53,6 @@ export interface InstanceIdentity {
 }
 
 /**
- * Props for ScaffaInstance component.
- */
-export interface ScaffaInstanceProps {
-  /**
-   * Component type ID (matches registry).
-   */
-  typeId: string;
-
-  /**
-   * Display name for UI (optional).
-   */
-  displayName?: string;
-
-  /**
-   * Children to render.
-   */
-  children: React.ReactNode;
-}
-
-/**
  * Override operation (from host).
  */
 export interface OverrideOp {

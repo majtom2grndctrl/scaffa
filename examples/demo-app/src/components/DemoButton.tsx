@@ -1,5 +1,4 @@
 import React from 'react';
-import { ScaffaInstance, useScaffaInstance } from '@scaffa/react-runtime-adapter';
 
 interface DemoButtonProps {
   label: string;
@@ -7,11 +6,8 @@ interface DemoButtonProps {
   onClick?: () => void;
 }
 
-function DemoButtonInner(props: DemoButtonProps) {
-  // Apply overrides to props (instanceId comes from ScaffaInstance context)
-  const effectiveProps = useScaffaInstance(props);
-
-  const { label, variant, onClick } = effectiveProps;
+export function DemoButton(props: DemoButtonProps) {
+  const { label, variant, onClick } = props;
 
   const styles: Record<string, React.CSSProperties> = {
     primary: {
@@ -50,13 +46,5 @@ function DemoButtonInner(props: DemoButtonProps) {
     <button style={styles[variant]} onClick={onClick}>
       {label}
     </button>
-  );
-}
-
-export function DemoButton(props: DemoButtonProps) {
-  return (
-    <ScaffaInstance typeId="demo.button" displayName="Button">
-      <DemoButtonInner {...props} />
-    </ScaffaInstance>
   );
 }
