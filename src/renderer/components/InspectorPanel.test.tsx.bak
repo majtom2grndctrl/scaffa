@@ -35,8 +35,6 @@ describe('InspectorPanel', () => {
         registry: null,
         overrides: [],
         isRegistryLoading: false,
-        inspectorSections: [],
-        isSectionsLoading: false,
       };
       return selector(state);
     });
@@ -76,8 +74,6 @@ describe('InspectorPanel', () => {
         registry: mockRegistry,
         overrides: [],
         isRegistryLoading: false,
-        inspectorSections: [],
-        isSectionsLoading: false,
       };
       return selector(state);
     });
@@ -110,8 +106,6 @@ describe('InspectorPanel', () => {
         registry: emptyRegistry,
         overrides: [],
         isRegistryLoading: false,
-        inspectorSections: [],
-        isSectionsLoading: false,
       };
       return selector(state);
     });
@@ -153,8 +147,6 @@ describe('InspectorPanel', () => {
         registry: mockRegistry,
         overrides: mockOverrides,
         isRegistryLoading: false,
-        inspectorSections: [],
-        isSectionsLoading: false,
       };
       return selector(state);
     });
@@ -205,8 +197,6 @@ describe('InspectorPanel', () => {
           registry: mockRegistry,
           overrides: [],
           isRegistryLoading: false,
-        inspectorSections: [],
-        isSectionsLoading: false,
         };
         return selector(state);
       });
@@ -257,8 +247,6 @@ describe('InspectorPanel', () => {
           registry: mockRegistry,
           overrides: [],
           isRegistryLoading: false,
-        inspectorSections: [],
-        isSectionsLoading: false,
         };
         return selector(state);
       });
@@ -307,8 +295,6 @@ describe('InspectorPanel', () => {
           registry: mockRegistry,
           overrides: mockOverrides,
           isRegistryLoading: false,
-        inspectorSections: [],
-        isSectionsLoading: false,
         };
         return selector(state);
       });
@@ -348,8 +334,6 @@ describe('InspectorPanel', () => {
           registry: mockRegistry,
           overrides: mockOverrides,
           isRegistryLoading: false,
-        inspectorSections: [],
-        isSectionsLoading: false,
         };
         return selector(state);
       });
@@ -388,8 +372,6 @@ describe('InspectorPanel', () => {
           registry: mockRegistry,
           overrides: mockOverrides,
           isRegistryLoading: false,
-        inspectorSections: [],
-        isSectionsLoading: false,
         };
         return selector(state);
       });

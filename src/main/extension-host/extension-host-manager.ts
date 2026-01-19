@@ -21,6 +21,7 @@ import type {
   ModuleActivationStatusMessage,
   PromoteOverridesResultMessage,
   PromoteOverridesErrorMessage,
+  InspectorSectionRegisteredMessage,
 } from '../../extension-host/ipc-protocol.js';
 import type { ComponentRegistry } from '../../shared/index.js';
 import type { ScaffaConfig } from '../../shared/config.js';
@@ -28,6 +29,7 @@ import type { DraftOverride, SavePlan } from '../../shared/save.js';
 import { registryManager } from '../registry/registry-manager.js';
 import { applyGraphPatch } from '../ipc/graph.js';
 import { launcherRegistry } from '../preview/launcher-registry.js';
+import { inspectorSectionRegistry } from '../inspector/inspector-section-registry.js';
 
 const __dirname = fileURLToPath(new URL('.', import.meta.url));
 
@@ -232,6 +234,10 @@ export class ExtensionHostManager {
         this.handlePromoteOverridesError(message);
         break;
 
+      case 'inspector-section-registered':
+        this.handleInspectorSectionRegistered(message);
+        break;
+
       default:
         console.warn('[ExtHostManager] Unknown message type:', (message as any).type);
     }
@@ -364,6 +370,14 @@ export class ExtensionHostManager {
   }
 
   /**
+   * Handle inspector section registered from extension host.
+   */
+  private handleInspectorSectionRegistered(message: InspectorSectionRegisteredMessage): void {
+    console.log(`[ExtHostManager] Inspector section registered: ${message.section.id}`);
+    inspectorSectionRegistry.registerSection(message.section);
+  }
+
+  /**
    * Get module activation statuses.
    */
   getModuleActivationStatuses(): ModuleActivationStatus[] {
@@ -445,6 +459,7 @@ export class ExtensionHostManager {
   async restart(workspacePath: string | null, config: ScaffaConfig): Promise<void> {
     await this.stopInternal();
     this.clearModuleActivationStatuses();
+    inspectorSectionRegistry.clear();
     await this.start(workspacePath, config);
   }
 

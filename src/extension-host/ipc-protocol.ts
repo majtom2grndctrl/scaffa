@@ -15,6 +15,7 @@ import type {
   PreviewLogEntry,
   PreviewLauncherId,
 } from '../shared/preview-session.js';
+import type { InspectorSectionContribution } from '../shared/inspector-sections.js';
 
 // ─────────────────────────────────────────────────────────────────────────────
 // Main → Extension Host Messages
@@ -217,6 +218,14 @@ export interface ModuleActivationStatusMessage {
   };
 }
 
+/**
+ * Module registered an inspector section.
+ */
+export interface InspectorSectionRegisteredMessage {
+  type: 'inspector-section-registered';
+  section: InspectorSectionContribution;
+}
+
 export type ExtHostToMainMessage =
   | ReadyMessage
   | RegistryContributionMessage
@@ -230,4 +239,5 @@ export type ExtHostToMainMessage =
   | PreviewLauncherLogMessage
   | ModuleActivationStatusMessage
   | PromoteOverridesResultMessage
-  | PromoteOverridesErrorMessage;
+  | PromoteOverridesErrorMessage
+  | InspectorSectionRegisteredMessage;

@@ -61,8 +61,6 @@ describe('Inspector Integration Tests', () => {
           registry: mockRegistry,
           overrides: [],
           isRegistryLoading: false,
-        inspectorSections: [],
-        isSectionsLoading: false,
         };
         return selector(state);
       });
@@ -126,8 +124,6 @@ describe('Inspector Integration Tests', () => {
           registry: mockRegistry,
           overrides: mockOverrides,
           isRegistryLoading: false,
-        inspectorSections: [],
-        isSectionsLoading: false,
         };
         return selector(state);
       });
@@ -178,8 +174,6 @@ describe('Inspector Integration Tests', () => {
           registry: mockRegistry,
           overrides: mockOverrides,
           isRegistryLoading: false,
-        inspectorSections: [],
-        isSectionsLoading: false,
         };
         return selector(state);
       });
@@ -256,8 +250,6 @@ describe('Inspector Integration Tests', () => {
           registry: mockRegistry,
           overrides: [],
           isRegistryLoading: false,
-        inspectorSections: [],
-        isSectionsLoading: false,
         };
         return selector(state);
       });
@@ -315,8 +307,6 @@ describe('Inspector Integration Tests', () => {
           registry: mockRegistry,
           overrides: mockOverrides,
           isRegistryLoading: false,
-        inspectorSections: [],
-        isSectionsLoading: false,
         };
         return selector(state);
       });
@@ -365,8 +355,6 @@ describe('Inspector Integration Tests', () => {
           registry: mockRegistry,
           overrides: [],
           isRegistryLoading: false,
-        inspectorSections: [],
-        isSectionsLoading: false,
         };
         return selector(state);
       });
@@ -435,8 +423,6 @@ describe('Inspector Integration Tests', () => {
           registry: mockRegistry,
           overrides: [],
           isRegistryLoading: false,
-        inspectorSections: [],
-        isSectionsLoading: false,
         };
         return selector(state);
       });

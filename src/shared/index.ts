@@ -14,3 +14,4 @@ export * from './config.js';
 export * from './registry.js';
 export * from './ipc.js';
 export * from './save.js';
+export * from './inspector-sections.js';

@@ -7,6 +7,7 @@ let selectionCallback: ((event: any) => void) | null = null;
 let overrideCallback: ((event: any) => void) | null = null;
 
 const mockGet = vi.fn();
+const mockGetSections = vi.fn();
 const mockOnSelectionChanged = vi.fn((cb) => {
   selectionCallback = cb;
 });
@@ -17,6 +18,7 @@ const mockOnOverridesChanged = vi.fn((cb) => {
 globalThis.window = {
   scaffa: {
     registry: { get: mockGet },
+    inspector: { getSections: mockGetSections },
     selection: { onSelectionChanged: mockOnSelectionChanged },
     overrides: { onOverridesChanged: mockOnOverridesChanged },
   },
@@ -27,6 +29,8 @@ describe('inspectorStore - Real Lifecycle Tests', () => {
     vi.clearAllMocks();
     selectionCallback = null;
     overrideCallback = null;
+    // Default mock return for inspector sections
+    mockGetSections.mockResolvedValue({ sections: [] });
   });
 
   afterEach(() => {
@@ -35,6 +39,8 @@ describe('inspectorStore - Real Lifecycle Tests', () => {
       selectedInstance: null,
       registry: null,
       isRegistryLoading: false,
+      inspectorSections: [],
+      isSectionsLoading: false,
       overrides: [],
       isInitialized: false,
     });

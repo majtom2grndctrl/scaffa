@@ -14,6 +14,10 @@ import {
 } from './project-graph.js';
 import { JsonValueSchema } from './common.js';
 import { SaveResultSchema } from './save.js';
+import {
+  InspectorSectionContributionSchema,
+  InspectorSectionContextSchema,
+} from './inspector-sections.js';
 
 // ─────────────────────────────────────────────────────────────────────────────
 // IPC Request/Response Schemas (v0)
@@ -133,3 +137,17 @@ export const IpcErrorSchema = z.object({
 });
 
 export type IpcError = z.infer<typeof IpcErrorSchema>;
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Inspector Section APIs
+// ─────────────────────────────────────────────────────────────────────────────
+
+export const GetInspectorSectionsRequestSchema = z.object({});
+
+export type GetInspectorSectionsRequest = z.infer<typeof GetInspectorSectionsRequestSchema>;
+
+export const GetInspectorSectionsResponseSchema = z.object({
+  sections: z.array(InspectorSectionContributionSchema),
+});
+
+export type GetInspectorSectionsResponse = z.infer<typeof GetInspectorSectionsResponseSchema>;

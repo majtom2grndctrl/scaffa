@@ -42,6 +42,10 @@ import type {
   GetRegistryRequest,
   GetRegistryResponse,
 } from '../main/ipc/registry.js';
+import type {
+  GetInspectorSectionsRequest,
+  GetInspectorSectionsResponse,
+} from '../shared/ipc.js';
 
 // ─────────────────────────────────────────────────────────────────────────────
 // Preload: Typed window.scaffa APIs (v0)
@@ -271,6 +275,18 @@ const scaffaApi = {
       return () => {
         ipcRenderer.removeListener('graph:patch', listener);
       };
+    },
+  },
+
+  // ───────────────────────────────────────────────────────────────────────────
+  // Inspector APIs
+  // ───────────────────────────────────────────────────────────────────────────
+
+  inspector: {
+    getSections: (
+      request: GetInspectorSectionsRequest
+    ): Promise<GetInspectorSectionsResponse> => {
+      return ipcRenderer.invoke('inspector:getSections', request);
     },
   },
 };

@@ -8,6 +8,7 @@ import type {
   InstanceDescriptor,
   ComponentRegistry,
   PersistedOverride,
+  InspectorSectionContribution,
 } from '../../shared/index.js';
 
 interface InspectorState {
@@ -17,6 +18,10 @@ interface InspectorState {
   // Component registry (cached)
   registry: ComponentRegistry | null;
   isRegistryLoading: boolean;
+
+  // Extension-provided inspector sections
+  inspectorSections: InspectorSectionContribution[];
+  isSectionsLoading: boolean;
 
   // Override state for current session
   overrides: PersistedOverride[];
@@ -32,14 +37,17 @@ export const useInspectorStore = create<InspectorState>((set, get) => ({
   selectedInstance: null,
   registry: null,
   isRegistryLoading: false,
+  inspectorSections: [],
+  isSectionsLoading: false,
   overrides: [],
   isInitialized: false,
 
   /**
    * Initialize the inspector by:
    * 1. Fetching the component registry
-   * 2. Subscribing to selection events
-   * 3. Subscribing to override events
+   * 2. Fetching inspector sections
+   * 3. Subscribing to selection events
+   * 4. Subscribing to override events
    */
   initialize: async () => {
     if (get().isInitialized) {
@@ -57,12 +65,27 @@ export const useInspectorStore = create<InspectorState>((set, get) => ({
       set({
         registry: response.registry,
         isRegistryLoading: false,
-        isInitialized: true,
       });
     } catch (error) {
       console.error('[InspectorStore] Failed to load registry:', error);
       set({ isRegistryLoading: false });
     }
+
+    // Fetch inspector sections
+    set({ isSectionsLoading: true });
+    try {
+      const response = await window.scaffa.inspector.getSections({});
+      console.log('[InspectorStore] Loaded inspector sections:', response.sections);
+      set({
+        inspectorSections: response.sections,
+        isSectionsLoading: false,
+      });
+    } catch (error) {
+      console.error('[InspectorStore] Failed to load inspector sections:', error);
+      set({ isSectionsLoading: false });
+    }
+
+    set({ isInitialized: true });
 
     // Subscribe to selection changes
     window.scaffa.selection.onSelectionChanged((event) => {
@@ -78,13 +101,14 @@ export const useInspectorStore = create<InspectorState>((set, get) => ({
   },
 
   /**
-   * Refresh registry and reset instance state without re-subscribing.
+   * Refresh registry, sections, and reset instance state without re-subscribing.
    */
   refresh: async () => {
     set({
       selectedInstance: null,
       overrides: [],
       isRegistryLoading: true,
+      isSectionsLoading: true,
     });
 
     try {
@@ -94,6 +118,15 @@ export const useInspectorStore = create<InspectorState>((set, get) => ({
     } catch (error) {
       console.error('[InspectorStore] Failed to refresh registry:', error);
       set({ isRegistryLoading: false });
+    }
+
+    try {
+      const response = await window.scaffa.inspector.getSections({});
+      console.log('[InspectorStore] Refreshed inspector sections:', response.sections);
+      set({ inspectorSections: response.sections, isSectionsLoading: false });
+    } catch (error) {
+      console.error('[InspectorStore] Failed to refresh inspector sections:', error);
+      set({ isSectionsLoading: false });
     }
   },
 
@@ -105,6 +138,8 @@ export const useInspectorStore = create<InspectorState>((set, get) => ({
       selectedInstance: null,
       registry: null,
       isRegistryLoading: false,
+      inspectorSections: [],
+      isSectionsLoading: false,
       overrides: [],
     });
   },

@@ -20,9 +20,11 @@ import type {
   PreviewLauncher,
   SaveAPI,
   SavePromoter,
+  UIAPI,
 } from './extension-context.js';
 import type { ExtHostToMainMessage } from './ipc-protocol.js';
 import type { DraftOverride, SavePlan } from '../shared/save.js';
+import type { InspectorSectionContribution } from '../shared/inspector-sections.js';
 
 // ─────────────────────────────────────────────────────────────────────────────
 // Module State
@@ -46,6 +48,7 @@ export class ModuleLoader {
   private graphProducers: Map<string, GraphProducer> = new Map();
   private previewLaunchers: Map<string, PreviewLauncher> = new Map();
   private savePromoters: Map<string, SavePromoter> = new Map();
+  private inspectorSections: InspectorSectionContribution[] = [];
 
   constructor(workspacePath: string | null, config: ScaffaConfig) {
     this.workspacePath = workspacePath;
@@ -291,6 +294,29 @@ export class ModuleLoader {
       },
     };
 
+    const uiAPI: UIAPI = {
+      registerInspectorSection: (section: InspectorSectionContribution) => {
+        this.inspectorSections.push(section);
+        console.log(`[ModuleLoader] Module ${moduleId} registered inspector section: ${section.id}`);
+
+        // Send section registration to main
+        this.sendToMain({
+          type: 'inspector-section-registered',
+          section,
+        });
+
+        // Return disposable to unregister
+        return {
+          dispose: () => {
+            const index = this.inspectorSections.indexOf(section);
+            if (index !== -1) {
+              this.inspectorSections.splice(index, 1);
+            }
+          },
+        };
+      },
+    };
+
     return {
       apiVersion: 'v0',
       extensionId: moduleId,
@@ -299,6 +325,7 @@ export class ModuleLoader {
       graph: graphAPI,
       preview: previewAPI,
       save: saveAPI,
+      ui: uiAPI,
       subscriptions,
     };
   }

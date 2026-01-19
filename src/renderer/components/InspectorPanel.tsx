@@ -1,13 +1,17 @@
 import { useMemo, useState, useEffect } from 'react';
 import { useInspectorStore } from '../state/inspectorStore';
 import type { PropDefinition } from '../../shared/index.js';
+import type { InspectorSectionContext } from '../../shared/inspector-sections.js';
 import { ControlRenderer } from './inspector/PropControls';
+import { ExtensionSection } from './ExtensionSection';
 
 export const InspectorPanel = () => {
   const selectedInstance = useInspectorStore((state) => state.selectedInstance);
   const registry = useInspectorStore((state) => state.registry);
   const overrides = useInspectorStore((state) => state.overrides);
   const isRegistryLoading = useInspectorStore((state) => state.isRegistryLoading);
+  const inspectorSections = useInspectorStore((state) => state.inspectorSections);
+  const isSectionsLoading = useInspectorStore((state) => state.isSectionsLoading);
 
   // Get the registry entry for the selected instance's component type
   const registryEntry = useMemo(() => {
@@ -286,6 +290,39 @@ export const InspectorPanel = () => {
                 </div>
               </div>
             ))}
+          </div>
+        )}
+
+        {/* Extension-provided inspector sections */}
+        {inspectorSections.length > 0 && selectedInstance && registryEntry && (
+          <div className="border-t border-subtle pt-4">
+            <h3 className="mb-3 text-xs font-semibold text-fg">Extension Sections</h3>
+            <div className="space-y-4">
+              {inspectorSections.map((section) => {
+                const context: InspectorSectionContext = {
+                  sessionId: selectedInstance.sessionId,
+                  selected: {
+                    instanceId: selectedInstance.instanceId,
+                    componentTypeId: selectedInstance.componentTypeId,
+                    displayName: selectedInstance.displayName,
+                    instanceLocator: selectedInstance.instanceLocator,
+                    props: selectedInstance.props,
+                  },
+                  registryEntry,
+                  overrides: overrides.filter(
+                    (override) => override.instanceId === selectedInstance.instanceId
+                  ),
+                };
+
+                return (
+                  <ExtensionSection
+                    key={section.id}
+                    section={section}
+                    context={context}
+                  />
+                );
+              })}
+            </div>
           </div>
         )}
       </div>

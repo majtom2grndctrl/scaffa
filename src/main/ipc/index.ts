@@ -10,6 +10,7 @@ import { registerGraphHandlers } from './graph.js';
 import { registerWorkspaceHandlers } from './workspace.js';
 import { registerConfigHandlers } from './config.js';
 import { registerRegistryHandlers } from './registry.js';
+import { registerInspectorHandlers } from './inspector.js';
 
 /**
  * Register all IPC handlers for the v0 domains.
@@ -23,6 +24,7 @@ export function registerAllIpcHandlers() {
   registerSelectionHandlers();
   registerOverrideHandlers();
   registerGraphHandlers();
+  registerInspectorHandlers();
 }
 
 // Re-export broadcast functions for use by domain services
@@ -33,3 +35,4 @@ export * from './preview.js';
 export * from './selection.js';
 export * from './overrides.js';
 export * from './graph.js';
+export * from './inspector.js';

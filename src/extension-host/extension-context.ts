@@ -12,6 +12,7 @@ import type {
   PreviewLogEntry,
 } from '../shared/preview-session.js';
 import type { DraftOverride, SavePlan } from '../shared/save.js';
+import type { InspectorSectionContribution } from '../shared/inspector-sections.js';
 
 // ─────────────────────────────────────────────────────────────────────────────
 // Disposable Pattern
@@ -60,6 +61,11 @@ export interface ExtensionContext {
    * Save API for promoting overrides to workspace edits.
    */
   readonly save: SaveAPI;
+
+  /**
+   * UI API for contributing UI elements.
+   */
+  readonly ui: UIAPI;
 
   /**
    * Subscriptions for automatic cleanup.
@@ -215,6 +221,20 @@ export interface SaveAPI {
    * Register a save promoter.
    */
   registerPromoter(promoter: SavePromoter): Disposable;
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// UI API (Inspector Sections, Panels, etc.)
+// ─────────────────────────────────────────────────────────────────────────────
+
+export interface UIAPI {
+  /**
+   * Register an inspector section.
+   * The section will appear in the Inspector panel when an instance is selected.
+   * @param section - The inspector section contribution
+   * @returns Disposable to unregister the section
+   */
+  registerInspectorSection(section: InspectorSectionContribution): Disposable;
 }
 
 // ─────────────────────────────────────────────────────────────────────────────

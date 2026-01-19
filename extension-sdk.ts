@@ -23,6 +23,9 @@ export type {
   GraphProducer,
   PreviewAPI,
   PreviewLauncher,
+  SaveAPI,
+  SavePromoter,
+  UIAPI,
 } from './src/extension-host/extension-context.js';
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -95,6 +98,13 @@ export type {
   WorkspacePath,
 } from './src/shared/config.js';
 
+// Inspector Sections
+export type {
+  InspectorSectionContribution,
+  InspectorSectionContext,
+  InspectorSectionId,
+} from './src/shared/inspector-sections.js';
+
 // ─────────────────────────────────────────────────────────────────────────────
 // Zod Schemas (for runtime validation)
 // ─────────────────────────────────────────────────────────────────────────────
@@ -108,6 +118,12 @@ export {
   PreviewSessionIdSchema,
   PreviewLauncherIdSchema,
 } from './src/shared/index.js';
+
+export {
+  InspectorSectionIdSchema,
+  InspectorSectionContributionSchema,
+  InspectorSectionContextSchema,
+} from './src/shared/inspector-sections.js';
 
 // ─────────────────────────────────────────────────────────────────────────────
 // Graph Construction Helpers
