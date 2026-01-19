@@ -3,6 +3,7 @@ import { useInspectorStore } from '../state/inspectorStore';
 import type { PropDefinition } from '../../shared/index.js';
 import type { InspectorSectionContext } from '../../shared/inspector-sections.js';
 import { ControlRenderer } from './inspector/PropControls';
+import { LayoutSection, isLayoutType } from './inspector/LayoutSection';
 import { ExtensionSection } from './ExtensionSection';
 
 export const InspectorPanel = () => {
@@ -290,6 +291,19 @@ export const InspectorPanel = () => {
                 </div>
               </div>
             ))}
+          </div>
+        )}
+
+        {/* Layout-specific section (designer-friendly spacing controls) */}
+        {registryEntry && selectedInstance && isLayoutType(selectedInstance.componentTypeId) && (
+          <div className="border-t border-subtle pt-4">
+            <LayoutSection
+              selectedInstance={selectedInstance}
+              registryEntry={registryEntry}
+              overrides={overrides.filter(
+                (override) => override.instanceId === selectedInstance.instanceId
+              )}
+            />
           </div>
         )}
 
