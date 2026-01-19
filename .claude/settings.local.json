@@ -30,7 +30,8 @@
       "Bash(ls:*)",
       "Bash(pnpm build:modules:*)",
       "Bash(tree:*)",
-      "Skill(code-review)"
+      "Skill(code-review)",
+      "Bash(find:*)"
     ]
   }
 }
