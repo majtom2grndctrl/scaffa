@@ -10,12 +10,13 @@
 - Use this file as a **router**: pick 2–4 linked docs for the task, don’t load everything.
 - Source of truth for: **process model**, **core concepts**, and where contracts live.
 - Don’t use for: deep schema details (load the specific contract doc instead).
+- Pre-v0 refactors may introduce breaking API changes; update all call sites and related tests in the same change (no compatibility shims by default).
 
 ## Agent Router (Task → Minimal Docs)
 
+- **Engineering conventions / code style** → `docs/scaffa_engineering_conventions.md`, `docs/scaffa_development_guide.md`
 - **UI visual language / theme tokens** → `docs/design/visual-language.md`, `docs/design/colors.md`
 - **Add/normalize UI components (shadcn)** → `.claude/skills/add-shadcn-component/SKILL.md`, `docs/design/colors.md`
-- **Engineering conventions / code style** → `docs/scaffa_engineering_conventions.md`, `docs/scaffa_development_guide.md`
 - **Inspector behavior & editing semantics** → `docs/scaffa_inspector_ux_semantics.md`, `docs/scaffa_component_registry_schema.md`, `docs/scaffa_override_model.md`
 - **Override model (data + persistence)** → `docs/scaffa_override_model.md`, `docs/scaffa_preview_session_protocol.md`
 - **Save to disk (validation + promotion)** → `docs/scaffa_save_to_disk_protocol.md`, `docs/scaffa_override_model.md`, `docs/scaffa_inspector_ux_semantics.md`
