@@ -61,8 +61,8 @@ describe('Inspector Integration Tests', () => {
           registry: mockRegistry,
           overrides: [],
           isRegistryLoading: false,
-        inspectorSections: [],
-        isSectionsLoading: false,
+          inspectorSections: [],
+          isSectionsLoading: false,
         };
         return selector(state);
       });
@@ -126,8 +126,8 @@ describe('Inspector Integration Tests', () => {
           registry: mockRegistry,
           overrides: mockOverrides,
           isRegistryLoading: false,
-        inspectorSections: [],
-        isSectionsLoading: false,
+          inspectorSections: [],
+          isSectionsLoading: false,
         };
         return selector(state);
       });
@@ -178,8 +178,8 @@ describe('Inspector Integration Tests', () => {
           registry: mockRegistry,
           overrides: mockOverrides,
           isRegistryLoading: false,
-        inspectorSections: [],
-        isSectionsLoading: false,
+          inspectorSections: [],
+          isSectionsLoading: false,
         };
         return selector(state);
       });
@@ -256,8 +256,8 @@ describe('Inspector Integration Tests', () => {
           registry: mockRegistry,
           overrides: [],
           isRegistryLoading: false,
-        inspectorSections: [],
-        isSectionsLoading: false,
+          inspectorSections: [],
+          isSectionsLoading: false,
         };
         return selector(state);
       });
@@ -315,8 +315,8 @@ describe('Inspector Integration Tests', () => {
           registry: mockRegistry,
           overrides: mockOverrides,
           isRegistryLoading: false,
-        inspectorSections: [],
-        isSectionsLoading: false,
+          inspectorSections: [],
+          isSectionsLoading: false,
         };
         return selector(state);
       });
@@ -365,8 +365,8 @@ describe('Inspector Integration Tests', () => {
           registry: mockRegistry,
           overrides: [],
           isRegistryLoading: false,
-        inspectorSections: [],
-        isSectionsLoading: false,
+          inspectorSections: [],
+          isSectionsLoading: false,
         };
         return selector(state);
       });
@@ -435,8 +435,8 @@ describe('Inspector Integration Tests', () => {
           registry: mockRegistry,
           overrides: [],
           isRegistryLoading: false,
-        inspectorSections: [],
-        isSectionsLoading: false,
+          inspectorSections: [],
+          isSectionsLoading: false,
         };
         return selector(state);
       });
@@ -455,4 +455,282 @@ describe('Inspector Integration Tests', () => {
       expect(screen.getByText('Opaque')).toBeInTheDocument();
     });
   });
+
+  describe('Baseline value resolution (runtime props)', () => {
+    it('should show runtime-provided baseline value when no override exists for editable prop', () => {
+      const mockInstance = {
+        sessionId: 'session-1',
+        instanceId: 'instance-baseline',
+        componentTypeId: 'ui.button',
+        instanceLocator: { type: 'instancePath', path: '/app/button[0]' },
+        // Runtime provides current prop values
+        props: {
+          variant: 'secondary',
+          label: 'Runtime Label',
+        },
+      } as any;
+
+      const mockRegistry: ComponentRegistry = {
+        schemaVersion: 'v0',
+        components: {
+          'ui.button': {
+            displayName: 'Button',
+            props: {
+              variant: {
+                propName: 'variant',
+                label: 'Variant',
+                exposure: {
+                  kind: 'editable',
+                  control: { kind: 'string' },
+                  uiDefaultValue: 'primary', // uiDefault differs from runtime
+                },
+              },
+              label: {
+                propName: 'label',
+                label: 'Label',
+                exposure: {
+                  kind: 'editable',
+                  control: { kind: 'string', placeholder: 'Enter label' },
+                },
+              },
+            },
+          },
+        },
+      };
+
+      vi.mocked(useInspectorStore).mockImplementation((selector: any) => {
+        const state = {
+          selectedInstance: mockInstance,
+          registry: mockRegistry,
+          overrides: [],
+          isRegistryLoading: false,
+          inspectorSections: [],
+          isSectionsLoading: false,
+        };
+        return selector(state);
+      });
+
+      render(<InspectorPanel />);
+
+      // Should show runtime baseline values in inputs, not uiDefaultValue
+      const variantInput = screen.getAllByRole('textbox')[0] as HTMLInputElement;
+      const labelInput = screen.getAllByRole('textbox')[1] as HTMLInputElement;
+
+      expect(variantInput.value).toBe('secondary'); // runtime value, not 'primary'
+      expect(labelInput.value).toBe('Runtime Label');
+    });
+
+    it('should show runtime-provided baseline value for inspect-only props', () => {
+      const mockInstance = {
+        sessionId: 'session-1',
+        instanceId: 'instance-inspect',
+        componentTypeId: 'ui.status',
+        instanceLocator: { type: 'instancePath', path: '/app/status[0]' },
+        props: {
+          connectionStatus: 'connected',
+          lastUpdated: '2026-01-19T12:00:00Z',
+        },
+      } as any;
+
+      const mockRegistry: ComponentRegistry = {
+        schemaVersion: 'v0',
+        components: {
+          'ui.status': {
+            displayName: 'Status',
+            props: {
+              connectionStatus: {
+                propName: 'connectionStatus',
+                label: 'Connection Status',
+                exposure: {
+                  kind: 'inspectOnly',
+                },
+              },
+              lastUpdated: {
+                propName: 'lastUpdated',
+                label: 'Last Updated',
+                exposure: {
+                  kind: 'inspectOnly',
+                },
+              },
+            },
+          },
+        },
+      };
+
+      vi.mocked(useInspectorStore).mockImplementation((selector: any) => {
+        const state = {
+          selectedInstance: mockInstance,
+          registry: mockRegistry,
+          overrides: [],
+          isRegistryLoading: false,
+          inspectorSections: [],
+          isSectionsLoading: false,
+        };
+        return selector(state);
+      });
+
+      render(<InspectorPanel />);
+
+      // Should display runtime baseline values for inspect-only props
+      expect(screen.getByText('"connected"')).toBeInTheDocument();
+      expect(screen.getByText('"2026-01-19T12:00:00Z"')).toBeInTheDocument();
+    });
+
+    it('should reset to runtime baseline after clearing override', async () => {
+      const mockInstance = {
+        sessionId: 'session-1',
+        instanceId: 'instance-reset-baseline',
+        componentTypeId: 'ui.button',
+        instanceLocator: { type: 'instancePath', path: '/app/button[0]' },
+        props: {
+          variant: 'outline', // runtime baseline
+        },
+      } as any;
+
+      const mockRegistry: ComponentRegistry = {
+        schemaVersion: 'v0',
+        components: {
+          'ui.button': {
+            displayName: 'Button',
+            props: {
+              variant: {
+                propName: 'variant',
+                exposure: {
+                  kind: 'editable',
+                  control: { kind: 'string' },
+                  uiDefaultValue: 'primary', // different from runtime
+                },
+              },
+            },
+          },
+        },
+      };
+
+      const mockOverrides = [
+        { sessionId: 'session-1', instanceId: 'instance-reset-baseline', path: '/variant', value: 'danger' },
+      ];
+
+      vi.mocked(useInspectorStore).mockImplementation((selector: any) => {
+        const state = {
+          selectedInstance: mockInstance,
+          registry: mockRegistry,
+          overrides: mockOverrides,
+          isRegistryLoading: false,
+          inspectorSections: [],
+          isSectionsLoading: false,
+        };
+        return selector(state);
+      });
+
+      mockOverrideClear.mockResolvedValue({});
+
+      render(<InspectorPanel />);
+
+      // Initial state shows override value
+      const input = screen.getByRole('textbox') as HTMLInputElement;
+      expect(input.value).toBe('danger');
+
+      // Click reset
+      const resetButton = screen.getByText('Reset to default');
+      fireEvent.click(resetButton);
+
+      await new Promise((resolve) => setTimeout(resolve, 10));
+
+      // Should reset to runtime baseline ('outline'), not uiDefaultValue ('primary')
+      expect(input.value).toBe('outline');
+    });
+
+    it('should fall back to uiDefaultValue when no runtime props available', () => {
+      const mockInstance = {
+        sessionId: 'session-1',
+        instanceId: 'instance-no-props',
+        componentTypeId: 'ui.button',
+        instanceLocator: { type: 'instancePath', path: '/app/button[0]' },
+        // No props provided by runtime
+      } as any;
+
+      const mockRegistry: ComponentRegistry = {
+        schemaVersion: 'v0',
+        components: {
+          'ui.button': {
+            displayName: 'Button',
+            props: {
+              variant: {
+                propName: 'variant',
+                exposure: {
+                  kind: 'editable',
+                  control: { kind: 'string' },
+                  uiDefaultValue: 'primary',
+                },
+              },
+            },
+          },
+        },
+      };
+
+      vi.mocked(useInspectorStore).mockImplementation((selector: any) => {
+        const state = {
+          selectedInstance: mockInstance,
+          registry: mockRegistry,
+          overrides: [],
+          isRegistryLoading: false,
+          inspectorSections: [],
+          isSectionsLoading: false,
+        };
+        return selector(state);
+      });
+
+      render(<InspectorPanel />);
+
+      // Should fall back to uiDefaultValue when no runtime props
+      const input = screen.getByRole('textbox') as HTMLInputElement;
+      expect(input.value).toBe('primary');
+    });
+
+    it('should show "Value not available" for inspect-only props when no runtime baseline', () => {
+      const mockInstance = {
+        sessionId: 'session-1',
+        instanceId: 'instance-no-baseline',
+        componentTypeId: 'ui.status',
+        instanceLocator: { type: 'instancePath', path: '/app/status[0]' },
+        // No props provided
+      } as any;
+
+      const mockRegistry: ComponentRegistry = {
+        schemaVersion: 'v0',
+        components: {
+          'ui.status': {
+            displayName: 'Status',
+            props: {
+              unknownProp: {
+                propName: 'unknownProp',
+                label: 'Unknown Prop',
+                exposure: {
+                  kind: 'inspectOnly',
+                },
+              },
+            },
+          },
+        },
+      };
+
+      vi.mocked(useInspectorStore).mockImplementation((selector: any) => {
+        const state = {
+          selectedInstance: mockInstance,
+          registry: mockRegistry,
+          overrides: [],
+          isRegistryLoading: false,
+          inspectorSections: [],
+          isSectionsLoading: false,
+        };
+        return selector(state);
+      });
+
+      render(<InspectorPanel />);
+
+      // Should show unknown baseline indicator
+      expect(screen.getByText('Value not available')).toBeInTheDocument();
+    });
+  });
 });
+

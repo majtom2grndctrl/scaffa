@@ -285,6 +285,7 @@ export const InspectorPanel = () => {
                       propDef={propDef}
                       instanceId={selectedInstance.instanceId}
                       overrides={overrides}
+                      runtimeProps={selectedInstance.props}
                     />
                   ))}
                 </div>
@@ -336,9 +337,11 @@ type PropFieldProps = {
   propDef: PropDefinition;
   instanceId: string;
   overrides: Array<{ instanceId: string; path: string; value: unknown }>;
+  /** Runtime-provided prop values snapshot from InstanceDescriptor.props */
+  runtimeProps?: Record<string, unknown>;
 };
 
-const PropField = ({ propDef, instanceId, overrides }: PropFieldProps) => {
+const PropField = ({ propDef, instanceId, overrides, runtimeProps }: PropFieldProps) => {
   const { propName, label, description, exposure } = propDef;
   const selectedInstance = useInspectorStore((state) => state.selectedInstance);
 
@@ -348,15 +351,27 @@ const PropField = ({ propDef, instanceId, overrides }: PropFieldProps) => {
   );
   const isOverridden = !!override;
 
+  // Get baseline value from runtime props (if provided)
+  const runtimeBaseline = runtimeProps?.[propName];
+  const hasRuntimeBaseline = runtimeProps !== undefined && propName in (runtimeProps ?? {});
+
   // Local form state for editable props
-  // Initialize from override value or uiDefaultValue
+  // Value resolution order: override → runtime props → uiDefaultValue → undefined
+  // See: docs/scaffa_inspector_ux_semantics.md Section 1.1
   const getInitialValue = () => {
+    // 1. Draft override value (top priority)
     if (isOverridden && override) {
       return override.value;
     }
+    // 2. Runtime-provided baseline (if available)
+    if (hasRuntimeBaseline) {
+      return runtimeBaseline;
+    }
+    // 3. uiDefaultValue (UI metadata fallback)
     if (exposure.kind === 'editable' && exposure.uiDefaultValue !== undefined) {
       return exposure.uiDefaultValue;
     }
+    // 4. Unknown baseline
     return undefined;
   };
 
@@ -384,6 +399,7 @@ const PropField = ({ propDef, instanceId, overrides }: PropFieldProps) => {
   };
 
   // Handle reset - clear override via IPC
+  // Resets to baseline value: runtime props → uiDefaultValue → undefined
   const handleReset = async () => {
     if (!selectedInstance || !isOverridden) return;
 
@@ -394,14 +410,18 @@ const PropField = ({ propDef, instanceId, overrides }: PropFieldProps) => {
         path: `/${propName}` as any,
       });
 
-      // Reset to default value
-      const defaultValue =
-        exposure.kind === 'editable' && exposure.uiDefaultValue !== undefined
-          ? exposure.uiDefaultValue
-          : undefined;
-      setFieldValue(defaultValue);
+      // Reset to baseline value (runtime props → uiDefaultValue → undefined)
+      let baselineValue: unknown;
+      if (hasRuntimeBaseline) {
+        baselineValue = runtimeBaseline;
+      } else if (exposure.kind === 'editable' && exposure.uiDefaultValue !== undefined) {
+        baselineValue = exposure.uiDefaultValue;
+      } else {
+        baselineValue = undefined;
+      }
+      setFieldValue(baselineValue);
 
-      console.log('[PropField] Override cleared:', { propName });
+      console.log('[PropField] Override cleared:', { propName, resetTo: baselineValue });
     } catch (error) {
       console.error('[PropField] Failed to clear override:', error);
     }
@@ -459,9 +479,11 @@ const PropField = ({ propDef, instanceId, overrides }: PropFieldProps) => {
 
       {exposure.kind === 'inspectOnly' && (
         <div className="bg-surface-card px-2 py-1.5 text-xs text-fg-muted">
-          {/* Read-only value display */}
+          {/* Read-only value display: override → runtime baseline → unknown */}
           {isOverridden && override ? (
             <span className="font-mono">{JSON.stringify(override.value)}</span>
+          ) : hasRuntimeBaseline ? (
+            <span className="font-mono">{JSON.stringify(runtimeBaseline)}</span>
           ) : (
             <span className="italic">Value not available</span>
           )}

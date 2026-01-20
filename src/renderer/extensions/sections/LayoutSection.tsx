@@ -71,12 +71,23 @@ const LayoutSection = ({ context }: ExtensionSectionProps) => {
 
   const isRowOrStack = componentTypeId === 'layout.row' || componentTypeId === 'layout.stack';
 
-  // Get override value for a prop
+  // Get the effective value for a prop: override → runtime baseline → undefined
+  // See: docs/scaffa_inspector_ux_semantics.md Section 1.1
   const getOverrideValue = (propName: string): string | undefined => {
+    // 1. Check for override value
     const override = overrides.find(
       (o) => o.instanceId === selected.instanceId && o.path === `/${propName}`
     );
-    return override?.value as string | undefined;
+    if (override) {
+      return override.value as string | undefined;
+    }
+    // 2. Fall back to runtime-provided baseline (if available)
+    const runtimeBaseline = selected.props?.[propName];
+    if (runtimeBaseline !== undefined) {
+      return String(runtimeBaseline);
+    }
+    // 3. Unknown baseline
+    return undefined;
   };
 
   // Set override via IPC
