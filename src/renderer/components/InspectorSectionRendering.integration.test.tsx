@@ -106,23 +106,20 @@ describe('Inspector Section Rendering Workflow (Integration)', () => {
     // STEP 2: Render InspectorPanel
     render(<InspectorPanel />);
 
-    // VERIFY: Extension sections header is visible
-    expect(screen.getByText('Extension Sections')).toBeInTheDocument();
+    // VERIFY: Sections are loading initially (component loading is async)
+    expect(screen.getByText(/Loading Custom Properties/)).toBeInTheDocument();
+    expect(screen.getByText(/Loading Diagnostics/)).toBeInTheDocument();
 
-    // VERIFY: Both sections are rendered
-    expect(screen.getByText('Custom Properties')).toBeInTheDocument();
-    expect(screen.getByText('Diagnostics')).toBeInTheDocument();
-
-    // VERIFY: Placeholder text is shown (component loading not yet implemented)
-    const placeholders = screen.getAllByText(/Extension section placeholder/);
-    expect(placeholders).toHaveLength(2);
+    // NOTE: In full e2e testing, we would verify that after loading completes,
+    // sections show error for unknown components (not in pre-bundle registry).
+    // This test focuses on the initial render and loading state visibility.
   });
 
   /**
    * WORKFLOW: No sections loaded → Panel shows no extension sections area
    *
    * This tests the baseline: when no extensions contribute sections,
-   * the extension sections area should not appear at all.
+   * no section loading states should appear.
    */
   it('should not render extension sections area when no sections are registered', () => {
     const mockInstance: InstanceDescriptor = {
@@ -156,11 +153,11 @@ describe('Inspector Section Rendering Workflow (Integration)', () => {
 
     render(<InspectorPanel />);
 
-    // VERIFY: No "Extension Sections" header
-    expect(screen.queryByText('Extension Sections')).not.toBeInTheDocument();
+    // VERIFY: No loading states for sections
+    expect(screen.queryByText(/Loading/)).not.toBeInTheDocument();
 
-    // VERIFY: No placeholder text
-    expect(screen.queryByText(/Extension section placeholder/)).not.toBeInTheDocument();
+    // VERIFY: No error states for sections
+    expect(screen.queryByText(/Failed to load extension section/)).not.toBeInTheDocument();
   });
 
   /**
@@ -198,16 +195,15 @@ describe('Inspector Section Rendering Workflow (Integration)', () => {
     // VERIFY: No instance selected message shown
     expect(screen.getByText('No instance selected')).toBeInTheDocument();
 
-    // VERIFY: Extension sections not rendered
-    expect(screen.queryByText('Extension Sections')).not.toBeInTheDocument();
-    expect(screen.queryByText('Properties')).not.toBeInTheDocument();
+    // VERIFY: Extension sections not rendered (no loading state)
+    expect(screen.queryByText(/Loading Properties/)).not.toBeInTheDocument();
   });
 
   /**
    * WORKFLOW: Registry entry missing → Sections not rendered (even if loaded)
    *
-   * This documents another conditional: extension sections require both
-   * a selected instance AND a valid registry entry.
+   * This documents another conditional: extension sections only render
+   * when a selected instance exists.
    */
   it('should not render extension sections when registry entry is missing', () => {
     const mockInstance: InstanceDescriptor = {
@@ -250,9 +246,9 @@ describe('Inspector Section Rendering Workflow (Integration)', () => {
     // VERIFY: Missing registry warning shown
     expect(screen.getByText('Missing Registry Entry')).toBeInTheDocument();
 
-    // VERIFY: Extension sections not rendered
-    expect(screen.queryByText('Extension Sections')).not.toBeInTheDocument();
-    expect(screen.queryByText('Properties')).not.toBeInTheDocument();
+    // VERIFY: Extension sections ARE rendered since we have a selectedInstance
+    // (the registryEntry is optional for extension sections now)
+    expect(screen.getByText(/Loading Properties/)).toBeInTheDocument();
   });
 
   /**
@@ -295,7 +291,7 @@ describe('Inspector Section Rendering Workflow (Integration)', () => {
     // VERIFY: Inspector still renders (no crash)
     expect(screen.getByText('Inspector')).toBeInTheDocument();
 
-    // VERIFY: No sections rendered during loading
-    expect(screen.queryByText('Extension Sections')).not.toBeInTheDocument();
+    // VERIFY: No sections rendered during loading (no loading states visible)
+    expect(screen.queryByText(/Loading/)).not.toBeInTheDocument();
   });
 });

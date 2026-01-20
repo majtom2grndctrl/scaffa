@@ -826,6 +826,19 @@ export function activate(context: ExtensionContext): void {
   context.registry.contributeRegistry(registry);
   console.log('[LayoutModule] Contributed component registry for layout.box, layout.row, and layout.stack');
 
+  // Register inspector section for layout components
+  // The section ID 'layout.layout' maps to the pre-bundled LayoutSection component
+  // in src/renderer/extensions/pre-bundle-loader.ts
+  context.ui.registerInspectorSection({
+    id: 'layout.layout' as any, // Cast to branded type
+    title: 'Layout',
+    order: 1000, // Extension sections use 1000+
+    extensionId: 'layout',
+    componentPath: 'inspector-sections/LayoutSection',
+    componentExport: 'default',
+  });
+  console.log('[LayoutModule] Registered inspector section: layout.layout');
+
   console.log('[LayoutModule] Activated');
 }
 

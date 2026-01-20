@@ -3,7 +3,6 @@ import { useInspectorStore } from '../state/inspectorStore';
 import type { PropDefinition } from '../../shared/index.js';
 import type { InspectorSectionContext } from '../../shared/inspector-sections.js';
 import { ControlRenderer } from './inspector/PropControls';
-import { LayoutSection, isLayoutType } from './inspector/LayoutSection';
 import { ExtensionSection } from './ExtensionSection';
 
 export const InspectorPanel = () => {
@@ -294,49 +293,34 @@ export const InspectorPanel = () => {
           </div>
         )}
 
-        {/* Layout-specific section (designer-friendly spacing controls) */}
-        {registryEntry && selectedInstance && isLayoutType(selectedInstance.componentTypeId) && (
-          <div className="border-t border-subtle pt-4">
-            <LayoutSection
-              selectedInstance={selectedInstance}
-              registryEntry={registryEntry}
-              overrides={overrides.filter(
-                (override) => override.instanceId === selectedInstance.instanceId
-              )}
-            />
-          </div>
-        )}
-
         {/* Extension-provided inspector sections */}
-        {inspectorSections.length > 0 && selectedInstance && registryEntry && (
-          <div className="border-t border-subtle pt-4">
-            <h3 className="mb-3 text-xs font-semibold text-fg">Extension Sections</h3>
-            <div className="space-y-4">
-              {inspectorSections.map((section) => {
-                const context: InspectorSectionContext = {
-                  sessionId: selectedInstance.sessionId,
-                  selected: {
-                    instanceId: selectedInstance.instanceId,
-                    componentTypeId: selectedInstance.componentTypeId,
-                    displayName: selectedInstance.displayName,
-                    instanceLocator: selectedInstance.instanceLocator,
-                    props: selectedInstance.props,
-                  },
-                  registryEntry,
-                  overrides: overrides.filter(
-                    (override) => override.instanceId === selectedInstance.instanceId
-                  ),
-                };
+        {inspectorSections.length > 0 && selectedInstance && (
+          <div className="space-y-4">
+            {inspectorSections.map((section) => {
+              const context: InspectorSectionContext = {
+                sessionId: selectedInstance.sessionId,
+                selected: {
+                  instanceId: selectedInstance.instanceId,
+                  componentTypeId: selectedInstance.componentTypeId,
+                  displayName: selectedInstance.displayName,
+                  instanceLocator: selectedInstance.instanceLocator,
+                  props: selectedInstance.props,
+                },
+                registryEntry,
+                overrides: overrides.filter(
+                  (override) => override.instanceId === selectedInstance.instanceId
+                ),
+              };
 
-                return (
+              return (
+                <div key={section.id} className="border-t border-subtle pt-4">
                   <ExtensionSection
-                    key={section.id}
                     section={section}
                     context={context}
                   />
-                );
-              })}
-            </div>
+                </div>
+              );
+            })}
           </div>
         )}
       </div>
