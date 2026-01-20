@@ -17,7 +17,9 @@ export type GetRegistryRequest = z.infer<typeof GetRegistryRequestSchema>;
 /**
  * Response with the effective registry.
  */
-export const GetRegistryResponseSchema = ComponentRegistrySchema;
+export const GetRegistryResponseSchema = z.object({
+  registry: ComponentRegistrySchema,
+});
 export type GetRegistryResponse = z.infer<typeof GetRegistryResponseSchema>;
 
 /**
@@ -30,8 +32,15 @@ export function registerRegistryHandlers() {
       GetRegistryRequestSchema,
       GetRegistryResponseSchema,
       async (_event, _request: GetRegistryRequest): Promise<GetRegistryResponse> => {
-        console.log('[IPC] registry:get');
-        return registryManager.getEffectiveRegistry();
+        const registry = registryManager.getEffectiveRegistry();
+        const componentCount = Object.keys(registry.components).length;
+        console.log(`[IPC] registry:get - returning ${componentCount} component(s)`);
+        console.log('[IPC] registry:get - registry defined:', registry !== undefined);
+        console.log('[IPC] registry:get - schemaVersion:', registry.schemaVersion);
+        if (componentCount > 0) {
+          console.log('[IPC] registry:get - component IDs:', Object.keys(registry.components).join(', '));
+        }
+        return { registry };
       }
     )
   );

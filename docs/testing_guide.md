@@ -69,6 +69,12 @@ Avoid over-mocking that hides the interaction.
 ### 3) Use clear, specific test names
 Names should describe the exact behavior and boundary being validated.
 
+### 4) Keep test harnesses stable and quiet
+- In jsdom tests, **never replace `globalThis.window`**; attach `window.scaffa` instead.
+- Use `waitFor`/`act` for async UI updates (avoid `setTimeout`-based waits).
+- If a test intentionally triggers a warning/error, suppress it **inside that test only** and restore afterward.
+- Prefer local fixture modules for module-loader tests (avoid relying on build artifacts).
+
 ---
 
 ## Quick Decision Tree

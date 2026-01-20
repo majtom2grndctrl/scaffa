@@ -79,15 +79,17 @@ describe('Selection Flow - Renderer Integration (End-to-End)', () => {
     vi.clearAllMocks();
     selectionCallback = null;
 
-    // Set up window.scaffa mock
-    globalThis.window = {
-      scaffa: {
-        registry: { get: mockRegistryGet },
-        inspector: { getSections: mockGetSections },
-        selection: { onSelectionChanged: mockOnSelectionChanged },
-        overrides: { onOverridesChanged: mockOnOverridesChanged },
-      },
-    } as any;
+    if (!globalThis.window) {
+      (globalThis as any).window = {};
+    }
+
+    // Set up window.scaffa mock without clobbering jsdom window
+    (globalThis.window as any).scaffa = {
+      registry: { get: mockRegistryGet },
+      inspector: { getSections: mockGetSections },
+      selection: { onSelectionChanged: mockOnSelectionChanged },
+      overrides: { onOverridesChanged: mockOnOverridesChanged },
+    };
 
     // Fresh import of the store
     vi.resetModules();
@@ -107,6 +109,7 @@ describe('Selection Flow - Renderer Integration (End-to-End)', () => {
   });
 
   afterEach(() => {
+    delete (globalThis.window as any).scaffa;
     vi.resetModules();
   });
 

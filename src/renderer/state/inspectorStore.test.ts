@@ -1,4 +1,4 @@
-import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
+import { describe, it, expect, vi, beforeEach, afterEach, beforeAll, afterAll } from 'vitest';
 import { useInspectorStore } from './inspectorStore';
 import type { ComponentRegistry, InstanceDescriptor } from '../../shared/index.js';
 
@@ -15,16 +15,25 @@ const mockOnOverridesChanged = vi.fn((cb) => {
   overrideCallback = cb;
 });
 
-globalThis.window = {
-  scaffa: {
-    registry: { get: mockGet },
-    inspector: { getSections: mockGetSections },
-    selection: { onSelectionChanged: mockOnSelectionChanged },
-    overrides: { onOverridesChanged: mockOnOverridesChanged },
-  },
-} as any;
+const scaffaApi = {
+  registry: { get: mockGet },
+  inspector: { getSections: mockGetSections },
+  selection: { onSelectionChanged: mockOnSelectionChanged },
+  overrides: { onOverridesChanged: mockOnOverridesChanged },
+};
 
 describe('inspectorStore - Real Lifecycle Tests', () => {
+  beforeAll(() => {
+    if (!globalThis.window) {
+      (globalThis as any).window = {};
+    }
+    (globalThis.window as any).scaffa = scaffaApi;
+  });
+
+  afterAll(() => {
+    delete (globalThis.window as any).scaffa;
+  });
+
   beforeEach(() => {
     vi.clearAllMocks();
     selectionCallback = null;

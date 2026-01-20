@@ -22,7 +22,16 @@ Demo Workspace Walkthrough
   ---
   🚀 Running the Demo
 
-  You'll need two terminal windows open:
+  Option A (Recommended): Managed Preview (single terminal)
+
+  From the Scaffa root:
+
+  pnpm dev
+
+  The Scaffa Electron app should launch. When you start a session, the Vite launcher
+  will start the demo app dev server automatically.
+
+  Option B: Attach-by-URL (two terminals)
 
   Terminal 1: Start the Demo React App
 
@@ -33,15 +42,11 @@ Demo Workspace Walkthrough
   VITE v5.x.x ready in xxx ms
   ➜ Local: http://localhost:5173/
 
-  Keep this terminal running! This is the React app that Scaffa will preview.
-
   Terminal 2: Start Scaffa
 
   From the Scaffa root:
 
   pnpm dev
-
-  The Scaffa Electron app should launch. You'll see the Launcher view.
 
   ---
   📂 Open the Demo Workspace (Launcher)
@@ -55,14 +60,21 @@ Demo Workspace Walkthrough
   - You should see:
   [DemoModule] Activating...
   [DemoModule] Contributed component registry for demo.button and demo.card
-  [DemoGraphProducer] Activating...
-  [DemoGraphProducer] Initialized with demo workspace data...
+  [ReactRouterGraphProducer] Activating...
+  [ReactRouterGraphProducer] Parsing route module: ...
 
   ---
   🎬 Start App Preview Session
 
-  1. In the Preview panel (or Web View panel), look for "Start App Preview" button
-  2. Click it, and enter the URL: http://localhost:5173
+  Managed preview:
+
+  1. In the Preview panel, look for "Start Session" / "Start App Preview"
+  2. Click it (no URL required)
+
+  Attach-by-URL (fallback):
+
+  1. Click "Start App Preview"
+  2. Enter the URL shown by Vite (usually http://localhost:5173)
   3. Click Start or OK
 
   What to expect:
@@ -197,10 +209,13 @@ Demo Workspace Walkthrough
 
   Click-to-select not working?
   - Check preview console for adapter handshake messages
-  - Verify ScaffaProvider is wrapping the app in demo/app/src/main.tsx
+  - In managed preview, confirm logs like:
+    [ViteRunner] Wrote harness file: .../.scaffa-harness.tsx
+    [ViteRunner] Instrumenting: ...DemoButton.tsx
 
   Edits not updating preview?
-  - Check that components use useScaffaInstance() hook
+  - Confirm the session is managed (instrumentation is only injected there)
+  - Ensure registry entries include implementation hints (file path + export name)
   - Check override messages in preview console
 
   ---

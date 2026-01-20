@@ -55,6 +55,8 @@ For UI consistency, follow:
 
 ### Running the Demo Workspace
 
+**Architectural note:** `demo/app` represents a real user's project folder (i.e., it would live outside the Scaffa workspace in production use). It uses `--ignore-workspace` for installs and has its own `pnpm-lock.yaml` to simulate standalone project behavior.
+
 The v0 demo workflow uses two independent processes: the demo app dev server (preview target) and Scaffa (the editor).
 
 #### Option 1: Single Command (Recommended for Local Development)
@@ -75,7 +77,7 @@ This uses `concurrently` to run both processes. Exit with Ctrl+C to stop both cl
 
 ```bash
 cd demo/app
-pnpm install
+pnpm run install:local  # or: pnpm --ignore-workspace install
 pnpm dev
 ```
 

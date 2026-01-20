@@ -62,11 +62,11 @@ demo/extensions/demo-graph-producer/
 ```
 demo/app/
 ├── src/
-│   ├── main.tsx                  # App entry with ScaffaProvider
-│   ├── App.tsx                   # Demo UI with buttons and cards
+│   ├── main.tsx                  # Production entry (no Scaffa deps)
+│   ├── App.tsx                   # Preview entry (router + UI)
 │   └── components/
-│       ├── DemoButton.tsx        # Button component with ScaffaInstance wrapper
-│       └── DemoCard.tsx          # Card component with ScaffaInstance wrapper
+│       ├── DemoButton.tsx        # Plain React component (instrumented in preview)
+│       └── DemoCard.tsx          # Plain React component (instrumented in preview)
 ├── package.json
 ├── vite.config.ts
 ├── tsconfig.json
@@ -74,10 +74,10 @@ demo/app/
 ```
 
 **Features:**
-- Uses `@scaffa/react-runtime-adapter`
-- Wrapped with `ScaffaProvider` for runtime adapter activation
-- Components use `ScaffaInstance` for instance identity
-- Components use `useScaffaInstance()` hook for override application
+- Uses `@scaffa/react-runtime-adapter` in managed previews (harness-injected)
+- `ScaffaProvider` is injected by the managed preview harness (not in app code)
+- Components are wrapped at export time by the Vite launcher (ScaffaInstanceBoundary)
+- Overrides apply via instrumentation; app code stays Scaffa-free
 - Interactive UI (counter, multiple instances)
 
 ## Architecture Compliance
@@ -91,9 +91,9 @@ demo/app/
 - Grouping and ordering metadata
 
 ✅ **Runtime Adapter Contract** (`docs/scaffa_runtime_adapter_contract.md`)
-- Uses ScaffaProvider for adapter initialization
-- ScaffaInstance wrappers provide instance identity
-- useScaffaInstance hook applies overrides
+- Harness injects ScaffaProvider for adapter initialization
+- ScaffaInstanceBoundary provides instance identity + componentTypeId
+- Overrides apply in the boundary; no app-side hook required
 - Click-to-select capability via DOM annotations
 
 ✅ **Preview Session Protocol** (`docs/scaffa_preview_session_protocol.md`)
@@ -116,8 +116,8 @@ demo/app/
 ## Dependencies
 
 ### External Dependencies
-- React 18.3.1
-- React DOM 18.3.1
+- React 19.0.0
+- React DOM 19.0.0
 - Vite 5.4.10
 - TypeScript 5.6.3
 
@@ -132,10 +132,10 @@ See `demo/TESTING.md` for comprehensive testing checklist.
 **Quick Start:**
 1. `pnpm install` (root)
 2. `pnpm build` (root)
-3. `cd demo/app && pnpm install && pnpm dev` (start demo app on localhost:5173)
+3. `cd demo/app && pnpm install` (one-time demo app deps)
 4. `pnpm dev` (start Scaffa)
 5. Launcher → Open Workspace → Select `demo/`
-6. Start app preview with URL `http://localhost:5173`
+6. Start app preview (managed launcher starts Vite automatically)
 7. Click components, edit in Inspector, verify live updates
 
 ## Success Criteria Met
@@ -153,7 +153,7 @@ See `demo/TESTING.md` for comprehensive testing checklist.
 
 ## Known Limitations / Future Work
 
-1. **Manual App Server Start**: Demo app must be started manually with `pnpm dev` before preview. Future: Scaffa could auto-start dev servers.
+1. **Managed vs Attached Preview**: Managed Vite launcher starts the dev server automatically. Attach-by-URL remains an escape hatch.
 
 2. **Component Session Previews**: Only app session type is demonstrated. Component-isolated preview sessions (harness) are deferred.
 

@@ -1,6 +1,5 @@
 import { describe, it, expect, vi } from 'vitest';
 import type { ScaffaConfig } from '../shared/config.js';
-import type { ExtensionContext, ExtensionModule } from './extension-context.js';
 import { ModuleLoader } from './module-loader.js';
 
 describe('Extension Host Activation', () => {
@@ -10,36 +9,18 @@ describe('Extension Host Activation', () => {
     const originalSend = process.send;
     process.send = mockSend as any;
 
-    // Create a minimal mock extension
-    const mockActivate = vi.fn(async (context: ExtensionContext) => {
-      // Registry contribution
-      context.registry.contributeRegistry({
-        schemaVersion: 'v0',
-        components: {
-          'test.Component': {
-            displayName: 'Test Component',
-            props: {},
-          },
-        },
-      });
-    });
-
-    const mockExtension: ExtensionModule = {
-      activate: mockActivate,
-    };
-
-    // Create a mock config pointing to an extension
+    // Create a config pointing to a local fixture module
     const config: ScaffaConfig = {
       schemaVersion: 'v0',
       modules: [
         {
           id: 'test-extension',
-          path: 'extensions/sample-graph-producer/module/index.ts',
+          path: 'src/extension-host/__fixtures__/test-extension.ts',
         },
       ],
     };
 
-    const loader = new ModuleLoader('/Users/dhiester/Projects/Personal/scaffa', config);
+    const loader = new ModuleLoader(process.cwd(), config);
 
     // Note: This test actually loads the real extension since we can't easily mock dynamic imports
     // For true unit test isolation, we'd need dependency injection for the import system
@@ -54,12 +35,11 @@ describe('Extension Host Activation', () => {
       // Verify process.send was called (module communications)
       expect(mockSend).toHaveBeenCalled();
 
-      // Check for registry contribution or activation status
+      // Check for registry contribution from the fixture module
       const messages = mockSend.mock.calls.map((call) => call[0]);
-      const hasRegistryOrStatus = messages.some(
-        (msg: any) => msg.type === 'registry-contribution' || msg.type === 'module-activation-status'
-      );
-      expect(hasRegistryOrStatus).toBe(true);
+      const registryMessage = messages.find((msg: any) => msg.type === 'registry-contribution');
+      expect(registryMessage).toBeDefined();
+      expect(registryMessage?.registries?.[0]?.components).toHaveProperty('test.component');
     } finally {
       // Cleanup
       process.send = originalSend;
@@ -67,6 +47,7 @@ describe('Extension Host Activation', () => {
   });
 
   it('should handle module load failures gracefully', async () => {
+    const errorSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
     const mockSend = vi.fn();
     const originalSend = process.send;
     process.send = mockSend as any;
@@ -93,6 +74,7 @@ describe('Extension Host Activation', () => {
     expect(failureMessage?.error).toBeDefined();
 
     process.send = originalSend;
+    errorSpy.mockRestore();
   });
 
   it('should support workspace config with extensions/*/module pattern', () => {

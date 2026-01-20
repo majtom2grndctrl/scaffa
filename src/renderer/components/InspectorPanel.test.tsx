@@ -1,7 +1,7 @@
 /**
  * @vitest-environment jsdom
  */
-import { describe, it, expect, vi, beforeEach } from 'vitest';
+import { describe, it, expect, vi, beforeEach, beforeAll, afterAll } from 'vitest';
 import { render, screen } from '@testing-library/react';
 import { InspectorPanel } from './InspectorPanel';
 import { useInspectorStore } from '../state/inspectorStore';
@@ -13,16 +13,22 @@ vi.mock('../state/inspectorStore', () => ({
 }));
 
 // Mock window.scaffa API
-globalThis.window = {
-  scaffa: {
-    overrides: {
-      set: vi.fn(),
-      clear: vi.fn(),
-    },
+const scaffaApi = {
+  overrides: {
+    set: vi.fn(),
+    clear: vi.fn(),
   },
-} as any;
+};
 
 describe('InspectorPanel', () => {
+  beforeAll(() => {
+    (globalThis.window as any).scaffa = scaffaApi;
+  });
+
+  afterAll(() => {
+    delete (globalThis.window as any).scaffa;
+  });
+
   beforeEach(() => {
     vi.clearAllMocks();
   });

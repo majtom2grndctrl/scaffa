@@ -114,7 +114,8 @@ class WorkspaceManager {
     await this.save();
     console.log('[Workspace] Workspace changed:', workspace?.path);
 
-    // Load config for the new workspace
+    // Load config for the new workspace (don't notify via config manager,
+    // we'll restart the extension host directly with the new workspace)
     await configManager.loadForWorkspace(workspace?.path ?? null, {
       notifyExtensionHost: false,
     });
@@ -124,6 +125,14 @@ class WorkspaceManager {
 
     // Reset project graph for the new workspace
     projectGraphStore.reset();
+
+    // Restart extension host with new workspace and config
+    // This ensures modules are loaded and registry contributions are sent
+    const { extensionHostManager } = await import('../extension-host/extension-host-manager.js');
+    const newConfig = configManager.getCurrentConfig();
+    console.log('[Workspace] Restarting extension host for new workspace...');
+    await extensionHostManager.restart(workspace?.path ?? null, newConfig);
+    console.log('[Workspace] Extension host restarted');
   }
 
   /**

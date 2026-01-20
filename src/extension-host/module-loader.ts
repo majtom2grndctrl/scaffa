@@ -509,10 +509,16 @@ export class ModuleLoader {
    * Send registry contributions to main process.
    */
   private sendRegistryContributions(): void {
+    console.log(`[ModuleLoader] Sending ${this.registryContributions.length} registry contribution(s) to main`);
+    for (const registry of this.registryContributions) {
+      const componentIds = Object.keys(registry.components);
+      console.log(`[ModuleLoader]   - ${componentIds.length} components: ${componentIds.join(', ') || '(none)'}`);
+    }
     this.sendToMain({
       type: 'registry-contribution',
       registries: this.registryContributions,
     });
+    console.log('[ModuleLoader] Registry contributions sent to main');
   }
 
   private getSavePromoter(): SavePromoter | null {

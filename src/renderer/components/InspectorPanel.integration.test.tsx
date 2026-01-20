@@ -1,8 +1,8 @@
 /**
  * @vitest-environment jsdom
  */
-import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { render, screen, fireEvent } from '@testing-library/react';
+import { describe, it, expect, vi, beforeEach, beforeAll, afterAll } from 'vitest';
+import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import { InspectorPanel } from '../components/InspectorPanel';
 import { useInspectorStore } from '../state/inspectorStore';
 import type { ComponentRegistry } from '../../shared/index.js';
@@ -14,16 +14,22 @@ vi.mock('../state/inspectorStore', () => ({
 const mockOverrideSet = vi.fn();
 const mockOverrideClear = vi.fn();
 
-globalThis.window = {
-  scaffa: {
-    overrides: {
-      set: mockOverrideSet,
-      clear: mockOverrideClear,
-    },
+const scaffaApi = {
+  overrides: {
+    set: mockOverrideSet,
+    clear: mockOverrideClear,
   },
-} as any;
+};
 
 describe('Inspector Integration Tests', () => {
+  beforeAll(() => {
+    (globalThis.window as any).scaffa = scaffaApi;
+  });
+
+  afterAll(() => {
+    delete (globalThis.window as any).scaffa;
+  });
+
   beforeEach(() => {
     vi.clearAllMocks();
   });
@@ -74,16 +80,15 @@ describe('Inspector Integration Tests', () => {
       const input = screen.getByPlaceholderText('Enter label') as HTMLInputElement;
       fireEvent.change(input, { target: { value: 'Click me' } });
 
-      // Wait for async processing
-      await new Promise((resolve) => setTimeout(resolve, 10));
-
-      expect(mockOverrideSet).toHaveBeenCalledWith({
-        sessionId: 'session-1',
-        instanceId: 'instance-123',
-        path: '/label',
-        value: 'Click me',
-        componentTypeId: 'ui.button',
-        instanceLocator: { type: 'instancePath', path: '/app/button[0]' },
+      await waitFor(() => {
+        expect(mockOverrideSet).toHaveBeenCalledWith({
+          sessionId: 'session-1',
+          instanceId: 'instance-123',
+          path: '/label',
+          value: 'Click me',
+          componentTypeId: 'ui.button',
+          instanceLocator: { type: 'instancePath', path: '/app/button[0]' },
+        });
       });
     });
   });
@@ -139,13 +144,12 @@ describe('Inspector Integration Tests', () => {
       const resetButton = screen.getByText('Reset to default');
       fireEvent.click(resetButton);
 
-      // Wait for async processing
-      await new Promise((resolve) => setTimeout(resolve, 10));
-
-      expect(mockOverrideClear).toHaveBeenCalledWith({
-        sessionId: 'session-1',
-        instanceId: 'instance-reset',
-        path: '/variant',
+      await waitFor(() => {
+        expect(mockOverrideClear).toHaveBeenCalledWith({
+          sessionId: 'session-1',
+          instanceId: 'instance-reset',
+          path: '/variant',
+        });
       });
     });
   });
@@ -191,10 +195,9 @@ describe('Inspector Integration Tests', () => {
       const clearAllButton = screen.getByText('Clear all');
       fireEvent.click(clearAllButton);
 
-      // Wait for async processing
-      await new Promise((resolve) => setTimeout(resolve, 10));
-
-      expect(mockOverrideClear).toHaveBeenCalledTimes(2);
+      await waitFor(() => {
+        expect(mockOverrideClear).toHaveBeenCalledTimes(2);
+      });
 
       expect(mockOverrideClear).toHaveBeenCalledWith({
         sessionId: 'session-1',
@@ -634,10 +637,17 @@ describe('Inspector Integration Tests', () => {
       const resetButton = screen.getByText('Reset to default');
       fireEvent.click(resetButton);
 
-      await new Promise((resolve) => setTimeout(resolve, 10));
+      await waitFor(() => {
+        expect(mockOverrideClear).toHaveBeenCalledWith({
+          sessionId: 'session-1',
+          instanceId: 'instance-reset-baseline',
+          path: '/variant',
+        });
+      });
 
-      // Should reset to runtime baseline ('outline'), not uiDefaultValue ('primary')
-      expect(input.value).toBe('outline');
+      await waitFor(() => {
+        expect(input.value).toBe('outline');
+      });
     });
 
     it('should fall back to uiDefaultValue when no runtime props available', () => {
@@ -733,4 +743,3 @@ describe('Inspector Integration Tests', () => {
     });
   });
 });
-

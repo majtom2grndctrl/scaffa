@@ -32,7 +32,8 @@
       "Bash(tree:*)",
       "Skill(code-review)",
       "Bash(find:*)",
-      "Bash(cat:*)"
+      "Bash(cat:*)",
+      "Bash(grep:*)"
     ]
   }
 }

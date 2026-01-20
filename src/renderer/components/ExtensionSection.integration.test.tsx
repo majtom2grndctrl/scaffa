@@ -23,12 +23,16 @@ import type {
 
 // Suppress console.error during error boundary tests
 const originalError = console.error;
+let warnSpy: ReturnType<typeof vi.spyOn> | null = null;
 beforeEach(() => {
   console.error = vi.fn();
+  warnSpy = vi.spyOn(console, 'warn').mockImplementation(() => {});
 });
 
 afterEach(() => {
   console.error = originalError;
+  warnSpy?.mockRestore();
+  warnSpy = null;
 });
 
 describe('Extension Section Error Handling Workflow (Integration)', () => {
@@ -159,7 +163,7 @@ describe('Extension Section Error Handling Workflow (Integration)', () => {
    * This verifies that the loading state includes the section title so users
    * can identify which section is loading.
    */
-  it('should show section title in loading state', () => {
+  it('should show section title in loading state', async () => {
     const mockSection: InspectorSectionContribution = {
       id: 'ext-1.async' as any,
       title: 'Async Section',
@@ -173,6 +177,10 @@ describe('Extension Section Error Handling Workflow (Integration)', () => {
 
     // VERIFY: Loading state shows section title
     expect(screen.getByText(/Loading Async Section/)).toBeInTheDocument();
+
+    await waitFor(() => {
+      expect(screen.getByText(/Failed to load extension section/)).toBeInTheDocument();
+    });
   });
 
   /**
@@ -252,6 +260,10 @@ describe('Extension Section Error Handling Workflow (Integration)', () => {
     };
 
     rerender(<ExtensionSection section={mockSection} context={updatedContext} />);
+
+    await waitFor(() => {
+      expect(screen.getByText(/Failed to load extension section/)).toBeInTheDocument();
+    });
 
     // VERIFY: Section still shows error state (same section, same loading state)
     expect(screen.getByText(/Failed to load extension section/)).toBeInTheDocument();

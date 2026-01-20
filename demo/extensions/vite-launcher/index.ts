@@ -78,6 +78,9 @@ class ViteLauncher implements PreviewLauncher {
           ...process.env,
           FORCE_COLOR: '0',
           SCAFFA_ROOT: this.appPath, // Runner runs in app dir
+          // Pass the actual workspace root for resolving implementation hint paths
+          // Implementation hints in registry are relative to workspace root, not app dir
+          SCAFFA_WORKSPACE_ROOT: this.workspaceRoot || this.appPath,
           SCAFFA_ENTRY: entry || '',
           SCAFFA_STYLES: JSON.stringify(styles || []),
           // Pass registry snapshot for instrumentation matchers

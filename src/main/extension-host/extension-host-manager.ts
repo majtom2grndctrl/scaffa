@@ -249,6 +249,12 @@ export class ExtensionHostManager {
   private handleRegistryContribution(message: RegistryContributionMessage): void {
     console.log(`[ExtHostManager] Received ${message.registries.length} registry contribution(s)`);
 
+    // Log details of each registry contribution
+    for (const registry of message.registries) {
+      const componentIds = Object.keys(registry.components);
+      console.log(`[ExtHostManager]   - Registry with ${componentIds.length} component(s): ${componentIds.join(', ') || '(none)'}`);
+    }
+
     if (!this.config) {
       console.error('[ExtHostManager] No config available for registry composition');
       return;
@@ -256,6 +262,10 @@ export class ExtensionHostManager {
 
     // Update registry manager with module registries
     registryManager.updateRegistry(message.registries, this.config);
+
+    // Log the effective registry after update
+    const effective = registryManager.getEffectiveRegistry();
+    console.log(`[ExtHostManager] Effective registry now has ${Object.keys(effective.components).length} component(s)`);
   }
 
   /**

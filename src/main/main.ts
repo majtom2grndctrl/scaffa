@@ -56,8 +56,12 @@ app.whenReady().then(async () => {
   // Register all IPC handlers before creating windows
   registerAllIpcHandlers();
 
-  createMainWindow();
+  // Launch extension host FIRST - this ensures registries are loaded
+  // before the renderer tries to fetch them
   await launchExtensionHost();
+
+  // Now create the window - renderer can safely fetch registries
+  createMainWindow();
 
   app.on('activate', () => {
     if (BrowserWindow.getAllWindows().length === 0) {

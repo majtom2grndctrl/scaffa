@@ -32,6 +32,7 @@ Scaffa integration should not be required for your app to build and run in produ
 Recommended approach:
 - Use the **Harness Model** for managed previews: Scaffa mounts the app via a launcher-injected harness entrypoint, so your app code has **zero Scaffa imports**.
 - Keep all Scaffa runtime logic **dev-only** and scoped to preview sessions started by Scaffa (managed mode).
+- Install `@scaffa/react-runtime-adapter` as a **devDependency** (the launcher needs it at dev-time even though your source code doesn't import it).
 
 See: `docs/scaffa_harness_model.md`.
 
@@ -39,7 +40,9 @@ See: `docs/scaffa_harness_model.md`.
 
 ## 2. Harness Model Recipe (Recommended)
 
-In the Harness Model, the “three parts” still exist, but they are injected by the launcher/runtime adapter rather than authored in the app code.
+In the Harness Model, the "three parts" still exist, but they are injected by the launcher/runtime adapter rather than authored in the app code.
+
+**Important:** Even though your app source code has zero Scaffa imports, the runtime adapter package must be available at dev-time because the vite-launcher generates code that imports it (harness entrypoint + component instrumentation). Add `@scaffa/react-runtime-adapter` to `devDependencies` (NOT `dependencies`) so it's excluded from production builds.
 
 ### 2.1 Mount via a virtual harness entry
 

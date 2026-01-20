@@ -1,7 +1,7 @@
 /**
  * @vitest-environment jsdom
  */
-import { describe, it, expect, vi, beforeEach } from 'vitest';
+import { describe, it, expect, vi, beforeEach, afterEach, beforeAll, afterAll } from 'vitest';
 import { render, screen, waitFor } from '@testing-library/react';
 import { InspectorPanel } from './InspectorPanel';
 import { useInspectorStore } from '../state/inspectorStore';
@@ -26,21 +26,35 @@ vi.mock('../state/inspectorStore', () => ({
 
 // Mock window.scaffa API
 const mockGetSections = vi.fn();
-globalThis.window = {
-  scaffa: {
-    overrides: {
-      set: vi.fn(),
-      clear: vi.fn(),
-    },
-    inspector: {
-      getSections: mockGetSections,
-    },
+const scaffaApi = {
+  overrides: {
+    set: vi.fn(),
+    clear: vi.fn(),
   },
-} as any;
+  inspector: {
+    getSections: mockGetSections,
+  },
+};
 
 describe('Inspector Section Rendering Workflow (Integration)', () => {
+  let warnSpy: ReturnType<typeof vi.spyOn> | null = null;
+
+  beforeAll(() => {
+    (globalThis.window as any).scaffa = scaffaApi;
+  });
+
+  afterAll(() => {
+    delete (globalThis.window as any).scaffa;
+  });
+
   beforeEach(() => {
     vi.clearAllMocks();
+    warnSpy = vi.spyOn(console, 'warn').mockImplementation(() => {});
+  });
+
+  afterEach(() => {
+    warnSpy?.mockRestore();
+    warnSpy = null;
   });
 
   /**
@@ -52,7 +66,7 @@ describe('Inspector Section Rendering Workflow (Integration)', () => {
    * 3. Store updates state with sections
    * 4. InspectorPanel reads state and renders sections
    */
-  it('should render extension sections after store initialization', () => {
+  it('should render extension sections after store initialization', async () => {
     const mockInstance: InstanceDescriptor = {
       sessionId: 'session-1' as any,
       instanceId: 'instance-1' as any,
@@ -110,9 +124,9 @@ describe('Inspector Section Rendering Workflow (Integration)', () => {
     expect(screen.getByText(/Loading Custom Properties/)).toBeInTheDocument();
     expect(screen.getByText(/Loading Diagnostics/)).toBeInTheDocument();
 
-    // NOTE: In full e2e testing, we would verify that after loading completes,
-    // sections show error for unknown components (not in pre-bundle registry).
-    // This test focuses on the initial render and loading state visibility.
+    await waitFor(() => {
+      expect(screen.getAllByText(/Failed to load extension section/)).toHaveLength(2);
+    });
   });
 
   /**
@@ -205,7 +219,7 @@ describe('Inspector Section Rendering Workflow (Integration)', () => {
    * This documents another conditional: extension sections only render
    * when a selected instance exists.
    */
-  it('should not render extension sections when registry entry is missing', () => {
+  it('should not render extension sections when registry entry is missing', async () => {
     const mockInstance: InstanceDescriptor = {
       sessionId: 'session-1' as any,
       instanceId: 'instance-1' as any,
@@ -249,6 +263,10 @@ describe('Inspector Section Rendering Workflow (Integration)', () => {
     // VERIFY: Extension sections ARE rendered since we have a selectedInstance
     // (the registryEntry is optional for extension sections now)
     expect(screen.getByText(/Loading Properties/)).toBeInTheDocument();
+
+    await waitFor(() => {
+      expect(screen.getByText(/Failed to load extension section/)).toBeInTheDocument();
+    });
   });
 
   /**

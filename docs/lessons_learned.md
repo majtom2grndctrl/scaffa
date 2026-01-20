@@ -6,24 +6,26 @@
 
 ---
 
-## 0. Update: Pure Harness Model Boundaries (2026-01-11)
+## 0. Update: Pure Harness Model Migration Complete (2026-01-19)
 
-The runtime adapter integration guide should explicitly show the production vs Scaffa preview boot chain and reinforce that Scaffa never loads `main.tsx`.
+✅ **Completed:** demo/app now demonstrates the pure harness model end-to-end with zero Scaffa imports in production code.
 
-Production build:
-`index.html` -> `src/main.tsx` (production bootstrap) -> `src/App.tsx` (router + UI) -> `src/pages/*.tsx` -> `src/components/*.tsx` (use `demo/app/src/scaffa-shim.tsx`)
+**Production build:**
+`index.html` -> `src/main.tsx` (production bootstrap) -> `src/App.tsx` (router + UI) -> `src/pages/*.tsx` -> `src/components/*.tsx` (pure React, no Scaffa deps)
 
-Components import from `demo/app/src/scaffa-shim.tsx`:
-- Production: no-op passthroughs
-- Exports: `ScaffaInstance`, `useScaffaInstance`
+**Scaffa preview:**
+`index.html` (transformed by harness plugin) -> virtual harness entry (injected by vite-launcher) -> `ScaffaProvider` (real adapter) -> `src/App.tsx` (router + UI) -> registry-listed components automatically wrapped with `ScaffaInstanceBoundary` (injected by vite-launcher instrumentation plugin)
 
-Scaffa preview:
-`index.html` (transformed by harness plugin) -> `.scaffa-harness.tsx` (generated) -> `ScaffaProvider` (real adapter) -> `src/App.tsx` (router + UI) -> components use shim (connects to provider)
-
-Key boundary:
-- `main.tsx` is production-only
+**Key boundary:**
+- `main.tsx` is production-only and NEVER loaded by Scaffa
 - Scaffa's harness replaces it in `index.html`
-- `App.tsx` must be self-contained and include its own router
+- `App.tsx` is self-contained and includes its own router
+- Components have NO Scaffa imports - instrumentation is injected at dev-time for registry-listed types only
+
+**Migration artifacts removed:**
+- `demo/app/src/scaffa-shim.tsx` (deleted)
+- `demo/app/.scaffa-harness.tsx` (deleted, was auto-generated)
+- `@scaffa/react-runtime-adapter` removed from demo/app dependencies
 
 ---
 
