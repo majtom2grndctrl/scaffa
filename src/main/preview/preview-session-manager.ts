@@ -19,6 +19,7 @@ import {
   broadcastSessionError,
   broadcastSessionStopped,
 } from '../ipc/preview.js';
+import { broadcastSelectionChanged } from '../ipc/selection.js';
 import { overrideStore } from '../overrides/override-store.js';
 import { launcherRegistry } from './launcher-registry.js';
 
@@ -305,8 +306,8 @@ class PreviewSessionManager {
       selected,
     };
 
-    // TODO: Broadcast selection to renderer (will be implemented with selection IPC)
-    // broadcastSelectionChanged({ sessionId, selected });
+    // Broadcast selection to renderer
+    broadcastSelectionChanged({ sessionId, selected });
   }
 
   /**
