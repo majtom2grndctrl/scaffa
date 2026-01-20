@@ -31,7 +31,8 @@
       "Bash(pnpm build:modules:*)",
       "Bash(tree:*)",
       "Skill(code-review)",
-      "Bash(find:*)"
+      "Bash(find:*)",
+      "Bash(cat:*)"
     ]
   }
 }
