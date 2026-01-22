@@ -37,12 +37,17 @@ export function registerGraphHandlers() {
 /**
  * Apply a graph patch to the store and broadcast to all renderers.
  * This is called by producers (e.g., workspace scanner, runtime adapters).
+ * Main assigns a global revision and broadcasts the patch with the global revision.
  */
 export function applyGraphPatch(patch: GraphPatch): void {
-  const applied = projectGraphStore.applyPatch(patch);
-  if (applied) {
-    broadcastGraphPatch(patch);
-  }
+  const globalRevision = projectGraphStore.applyPatch(patch);
+
+  // Broadcast patch with the assigned global revision
+  const globalPatch: GraphPatch = {
+    ...patch,
+    revision: globalRevision,
+  };
+  broadcastGraphPatch(globalPatch);
 }
 
 /**

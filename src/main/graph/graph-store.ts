@@ -45,21 +45,16 @@ export class ProjectGraphStore {
   }
 
   /**
-   * Apply a graph patch.
-   * Patches are idempotent and ordered by revision.
-   * Duplicate or out-of-order patches are ignored.
+   * Apply a graph patch with global revision coordination.
+   * Main assigns a global revision for every applied update, regardless of producer revision.
+   * The producer revision in the patch is ignored (used only for producer-local ordering).
    */
-  applyPatch(patch: GraphPatch): boolean {
-    // Ignore patches with revision <= current revision (duplicate/out-of-order)
-    if (patch.revision <= this.revision) {
-      console.log(
-        `[GraphStore] Ignoring patch with revision ${patch.revision} (current: ${this.revision})`
-      );
-      return false;
-    }
+  applyPatch(patch: GraphPatch): GraphRevision {
+    // Assign next global revision
+    const globalRevision = this.revision + 1;
 
     console.log(
-      `[GraphStore] Applying patch with revision ${patch.revision} (${patch.ops.length} ops)`
+      `[GraphStore] Applying patch (producer revision: ${patch.revision}, assigned global: ${globalRevision}, ${patch.ops.length} ops)`
     );
 
     // Apply all operations in the patch
@@ -67,9 +62,9 @@ export class ProjectGraphStore {
       this.applyOp(op);
     }
 
-    // Update revision
-    this.revision = patch.revision;
-    return true;
+    // Update to the new global revision
+    this.revision = globalRevision;
+    return globalRevision;
   }
 
   /**

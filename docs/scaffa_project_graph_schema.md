@@ -177,6 +177,21 @@ Not guaranteed in v0:
 - exactly-once delivery (consumers should handle duplicates)
 - persistence of patch history across app restarts (snapshots handle that)
 
+### 5.2 Global Revision Coordination
+
+**For extension authors:**
+
+Graph producers emit patches with their own local revision counters (starting at 1 per producer). The main process assigns a **global revision** to every applied update, regardless of the producer's local revision.
+
+- **Producer revision**: used only for producer-local ordering and diagnostics
+- **Global revision**: assigned by main, monotonic across all producers, used by consumers
+
+**Implementation:**
+- Producers should maintain local revision counters starting at 1 and increment on each patch
+- Main process assigns the next global revision when ingesting snapshots/patches
+- Renderer and other consumers receive patches with the global revision only
+- Multiple producers can emit `revision: 1` without collision; main assigns distinct global revisions
+
 ---
 
 ## 6. Example Patch Payload
@@ -209,10 +224,13 @@ Not guaranteed in v0:
 Producers (framework adapters) MUST:
 - emit a snapshot at startup (or provide `getSnapshot`)
 - emit ordered patches reflecting workspace changes
+- maintain a local revision counter starting at 1 (incremented per patch)
+- understand that the producer revision is for local ordering only; main assigns global revisions
 
 Consumers (renderer, extensions) MUST:
 - treat the graph as canonical truth
 - tolerate partial graphs in v0 (some nodes/edges may be unavailable until adapters mature)
+- use only the global revision provided by main (never the producer revision)
 
 ---
 
