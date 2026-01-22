@@ -23,7 +23,7 @@ import type {
   PromoteOverridesErrorMessage,
   InspectorSectionRegisteredMessage,
 } from '../../extension-host/ipc-protocol.js';
-import type { ComponentRegistry } from '../../shared/index.js';
+import type { ComponentRegistry, GraphPatch } from '../../shared/index.js';
 import type { ScaffaConfig } from '../../shared/config.js';
 import type { DraftOverride, SavePlan } from '../../shared/save.js';
 import { registryManager } from '../registry/registry-manager.js';
@@ -272,9 +272,31 @@ export class ExtensionHostManager {
    * Handle graph snapshot from extension host.
    */
   private handleGraphSnapshot(message: GraphSnapshotMessage): void {
-    console.log(`[ExtHostManager] Received graph snapshot from producer: ${message.producerId}`);
-    // v0: Snapshots are handled by initial patch with revision 1
-    // Future: Support full snapshot replacement
+    console.log(
+      `[ExtHostManager] Received graph snapshot from producer: ${message.producerId} (revision: ${message.snapshot.revision})`
+    );
+
+    // Convert snapshot to a patch for ingestion
+    // Semantics: treat as full snapshot replacement for that producer
+    const patch = this.snapshotToPatch(message.snapshot);
+    applyGraphPatch(patch);
+  }
+
+  /**
+   * Convert a graph snapshot to a patch.
+   * v0 semantics: snapshot is treated as a full replacement, converted to upsert operations.
+   */
+  private snapshotToPatch(snapshot: GraphSnapshotMessage['snapshot']): GraphPatch {
+    const ops = [
+      ...snapshot.nodes.map((node) => ({ op: 'upsertNode' as const, node })),
+      ...snapshot.edges.map((edge) => ({ op: 'upsertEdge' as const, edge })),
+    ];
+
+    return {
+      schemaVersion: snapshot.schemaVersion,
+      revision: snapshot.revision,
+      ops,
+    };
   }
 
   /**
