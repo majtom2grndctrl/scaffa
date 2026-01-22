@@ -24,8 +24,8 @@ demo/
 │       └── package.json
 ├── app/                       # Sample React application
 │   ├── src/
-│   │   ├── main.tsx          # App entry with ScaffaProvider
-│   │   ├── App.tsx           # Demo UI with buttons and cards
+│   │   ├── main.tsx          # Production entry (no Scaffa deps)
+│   │   ├── App.tsx           # Preview entry (router + UI)
 │   │   └── components/
 │   │       ├── DemoButton.tsx
 │   │       └── DemoCard.tsx

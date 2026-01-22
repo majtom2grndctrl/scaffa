@@ -210,7 +210,7 @@ Demo Workspace Walkthrough
   Click-to-select not working?
   - Check preview console for adapter handshake messages
   - In managed preview, confirm logs like:
-    [ViteRunner] Wrote harness file: .../.scaffa-harness.tsx
+    [ViteRunner] Serving virtual harness module
     [ViteRunner] Instrumenting: ...DemoButton.tsx
 
   Edits not updating preview?
