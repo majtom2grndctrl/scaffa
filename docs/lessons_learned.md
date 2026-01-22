@@ -120,37 +120,15 @@ This is the correct architecture (separation of concerns), but it's not explicit
 ## 5. Runtime Adapter Integration Pattern (Recipe) (2026-01-11)
 
 ### Issue
-Integrating the runtime adapter requires a three-part pattern:
+Early guidance implied a three-part in-app recipe (provider + per-component wrapper + hook), which conflicted with the Harness Model and suggested Scaffa imports in app code.
 
-```typescript
-// 1. Wrap app root with ScaffaProvider
-<ScaffaProvider config={{ adapterId: 'react', ... }}>
-  <App />
-</ScaffaProvider>
-
-// 2. Wrap each component with ScaffaInstance
-export function DemoButton(props) {
-  return (
-    <ScaffaInstance typeId="demo.button" displayName="Button">
-      <DemoButtonInner {...props} />
-    </ScaffaInstance>
-  );
-}
-
-// 3. Use hook inside component to apply overrides
-function DemoButtonInner(props) {
-  const effectiveProps = useScaffaInstance(props);
-  // Use effectiveProps instead of props
-}
-```
-
-**Update:** This “in-app wrapper + hook” integration is now considered a legacy escape hatch. The preferred v0 direction is the Harness Model (managed launcher + virtual harness + registry-driven instrumentation), which avoids Scaffa imports in app production code.
+### Update
+The preferred v0 direction is the Harness Model: the launcher injects `ScaffaProvider` and instruments registry-listed component exports to provide instance identity and override application. App source code remains Scaffa-free.
 
 ### Observation
-- All three parts are required for the system to work
-- Missing any part breaks click-to-select or override application
-- This recipe is scattered across multiple doc sections
-- Without explicit guidance, teams may assume Scaffa runtime code must ship in production builds
+- Instance identity and overrides are provided by launcher instrumentation, not app code.
+- Missing instrumentation or registry hints breaks click-to-select or override application.
+- Guidance must stay centralized to avoid mixed signals about production dependencies.
 
 ### ✅ RESOLVED (2026-01-11)
 - `docs/scaffa_runtime_adapter_integration_guide.md` now documents the harness model recipe, common pitfalls, and shim usage.
@@ -235,7 +213,7 @@ The `typeId` must match across three places:
 
 1. Component registry: `components: { 'demo.button': { ... } }`
 2. Graph producer: `{ kind: 'componentType', id: 'demo.button' }`
-3. Runtime wrapper: `<ScaffaInstance typeId="demo.button">`
+3. Runtime instrumentation typeId (launcher wraps exports with `ScaffaInstanceBoundary`)
 
 If any mismatch, Inspector won't show metadata for selected instances.
 

@@ -122,13 +122,13 @@ See also: `docs/scaffa_harness_model.md` for the managed preview entrypoint and 
 
 ## Appendix: Project-Local Shim (Legacy / Escape Hatch)
 
-If you cannot use managed mode (or need an incremental migration), a project-local shim can provide a dev-only integration path. This is not the preferred v0 direction for Scaffa-managed previews.
+If you cannot use managed mode (or need an incremental migration), a project-local shim can provide a dev-only provider mount. This is not the preferred v0 direction for Scaffa-managed previews.
 
-Note: In the pure harness model, components still import from the shim. The difference is that Scaffa installs the real adapter in the harness, and `main.tsx` is never part of the preview boot chain.
+Note: Instance identity still comes from launcher instrumentation; app components should not import `ScaffaInstance` or `useScaffaInstance`.
 
 Then, switch that module between:
-- **No-op exports** for production (and/or normal dev).
-- **Real adapter exports** for Scaffa-enabled dev.
+- **No-op provider exports** for production (and/or normal dev).
+- **Real provider exports** for Scaffa-enabled preview.
 
 How you switch is toolchain-specific (Vite alias, conditional entrypoints, environment-flagged builds). The important invariant is:
 - your production build must not require `@scaffa/*` packages to be installed.
@@ -141,8 +141,6 @@ For Vite projects, use mode-based aliases to switch between dev and production s
 ```ts
 export {
   ScaffaProvider,
-  ScaffaInstance,
-  useScaffaInstance,
 } from '@scaffa/react-runtime-adapter';
 ```
 
@@ -152,14 +150,6 @@ import type { ReactNode } from 'react';
 
 export function ScaffaProvider({ children }: { children: ReactNode; config?: unknown }) {
   return children;
-}
-
-export function ScaffaInstance({ children }: { children: ReactNode; typeId?: string; displayName?: string }) {
-  return children;
-}
-
-export function useScaffaInstance<T>(props: T): T {
-  return props;
 }
 ```
 
@@ -201,9 +191,9 @@ export default defineConfig(({ mode }) => ({
 }
 ```
 
-**6. Import from shim everywhere**:
+**6. Import from shim in your preview entrypoint**:
 ```tsx
-import { ScaffaProvider, ScaffaInstance, useScaffaInstance } from '@/scaffa-runtime';
+import { ScaffaProvider } from '@/scaffa-runtime';
 ```
 
 With this setup:
@@ -219,5 +209,5 @@ The React adapter recomputes “effective props” when overrides change. For sm
 
 If you see perf issues in larger apps:
 - Prefer smaller prop objects and stable references where possible.
-- Avoid passing large, deeply nested objects through `useScaffaInstance()` unless you expect to override them.
+- Avoid passing large, deeply nested props into instrumented components unless you expect overrides.
 - Consider limiting which components are wrapped as instances during early integration.

@@ -41,18 +41,20 @@ export const InspectorPanel = () => {
     );
     console.warn('[Inspector] → Possible causes:');
     console.warn(
-      '[Inspector]   • Runtime wrapper typeId does not match registry key'
+      '[Inspector]   • Runtime instrumentation componentTypeId does not match registry key'
     );
     console.warn(
       '[Inspector]   • Module failed to contribute registry (check config health banner)'
     );
-    console.warn('[Inspector]   • Component is not wrapped with ScaffaInstance');
+    console.warn(
+      '[Inspector]   • Component export was not instrumented (managed preview or registry hint missing)'
+    );
     console.warn('[Inspector] → To fix:');
     console.warn('[Inspector]   • Ensure ComponentTypeId matches across:');
     console.warn('[Inspector]     1. Registry entry key (e.g., components["ui.button"])');
     console.warn('[Inspector]     2. Graph node id (componentType node)');
     console.warn(
-      '[Inspector]     3. Runtime wrapper <ScaffaInstance typeId="ui.button" />'
+      '[Inspector]     3. Launcher instrumentation typeId (component export wrapper)'
     );
   }, [selectedInstance, registry, registryEntry, isRegistryLoading]);
 
@@ -248,7 +250,7 @@ export const InspectorPanel = () => {
                 </p>
                 <p className="ml-3">2. Graph node id (componentType node)</p>
                 <p className="ml-3">
-                  3. Runtime wrapper typeId (&lt;ScaffaInstance typeId=&quot;...&quot; /&gt;)
+                  3. Launcher instrumentation typeId (component export wrapper)
                 </p>
                 {registry && Object.keys(registry.components).length > 0 && (
                   <p className="mt-2">
