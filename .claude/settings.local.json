@@ -33,7 +33,9 @@
       "Skill(code-review)",
       "Bash(find:*)",
       "Bash(cat:*)",
-      "Bash(grep:*)"
+      "Bash(grep:*)",
+      "Bash(pnpm run build:modules:*)",
+      "WebSearch"
     ]
   }
 }
