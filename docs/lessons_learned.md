@@ -11,20 +11,21 @@
 ✅ **Completed:** demo/app now demonstrates the pure harness model end-to-end with zero Scaffa imports in production code.
 
 **Production build:**
-`index.html` -> `src/main.tsx` (production bootstrap) -> `src/App.tsx` (router + UI) -> `src/pages/*.tsx` -> `src/components/*.tsx` (pure React, no Scaffa deps)
+`index.html` -> `src/main.tsx` (production bootstrap) -> `src/App.tsx` (router instance) -> `src/routes.tsx` (route definitions) -> `src/pages/*.tsx` -> `src/components/*.tsx` (pure React, no Scaffa deps)
 
 **Scaffa preview:**
-`index.html` (transformed by harness plugin) -> virtual harness entry (injected by vite-launcher) -> `ScaffaProvider` (real adapter) -> `src/App.tsx` (router + UI) -> registry-listed components automatically wrapped with `ScaffaInstanceBoundary` (injected by vite-launcher instrumentation plugin)
+`index.html` (transformed by harness plugin) -> virtual harness entry (injected by vite-launcher) -> `ScaffaProvider` (real adapter) -> `src/App.tsx` (router instance) -> `src/routes.tsx` (parsed by graph producer) -> registry-listed components automatically wrapped with `ScaffaInstanceBoundary` (injected by vite-launcher instrumentation plugin)
 
 **Key boundary:**
 - `main.tsx` is production-only and NEVER loaded by Scaffa
 - Scaffa's harness replaces it in `index.html`
-- `App.tsx` is self-contained and includes its own router
+- `App.tsx` is self-contained and creates a router instance by importing route definitions
+- Route definitions live in `routes.tsx` (required by react-router-graph-producer in v0)
 - Components have NO Scaffa imports - instrumentation is injected at dev-time for registry-listed types only
 
 **Migration artifacts removed:**
 - `demo/app/src/scaffa-shim.tsx` (deleted)
-- `demo/app/.scaffa-harness.tsx` (deleted, was auto-generated)
+- `demo/app/.scaffa-harness.tsx` (deleted, now served as virtual module `/@scaffa/harness.tsx`)
 - `@scaffa/react-runtime-adapter` removed from demo/app dependencies
 
 ---

@@ -35,7 +35,7 @@ export function activate(context: ExtensionContext): void {
 
   // For v0, we'll hardcode the demo route module path
   // TODO: Read from config once we add routeModule config option
-  const routeModulePath = path.join(workspaceRoot, 'app/src/routes.ts');
+  const routeModulePath = path.join(workspaceRoot, 'app/src/routes.tsx');
 
   const producer: GraphProducer = {
     id: 'react-router-graph-producer',

@@ -66,13 +66,20 @@ Scaffa keeps production bootstrapping separate from the preview entry so it can 
 
 Example file structure (demo app):
 - Production entry: `demo/app/src/main.tsx` (no Scaffa deps; production-only providers like analytics/error boundaries/auth)
-- Preview entry: `demo/app/src/App.tsx` (UI + routing so Scaffa can control navigation)
-- Harness: `.scaffa-harness.tsx` (auto-generated, auto-cleaned) that wraps `App.tsx` with the Scaffa provider/adapter
+- Preview entry: `demo/app/src/App.tsx` (imports route definitions and creates router instance)
+- Route definitions: `demo/app/src/routes.tsx` (exports route array; parsed by react-router-graph-producer)
+- Harness: `/@scaffa/harness.tsx` (virtual module served by Vite plugin) that wraps `App.tsx` with the Scaffa provider/adapter
 
-Why `App.tsx` owns the router:
+Why `App.tsx` owns the router (instance):
 - `main.tsx` stays production-only and stable across environments
 - `App.tsx` remains the UI + routing boundary Scaffa can drive during preview sessions
+- Route *definitions* live in `routes.tsx` so graph producers can statically parse them
+- `App.tsx` imports and instantiates the router, keeping it navigable in preview
 - The harness is where Scaffa-specific provider wiring lives, not production code
+
+**v0 constraint:** The `react-router-graph-producer` expects route definitions at `app/src/routes.tsx`. This path is hardcoded in v0; future versions may allow configuration via `scaffa.config.js`.
+
+**Important:** The routes file must use the `.tsx` extension (not `.ts`) because it contains JSX syntax (`element: <Component />`). Using `.ts` will cause esbuild transform errors since JSX is only processed in `.tsx` files.
 
 ---
 

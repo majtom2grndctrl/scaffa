@@ -100,14 +100,15 @@ See also: `docs/scaffa_harness_model.md` for the managed preview entrypoint and 
 
 ### 3.2 Scaffa preview
 
-`index.html` (transformed by harness plugin) -> `.scaffa-harness.tsx` (generated) -> `ScaffaProvider` (real adapter) -> `src/App.tsx` (router + UI) -> registry-listed components are automatically wrapped with `ScaffaInstanceBoundary` (injected by vite-launcher instrumentation plugin) -> overrides applied transparently
+`index.html` (transformed by harness plugin) -> `/@scaffa/harness.tsx` (virtual module served by Vite plugin) -> `ScaffaProvider` (real adapter) -> `src/App.tsx` (router + UI) -> registry-listed components are automatically wrapped with `ScaffaInstanceBoundary` (injected by vite-launcher instrumentation plugin) -> overrides applied transparently
 
 ### 3.3 Key boundary
 
 `main.tsx` is NEVER loaded by Scaffa:
 - `main.tsx` is production-only
 - Scaffa's harness replaces it in `index.html`
-- `App.tsx` must be self-contained and include its own router
+- `App.tsx` must be self-contained and create its own router instance
+- Route definitions should live in `routes.tsx` (required by react-router-graph-producer in v0)
 
 ---
 

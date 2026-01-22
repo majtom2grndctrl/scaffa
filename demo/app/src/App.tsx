@@ -14,24 +14,8 @@
 // - Scaffa can preview the full routed app without production-only dependencies
 
 import React from 'react';
-import { createMemoryRouter, RouterProvider, type RouteObject } from 'react-router-dom';
-import { HomePage } from './pages/HomePage';
-
-// Route definitions
-// Each route MUST have a stable `id` for Scaffa to join graph nodes with runtime state
-const routes: RouteObject[] = [
-  {
-    id: 'home',
-    path: '/',
-    element: <HomePage />,
-  },
-  // Add more routes here as the app grows
-  // {
-  //   id: 'about',
-  //   path: '/about',
-  //   element: <AboutPage />,
-  // },
-];
+import { createMemoryRouter, RouterProvider } from 'react-router-dom';
+import { routes } from './routes';
 
 // Create router instance
 // Using MemoryRouter for compatibility with both production (main.tsx) and Scaffa preview (harness)
