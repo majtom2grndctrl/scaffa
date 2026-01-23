@@ -6,6 +6,7 @@ import {
   type GetGraphSnapshotRequest,
   type GetGraphSnapshotResponse,
   type GraphPatch,
+  type GraphSnapshot,
 } from '../../shared/index.js';
 import { validated, validateEvent } from './validation.js';
 import { projectGraphStore } from '../graph/graph-store.js';
@@ -48,6 +49,26 @@ export function applyGraphPatch(patch: GraphPatch): void {
     revision: globalRevision,
   };
   broadcastGraphPatch(globalPatch);
+}
+
+/**
+ * Apply a producer snapshot with full replacement semantics.
+ * This is the preferred way to ingest snapshots from graph producers.
+ *
+ * Producer-scoped replacement:
+ * - Nodes/edges owned by this producer but not in the snapshot are removed
+ * - All nodes/edges in the snapshot are upserted
+ * - Changes are broadcast as a single patch to all renderers
+ *
+ * @param producerId - The ID of the producer sending the snapshot
+ * @param snapshot - The graph snapshot from the producer
+ */
+export function applyGraphSnapshot(producerId: string, snapshot: GraphSnapshot): void {
+  // Apply snapshot with producer-scoped replacement semantics
+  const { patch } = projectGraphStore.applySnapshot(producerId, snapshot);
+
+  // Broadcast the patch (with remove + upsert ops) to all renderers
+  broadcastGraphPatch(patch);
 }
 
 /**

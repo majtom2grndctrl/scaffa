@@ -32,6 +32,10 @@ export class ProjectGraphStore {
   private nodes = new Map<NodeKey, GraphNode>();
   private edges = new Set<string>(); // serialized edge for Set-based deduplication
 
+  // Producer ownership tracking for snapshot replacement semantics
+  private producerNodes = new Map<string, Set<NodeKey>>();
+  private producerEdges = new Map<string, Set<string>>();
+
   /**
    * Get the current graph snapshot.
    */
@@ -68,6 +72,83 @@ export class ProjectGraphStore {
   }
 
   /**
+   * Apply a producer snapshot with full replacement semantics.
+   * This is the correct way to ingest snapshots from graph producers.
+   *
+   * Replacement semantics:
+   * - Nodes/edges in the snapshot are upserted
+   * - Nodes/edges previously owned by this producer but not in the snapshot are removed
+   * - Producer ownership is tracked to enable proper cleanup
+   *
+   * @param producerId - The ID of the producer sending the snapshot
+   * @param snapshot - The graph snapshot from the producer
+   * @returns Object containing the assigned global revision and the patch that was applied
+   */
+  applySnapshot(
+    producerId: string,
+    snapshot: GraphSnapshot
+  ): { globalRevision: GraphRevision; patch: GraphPatch } {
+    console.log(
+      `[GraphStore] Applying snapshot from producer: ${producerId} (producer revision: ${snapshot.revision}, ${snapshot.nodes.length} nodes, ${snapshot.edges.length} edges)`
+    );
+
+    // Get existing nodes/edges owned by this producer
+    const existingNodeKeys = this.producerNodes.get(producerId) ?? new Set<NodeKey>();
+    const existingEdgeKeys = this.producerEdges.get(producerId) ?? new Set<string>();
+
+    // Compute new node/edge keys from snapshot
+    const newNodeKeys = new Set(snapshot.nodes.map((node) => this.makeNodeKey(node)));
+    const newEdgeKeys = new Set(snapshot.edges.map((edge) => this.makeEdgeKey(edge)));
+
+    // Compute nodes/edges to remove (in existing but not in new)
+    const nodesToRemove = Array.from(existingNodeKeys).filter((key) => !newNodeKeys.has(key));
+    const edgesToRemove = Array.from(existingEdgeKeys).filter((key) => !newEdgeKeys.has(key));
+
+    // Build patch operations
+    const ops: GraphOp[] = [
+      // Remove operations for nodes/edges no longer in snapshot
+      ...nodesToRemove.map((key) => {
+        const node = this.nodes.get(key);
+        if (!node) {
+          throw new Error(`[GraphStore] Cannot remove node ${key}: not found`);
+        }
+        return { op: 'removeNode' as const, node: this.makeNodeRef(node) };
+      }),
+      ...edgesToRemove.map((key) => {
+        const edge = JSON.parse(key) as GraphEdge;
+        return { op: 'removeEdge' as const, edge };
+      }),
+      // Upsert operations for all nodes/edges in snapshot
+      ...snapshot.nodes.map((node) => ({ op: 'upsertNode' as const, node })),
+      ...snapshot.edges.map((edge) => ({ op: 'upsertEdge' as const, edge })),
+    ];
+
+    // Apply the patch (assigns global revision)
+    const patch: GraphPatch = {
+      schemaVersion: snapshot.schemaVersion,
+      revision: snapshot.revision, // Producer-local; replaced with global by applyPatch
+      ops,
+    };
+    const globalRevision = this.applyPatch(patch);
+
+    // Update producer ownership tracking
+    this.producerNodes.set(producerId, newNodeKeys);
+    this.producerEdges.set(producerId, newEdgeKeys);
+
+    console.log(
+      `[GraphStore] Snapshot applied: ${nodesToRemove.length} nodes removed, ${snapshot.nodes.length} nodes upserted, ${edgesToRemove.length} edges removed, ${snapshot.edges.length} edges upserted`
+    );
+
+    // Return both the global revision and the patch with global revision
+    const appliedPatch: GraphPatch = {
+      ...patch,
+      revision: globalRevision,
+    };
+
+    return { globalRevision, patch: appliedPatch };
+  }
+
+  /**
    * Get a specific node by key.
    */
   getNode(
@@ -87,6 +168,8 @@ export class ProjectGraphStore {
     this.revision = 0;
     this.nodes.clear();
     this.edges.clear();
+    this.producerNodes.clear();
+    this.producerEdges.clear();
   }
 
   // ───────────────────────────────────────────────────────────────────────────
@@ -177,6 +260,25 @@ export class ProjectGraphStore {
         return `componentType:${node.id}`;
       case 'instance':
         return `instance:${node.sessionId}:${node.instanceId}`;
+    }
+  }
+
+  /**
+   * Convert a GraphNode to a node reference for remove operations.
+   */
+  private makeNodeRef(
+    node: GraphNode
+  ):
+    | { kind: 'route'; id: RouteId }
+    | { kind: 'componentType'; id: ComponentTypeId }
+    | { kind: 'instance'; sessionId: PreviewSessionId; instanceId: InstanceId } {
+    switch (node.kind) {
+      case 'route':
+        return { kind: 'route', id: node.id };
+      case 'componentType':
+        return { kind: 'componentType', id: node.id };
+      case 'instance':
+        return { kind: 'instance', sessionId: node.sessionId, instanceId: node.instanceId };
     }
   }
 
