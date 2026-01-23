@@ -222,10 +222,11 @@ function buildGraphFromRoutes(
   const edges: GraphSnapshot['edges'] = [];
 
   function processRoute(route: RouteDefinition, parentId?: string) {
-    // Create route node
+    // Create route node with explicit router id for stable joins
     nodes.push(
       createRouteNode({
         path: route.path,
+        routeId: route.id,
         filePath: sourceFilePath,
         line: 1, // TODO: Track actual line numbers from AST
       })

@@ -99,11 +99,19 @@ In practice, `ComponentTypeId` is the join key that lets a selected runtime inst
 
 `RouteId` SHOULD be stable enough to join:
 - the Routes panel selection/highlighting
-- any runtime-emitted “active route” state (e.g. matched route ids)
+- any runtime-emitted "active route" state (e.g. matched route ids)
 
-For router integrations that support explicit route ids (e.g. React Router data-router route objects), prefer using the router’s explicit `id` as the `RouteId`.
+**RouteId Encoding Strategy:**
 
-If explicit ids are unavailable, a deterministic fallback MAY be derived from the full path (with clear limitations for index routes and dynamic composition).
+1. **Explicit Router IDs (recommended)**: When the router provides explicit route identifiers (e.g., React Router `route.id`), use `routeId:{explicitId}` format.
+   - Example: `routeId:dashboard-route` for a route with `id: "dashboard-route"`
+   - Guarantees stability even when paths are reused or routes are reordered
+
+2. **Path-derived IDs (fallback)**: When explicit ids are unavailable, use `route:{path}` format.
+   - Example: `route:/dashboard` for a route with `path: "/dashboard"`
+   - Works for simple cases but has limitations with index routes and dynamic composition
+
+Graph producers should prefer strategy 1 when available. The `createRouteNode` helper accepts an optional `routeId` parameter for explicit ids.
 
 ### 3.2 Instance IDs
 

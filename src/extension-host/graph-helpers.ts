@@ -8,7 +8,10 @@
 //   import { createRouteNode, createComponentTypeNode, createRouteUsesComponentTypeEdge } from '../../extension-sdk.js';
 //
 //   const nodes = [
-//     createRouteNode({ path: '/', filePath: 'src/app/page.tsx', line: 1 }),
+//     // With explicit router id (recommended when available)
+//     createRouteNode({ path: '/', routeId: 'root-route', filePath: 'src/app/page.tsx', line: 1 }),
+//     // Or without explicit id (falls back to path-based id)
+//     createRouteNode({ path: '/about', filePath: 'src/app/about/page.tsx', line: 1 }),
 //     createComponentTypeNode({ id: 'ui.button', displayName: 'Button', filePath: 'src/components/Button.tsx', line: 5 }),
 //   ];
 //
@@ -62,6 +65,12 @@ export interface CreateRouteNodeOptions {
   filePath: string;
   line: number;
   column?: number;
+  /**
+   * Optional explicit route ID from the router (e.g., React Router route.id).
+   * When provided, this becomes the RouteId directly (prefixed with "routeId:").
+   * When omitted, RouteId is derived from path as "route:{path}".
+   */
+  routeId?: string;
 }
 
 /**
@@ -71,10 +80,16 @@ export interface CreateRouteNodeOptions {
  * @throws ZodError if path is invalid
  */
 export function createRouteNode(options: CreateRouteNodeOptions): RouteNode {
-  const { path, filePath, line, column } = options;
+  const { path, filePath, line, column, routeId } = options;
+
+  // Use explicit routeId if provided, otherwise derive from path
+  const id = routeId
+    ? RouteIdSchema.parse(`routeId:${routeId}`)
+    : createRouteId(path);
+
   return {
     kind: 'route' as const,
-    id: createRouteId(path),
+    id,
     path,
     source: {
       filePath,
