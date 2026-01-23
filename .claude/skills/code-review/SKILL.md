@@ -1,3 +1,8 @@
+---
+name: code-review
+description: Perform a thorough code review with Staff Software Engineer rigor, grounded in ticket context and relevant documentation.
+---
+
 # Code Review
 
 ## Purpose

@@ -1,3 +1,8 @@
+---
+name: implement-ticket
+description: Implement a Beads ticket with documentation grounding, correctness checks, and full landing protocol completion.
+---
+
 # Implement Beads Ticket
 
 ## Purpose
