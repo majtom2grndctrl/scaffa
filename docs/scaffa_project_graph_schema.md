@@ -113,7 +113,19 @@ In practice, `ComponentTypeId` is the join key that lets a selected runtime inst
 
 Graph producers should prefer strategy 1 when available. The `createRouteNode` helper accepts an optional `routeId` parameter for explicit ids.
 
-### 3.2 Instance IDs
+**Backward Compatibility and Mixed ID Formats:**
+
+Both `routeId:` and `route:` ID formats coexist in the same graph. This is intentional:
+- Producers using explicit router IDs emit `routeId:{explicitId}` nodes
+- Producers without explicit IDs (e.g., sample/demo producers) emit `route:{path}` nodes
+- Consumers (renderer, extensions) MUST handle both formats transparently
+
+When joining or matching RouteIds:
+- Treat the prefix (`routeId:` vs `route:`) as part of the identifier
+- Do not attempt to normalize or convert between formats
+- For path-based lookups, use the `node.path` field (always present) rather than parsing the ID
+
+### 3.3 Instance IDs
 
 `InstanceId` is only guaranteed stable within a session; stability across reloads is adapter-dependent.
 
@@ -121,7 +133,7 @@ If stability cannot be guaranteed, consumers MUST tolerate orphaning:
 - overrides may fail to apply (see `docs/scaffa_override_model.md`)
 - instance graph nodes may churn on reload
 
-### 3.3 Schema Versioning
+### 3.4 Schema Versioning
 
 Graph snapshots and patches MUST declare a schema version:
 

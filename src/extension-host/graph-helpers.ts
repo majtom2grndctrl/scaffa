@@ -69,6 +69,11 @@ export interface CreateRouteNodeOptions {
    * Optional explicit route ID from the router (e.g., React Router route.id).
    * When provided, this becomes the RouteId directly (prefixed with "routeId:").
    * When omitted, RouteId is derived from path as "route:{path}".
+   *
+   * **Constraints:**
+   * - Must not contain `:` or `/` characters (these conflict with ID encoding)
+   * - Should be a safe identifier (alphanumeric, hyphens, underscores recommended)
+   * - Empty string is technically valid but discouraged (results in "routeId:")
    */
   routeId?: string;
 }
@@ -78,12 +83,21 @@ export interface CreateRouteNodeOptions {
  * @param options - Route node options
  * @returns Typed RouteNode
  * @throws ZodError if path is invalid
+ * @throws Error if routeId contains invalid characters (: or /)
  */
 export function createRouteNode(options: CreateRouteNodeOptions): RouteNode {
   const { path, filePath, line, column, routeId } = options;
 
+  // Validate routeId if provided
+  if (routeId !== undefined && (routeId.includes(':') || routeId.includes('/'))) {
+    throw new Error(
+      `Invalid routeId: "${routeId}". RouteId must not contain ':' or '/' characters ` +
+      `(these conflict with ID encoding). Use alphanumeric, hyphens, and underscores only.`
+    );
+  }
+
   // Use explicit routeId if provided, otherwise derive from path
-  const id = routeId
+  const id = routeId !== undefined
     ? RouteIdSchema.parse(`routeId:${routeId}`)
     : createRouteId(path);
 
