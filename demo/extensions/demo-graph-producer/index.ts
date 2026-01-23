@@ -1,14 +1,16 @@
 // ─────────────────────────────────────────────────────────────────────────────
 // Demo Graph Producer Module (v0)
 // ─────────────────────────────────────────────────────────────────────────────
-// Provides graph snapshot with routes and component types for the demo workspace.
+// Provides graph snapshot with component types for the demo workspace.
 
 import type {
   ExtensionContext,
   GraphProducer,
   Disposable,
-} from '../../../src/extension-host/extension-context.js';
-import type { GraphPatch, GraphSnapshot } from '../../../src/shared/project-graph.js';
+  GraphPatch,
+  GraphSnapshot,
+} from '../../../extension-sdk.js';
+import { createComponentTypeNode } from '../../../extension-sdk.js';
 
 export function activate(context: ExtensionContext): void {
   console.log('[DemoGraphProducer] Activating...');
@@ -19,55 +21,26 @@ export function activate(context: ExtensionContext): void {
     async initialize(): Promise<GraphSnapshot> {
       console.log('[DemoGraphProducer] Initializing with demo workspace data...');
 
-      // Return initial graph snapshot with demo routes and component types
+      // Return initial graph snapshot with demo component types only.
       return {
         schemaVersion: 'v0' as const,
         revision: 1,
         nodes: [
-          // Routes
-          {
-            kind: 'route' as const,
-            id: 'route:/' as any,
-            path: '/',
-            source: {
-              filePath: 'demo/app/src/App.tsx',
-              line: 5,
-            },
-          },
           // Component types used in demo app
-          {
-            kind: 'componentType' as const,
-            id: 'demo.button' as any,
+          createComponentTypeNode({
+            id: 'demo.button',
             displayName: 'Demo Button',
-            source: {
-              filePath: 'demo/app/src/components/DemoButton.tsx',
-              line: 56,
-            },
-          },
-          {
-            kind: 'componentType' as const,
-            id: 'demo.card' as any,
+            filePath: 'app/src/components/DemoButton.tsx',
+            line: 56,
+          }),
+          createComponentTypeNode({
+            id: 'demo.card',
             displayName: 'Demo Card',
-            source: {
-              filePath: 'demo/app/src/components/DemoCard.tsx',
-              line: 47,
-            },
-          },
+            filePath: 'app/src/components/DemoCard.tsx',
+            line: 47,
+          }),
         ],
-        edges: [
-          // App route uses demo.button
-          {
-            kind: 'routeUsesComponentType' as const,
-            routeId: 'route:/' as any,
-            componentTypeId: 'demo.button' as any,
-          },
-          // App route uses demo.card
-          {
-            kind: 'routeUsesComponentType' as const,
-            routeId: 'route:/' as any,
-            componentTypeId: 'demo.card' as any,
-          },
-        ],
+        edges: [],
       };
     },
 

@@ -22,6 +22,11 @@ export default defineScaffaConfig({
       id: 'react-router-graph-producer',
       path: '../extensions/react-router-graph-producer/module/index.js',
     },
+    // Demo graph producer for component types (demo-only)
+    {
+      id: 'demo-graph-producer',
+      path: './extensions/demo-graph-producer/index.js',
+    },
     // Vite+React preview launcher for managed dev server
     {
       id: 'vite-launcher',
