@@ -1,0 +1,12 @@
+{
+  "name": "@scaffa/demo-workspace",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "devDependencies": {
+    "@scaffa/config": "file:./vendor/scaffa-config-0.1.0.tgz",
+    "@scaffa/layout-registry": "file:./vendor/scaffa-layout-registry-0.1.0.tgz",
+    "@scaffa/react-router-graph-producer": "file:./vendor/scaffa-react-router-graph-producer-0.1.0.tgz",
+    "@scaffa/shadcn-ui-registry": "file:./vendor/scaffa-shadcn-ui-registry-0.1.0.tgz"
+  }
+}

@@ -1,0 +1,17 @@
+{
+  "name": "@scaffa/react-router-graph-producer",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "Scaffa extension module producing route nodes from React Router data router config",
+  "main": "module/index.js",
+  "exports": {
+    ".": "./module/index.js"
+  },
+  "files": [
+    "module/index.js"
+  ],
+  "dependencies": {
+    "typescript": "^5.6.3"
+  }
+}

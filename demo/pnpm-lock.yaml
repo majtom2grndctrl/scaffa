@@ -1,0 +1,66 @@
+lockfileVersion: '9.0'
+
+settings:
+  autoInstallPeers: true
+  excludeLinksFromLockfile: false
+
+importers:
+
+  .:
+    devDependencies:
+      '@scaffa/config':
+        specifier: file:./vendor/scaffa-config-0.1.0.tgz
+        version: file:vendor/scaffa-config-0.1.0.tgz
+      '@scaffa/layout-registry':
+        specifier: file:./vendor/scaffa-layout-registry-0.1.0.tgz
+        version: file:vendor/scaffa-layout-registry-0.1.0.tgz
+      '@scaffa/react-router-graph-producer':
+        specifier: file:./vendor/scaffa-react-router-graph-producer-0.1.0.tgz
+        version: file:vendor/scaffa-react-router-graph-producer-0.1.0.tgz
+      '@scaffa/shadcn-ui-registry':
+        specifier: file:./vendor/scaffa-shadcn-ui-registry-0.1.0.tgz
+        version: file:vendor/scaffa-shadcn-ui-registry-0.1.0.tgz
+
+packages:
+
+  '@scaffa/config@file:vendor/scaffa-config-0.1.0.tgz':
+    resolution: {integrity: sha512-aM1wYHklfawrsITElFrKz7UxfbycgMwJkQ1NoBt5TyUl1THtOQN6CE27g32i36WGDF/oq0Omx3NLKY3Yp4Kjkg==, tarball: file:vendor/scaffa-config-0.1.0.tgz}
+    version: 0.1.0
+
+  '@scaffa/layout-registry@file:vendor/scaffa-layout-registry-0.1.0.tgz':
+    resolution: {integrity: sha512-TNdmvxL3xCHsonNkbWCCl/xbe/9EBT+jc5EfH0R+AcCNlDTJ0HnkGyGoGqc/XZ47F22uDEVWvBODyWlKCpUsVg==, tarball: file:vendor/scaffa-layout-registry-0.1.0.tgz}
+    version: 0.1.0
+
+  '@scaffa/react-router-graph-producer@file:vendor/scaffa-react-router-graph-producer-0.1.0.tgz':
+    resolution: {integrity: sha512-RZGtfZ8inTcSKUk4kl3m7v8Radzkr0LsWd4SGzP26DX7tQf0/cLxSN4ulOdJsvM3e8toZRaDpuxZ+ocKvgEa6A==, tarball: file:vendor/scaffa-react-router-graph-producer-0.1.0.tgz}
+    version: 0.1.0
+
+  '@scaffa/shadcn-ui-registry@file:vendor/scaffa-shadcn-ui-registry-0.1.0.tgz':
+    resolution: {integrity: sha512-FrmdBZlA5cP2w0wsfy+31gapBjysyHYzdjFM81cLQsSqJOfqwPuqXETaY2VXZSZPE4/5A1O35T6bdpOiwUBuoQ==, tarball: file:vendor/scaffa-shadcn-ui-registry-0.1.0.tgz}
+    version: 0.1.0
+
+  typescript@5.9.3:
+    resolution: {integrity: sha512-jl1vZzPDinLr9eUt3J/t7V6FgNEw9QjvBPdysz9KfQDD41fQrC2Y4vKQdiaUpFT4bXlb1RHhLpp8wtm6M5TgSw==}
+    engines: {node: '>=14.17'}
+    hasBin: true
+
+  zod@3.25.76:
+    resolution: {integrity: sha512-gzUt/qt81nXsFGKIFcC3YnfEAx5NkunCfnDlvuBSSFS02bcXu4Lmea0AFIUwbLWxWPx3d9p8S5QoaujKcNQxcQ==}
+
+snapshots:
+
+  '@scaffa/config@file:vendor/scaffa-config-0.1.0.tgz':
+    dependencies:
+      zod: 3.25.76
+
+  '@scaffa/layout-registry@file:vendor/scaffa-layout-registry-0.1.0.tgz': {}
+
+  '@scaffa/react-router-graph-producer@file:vendor/scaffa-react-router-graph-producer-0.1.0.tgz':
+    dependencies:
+      typescript: 5.9.3
+
+  '@scaffa/shadcn-ui-registry@file:vendor/scaffa-shadcn-ui-registry-0.1.0.tgz': {}
+
+  typescript@5.9.3: {}
+
+  zod@3.25.76: {}

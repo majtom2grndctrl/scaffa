@@ -1,0 +1,14 @@
+{
+  "name": "@scaffa/shadcn-ui-registry",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "Scaffa extension module providing a shadcn/ui component registry",
+  "main": "module/index.js",
+  "exports": {
+    ".": "./module/index.js"
+  },
+  "files": [
+    "module/index.js"
+  ]
+}

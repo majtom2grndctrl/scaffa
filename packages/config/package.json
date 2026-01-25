@@ -1,0 +1,21 @@
+{
+  "name": "@scaffa/config",
+  "version": "0.1.0",
+  "type": "module",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "exports": {
+    ".": "./dist/index.js"
+  },
+  "files": [
+    "dist/index.js",
+    "dist/index.d.ts"
+  ],
+  "scripts": {
+    "build": "node build.mjs",
+    "prepack": "pnpm build"
+  },
+  "dependencies": {
+    "zod": "^3.23.8"
+  }
+}
