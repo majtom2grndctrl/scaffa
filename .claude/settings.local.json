@@ -35,7 +35,12 @@
       "Bash(cat:*)",
       "Bash(grep:*)",
       "Bash(pnpm run build:modules:*)",
-      "WebSearch"
+      "WebSearch",
+      "Bash(pnpm test:main:*)",
+      "Bash(pnpm demo:refresh-extensions:*)",
+      "Bash(pnpm demo:pack-extensions:*)",
+      "Bash(tar -xzf:*)",
+      "Bash(bd stats:*)"
     ]
   }
 }
