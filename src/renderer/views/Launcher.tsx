@@ -235,9 +235,7 @@ export const Launcher = () => {
               <p className="text-xs font-semibold text-fg">Need to prep?</p>
               <p className="mt-2 text-xs text-fg-subtle">
                 Scaffa loads <span className="font-mono">scaffa.config.js</span>{' '}
-                at runtime. You can author in{' '}
-                <span className="font-mono">scaffa.config.ts</span>, but compile
-                it to <span className="font-mono">scaffa.config.js</span>.
+                at runtime. Ensure the file exists before opening the workspace.
               </p>
             </div>
           </div>

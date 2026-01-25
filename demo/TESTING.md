@@ -8,19 +8,28 @@ This file is intentionally kept minimal so we maintain a single source of truth 
 
 ## Demo-Specific Setup
 
-### 1) Start Demo App Dev Server
+### 1) Prepare Workspace Extensions
+
+From repo root:
+
+```bash
+pnpm demo:refresh-extensions
+```
+
+### 2) Start Demo App Dev Server
 
 In a separate terminal:
 
 ```bash
 cd demo/app
-pnpm install
 pnpm dev
 ```
 
+If you skipped `pnpm demo:refresh-extensions`, run `pnpm install` here first.
+
 The app should start on `http://localhost:5173` (or similar port).
 
-### 2) Start Scaffa
+### 3) Start Scaffa
 
 From repo root:
 
@@ -28,7 +37,7 @@ From repo root:
 pnpm dev
 ```
 
-### 3) Open the `demo/` Workspace
+### 4) Open the `demo/` Workspace
 
 - In Scaffa (Launcher): **Open Workspace**
 - Select the `demo/` directory

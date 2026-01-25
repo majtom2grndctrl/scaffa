@@ -55,15 +55,23 @@ For UI consistency, follow:
 
 ### Running the Demo Workspace
 
-**Architectural note:** `demo/app` represents a real user's project folder (i.e., it would live outside the Scaffa workspace in production use). It uses `--ignore-workspace` for installs and has its own `pnpm-lock.yaml` to simulate standalone project behavior.
+**Architectural note:** `demo/` is treated as a real workspace that could live outside the Scaffa repo. `demo/app` uses `--ignore-workspace` and its own `pnpm-lock.yaml` to simulate standalone project behavior. Its dependencies (including Scaffa extension modules and `@scaffa/config`) are installed from local tarballs in `demo/vendor/` to keep the workspace portable.
+
+Before running the demo (or after extension changes), pack and install the local dependencies:
+
+```bash
+pnpm demo:refresh-extensions
+```
+
+This packs local extension modules plus `@scaffa/config` and `@scaffa/layout-primitives-react` into `demo/vendor/`, then installs both `demo/` and `demo/app/`.
 
 The v0 demo workflow uses two independent processes: the demo app dev server (preview target) and Scaffa (the editor).
 
 #### Option 1: Single Command (Recommended for Local Development)
 
 ```bash
-# One-time setup: Install demo app dependencies
-pnpm -C demo/app run install:local
+# Pack + install demo workspace dependencies (once per change)
+pnpm demo:refresh-extensions
 
 # Start both Scaffa and demo app together
 pnpm dev:demo
@@ -76,8 +84,8 @@ This uses `concurrently` to run both processes. Exit with Ctrl+C to stop both cl
 1) **Demo app dev server** (preview target)
 
 ```bash
+pnpm demo:refresh-extensions
 cd demo/app
-pnpm run install:local  # or: pnpm --ignore-workspace install
 pnpm dev
 ```
 
@@ -97,6 +105,19 @@ Scaffa **core** does not auto-start framework dev servers. Instead, dev-server s
 - If a project is a Vite project and enables a Vite launcher extension, starting an `app` preview session should start the Vite dev server (and surface its URL in session logs).
 - The `dev:demo` convenience script simply launches both processes in parallel for faster iteration.
 
+### Config Package (@scaffa/config)
+
+`scaffa.config.js` is validated by shared Zod schemas in `src/shared/config.js`.
+We generate a no-maintenance type shim with:
+
+```bash
+pnpm build:shared-types
+```
+
+The `packages/config` package copies `src/shared/config.js` and the generated
+`src/shared/config.d.ts` into `packages/config/dist/` so the demo workspace can
+import `defineScaffaConfig` via `@scaffa/config` without repo-relative paths.
+
 ### Hot Reload Behavior
 
 - **Renderer**: Vite provides instant HMR
@@ -107,6 +128,23 @@ Scaffa **core** does not auto-start framework dev servers. Instead, dev-server s
 ---
 
 ## 2. Build System Architecture
+
+### Extension Module Build Process
+
+Scaffa bundles workspace-local extension modules in place:
+
+- Entry discovery: `extensions/*/module/index.{ts,js}`
+- SDK build: `extension-sdk.ts` is bundled to `extension-sdk.js`
+- Bundling: `scripts/build-workspace-modules.mjs` runs via:
+
+```bash
+pnpm build:modules
+```
+
+Notes:
+- `build:modules` also runs `pnpm build:shared-types` (for `src/shared/config.d.ts`).
+- `.ts` entrypoints output to `.js` in the same folder.
+- `.js` entrypoints are treated as build artifacts; running the build will overwrite them.
 
 ### Output Structure
 

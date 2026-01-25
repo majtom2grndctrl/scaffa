@@ -51,6 +51,9 @@ extensions/
 Notes:
 - `module/` runs in the extension host process.
 - `packages/` are regular workspace packages consumed by apps or preview runtimes.
+- `module/index.js` is the runtime entrypoint. In v0 it is a bundled artifact
+  produced by `pnpm build:modules` (from `module/index.ts` or `module/index.js`)
+  and is safe to commit for workspace portability.
 
 ---
 
@@ -74,7 +77,10 @@ Naming note:
 
 ## 3. Type Import Conventions (Extension SDK)
 
-v0 extensions should import from the **Extension SDK entrypoint** (`extension-sdk.ts`) for a stable API surface.
+v0 extensions should import from the **Extension SDK entrypoint** for a stable API surface.
+The source lives in `extension-sdk.ts`; `pnpm build:modules` bundles it to
+`extension-sdk.js` at the repo root. If the `.js` file is missing, run
+`pnpm build:modules` before developing extensions.
 
 **Recommended (v0):**
 

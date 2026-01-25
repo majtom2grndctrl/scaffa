@@ -4,9 +4,13 @@
 // This file defines routes using React Router's data-router (object) API.
 // Scaffa will statically parse this file to populate the Project Graph.
 
-import type { RouteObject } from 'react-router-dom';
-import React from 'react';
-import { HomePage } from './pages/HomePage';
+import type { RouteObject } from "react-router-dom";
+import { AppShell } from "./components/AppShell";
+import { ExperimentsPage } from "./pages/ExperimentsPage";
+import { IncidentsPage } from "./pages/IncidentsPage";
+import { ModelDetailPage } from "./pages/ModelDetailPage";
+import { ModelsPage } from "./pages/ModelsPage";
+import { OverviewPage } from "./pages/OverviewPage";
 
 /**
  * Canonical route definitions for Scaffa-enabled demo app.
@@ -18,14 +22,35 @@ import { HomePage } from './pages/HomePage';
  */
 export const routes: RouteObject[] = [
   {
-    id: 'home',
-    path: '/',
-    element: <HomePage />,
+    id: "root",
+    path: "/",
+    element: <AppShell />,
+    children: [
+      {
+        id: "overview",
+        path: "",
+        element: <OverviewPage />,
+      },
+      {
+        id: "models",
+        path: "models",
+        element: <ModelsPage />,
+      },
+      {
+        id: "model-detail",
+        path: "models/:modelId",
+        element: <ModelDetailPage />,
+      },
+      {
+        id: "incidents",
+        path: "incidents",
+        element: <IncidentsPage />,
+      },
+      {
+        id: "experiments",
+        path: "experiments",
+        element: <ExperimentsPage />,
+      },
+    ],
   },
-  // Add more routes here as the app grows
-  // {
-  //   id: 'about',
-  //   path: '/about',
-  //   element: <AboutPage />,
-  // },
 ];

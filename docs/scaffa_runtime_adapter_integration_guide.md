@@ -30,7 +30,7 @@ Editor View interaction policy (v0):
 Scaffa integration should not be required for your app to build and run in production.
 
 Recommended approach:
-- Use the **Harness Model** for managed previews: Scaffa mounts the app via a launcher-injected harness entrypoint, so your app code has **zero Scaffa imports**.
+- Use the **Harness Model** for managed previews: Scaffa mounts the app via a launcher-injected harness entrypoint, so your app code has **no Scaffa editor/runtime adapter imports** (UI libraries are allowed).
 - Keep all Scaffa runtime logic **dev-only** and scoped to preview sessions started by Scaffa (managed mode).
 - Install `@scaffa/react-runtime-adapter` as a **devDependency** (the launcher needs it at dev-time even though your source code doesn't import it).
 
@@ -42,7 +42,7 @@ See: `docs/scaffa_harness_model.md`.
 
 In the Harness Model, the "three parts" still exist, but they are injected by the launcher/runtime adapter rather than authored in the app code.
 
-**Important:** Even though your app source code has zero Scaffa imports, the runtime adapter package must be available at dev-time because the vite-launcher generates code that imports it (harness entrypoint + component instrumentation). Add `@scaffa/react-runtime-adapter` to `devDependencies` (NOT `dependencies`) so it's excluded from production builds.
+**Important:** Even though your app source code has no Scaffa editor/runtime adapter imports, the runtime adapter package must be available at dev-time because the vite-launcher generates code that imports it (harness entrypoint + component instrumentation). Add `@scaffa/react-runtime-adapter` to `devDependencies` (NOT `dependencies`) so it's excluded from production builds.
 
 ### 2.1 Mount via a virtual harness entry
 
@@ -96,7 +96,7 @@ See also: `docs/scaffa_harness_model.md` for the managed preview entrypoint and 
 
 `index.html` -> `src/main.tsx` (production bootstrap) -> `src/App.tsx` (router + UI) -> `src/pages/*.tsx` -> `src/components/*.tsx`
 
-**No Scaffa imports required**: Components are written as standard React components with no Scaffa dependencies.
+**No Scaffa editor/runtime adapter imports required**: Components are written as standard React components with no Scaffa editor/runtime adapter dependencies.
 
 ### 3.2 Scaffa preview
 
@@ -133,6 +133,10 @@ Then, switch that module between:
 
 How you switch is toolchain-specific (Vite alias, conditional entrypoints, environment-flagged builds). The important invariant is:
 - your production build must not require `@scaffa/*` packages to be installed.
+  - Exception: the demo workspace uses `@scaffa/layout-primitives-react` as a runtime
+    dependency for layout primitives. In-repo we install it from a local tarball in
+    `demo/vendor/`, but if you extract the demo app, treat it like a normal UI package
+    and install it from your registry.
 
 ### Example: Vite-based Implementation
 
@@ -201,6 +205,8 @@ With this setup:
 - `pnpm dev` uses the real adapter (mode='development')
 - `pnpm build` uses no-ops (mode='production')
 - Production builds have zero runtime dependency on @scaffa/* packages
+  - Exception: the demo workspace intentionally depends on
+    `@scaffa/layout-primitives-react` at runtime.
 
 ---
 

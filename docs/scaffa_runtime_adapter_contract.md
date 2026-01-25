@@ -37,7 +37,7 @@ This is distinct from:
 Production expectation:
 - Projects SHOULD be able to build and run in production without Scaffa installed or enabled.
 - Runtime adapter integration is intended to be dev-only (or Scaffa-only) instrumentation of the preview runtime.
-- Recommended v0 integration path is the Harness Model (managed launcher + virtual harness entry), so projects do not need Scaffa imports in production code.
+- Recommended v0 integration path is the Harness Model (managed launcher + virtual harness entry), so projects do not need Scaffa editor/runtime adapter imports in production code.
 
 ---
 

@@ -24,18 +24,18 @@ This file is **code**, not JSON, to allow reuse and composition.
 /scaffa.config.js
 ```
 
-Scaffa loads `scaffa.config.js` at runtime. Other extensions (e.g. `scaffa.config.ts`) are not loaded directly; if you author config in TypeScript, compile it to `scaffa.config.js` as part of your project build.
+Scaffa loads `scaffa.config.js` at runtime; this is the only supported config file in v0.
 
 ---
 
 ## 3. Top‑Level Shape
 
 ```js
-// v0 (in-repo development): import from Scaffa source
-import { defineScaffaConfig } from '../src/shared/config.js'
+// Preferred (portable): import from a published or packed package
+import { defineScaffaConfig } from '@scaffa/config'
 
-// Planned (not v0): import from a published package
-// import { defineScaffaConfig } from '@scaffa/config'
+// In-repo development shortcut:
+// import { defineScaffaConfig } from '../src/shared/config.js'
 
 export default defineScaffaConfig({
   modules: [
@@ -106,6 +106,26 @@ Also supported in v0:
 - **Package-based modules**:
   - `package: '@scaffa/some-module'` is resolved using Node.js module resolution anchored at `<workspaceRoot>`.
   - If `package` is omitted, Scaffa will also attempt to resolve `id` as a package specifier.
+
+### 4.2 Package-Based Imports: Workspace Prerequisites (v0)
+
+`scaffa.config.js` executes in Node, so **package-based imports require the package
+to be installed in the workspace** (the directory containing `scaffa.config.js`).
+
+Examples:
+
+```bash
+# In a real project (registry install)
+pnpm add -D @scaffa/config
+
+# In the demo workspace (local tarballs)
+pnpm demo:refresh-extensions
+```
+
+Notes:
+- This does **not** require a `pnpm-workspace.yaml`; standard Node module resolution applies.
+- For module `package` entries, ensure those extension packages are installed in the same
+  workspace root as `scaffa.config.js`.
 
 ---
 

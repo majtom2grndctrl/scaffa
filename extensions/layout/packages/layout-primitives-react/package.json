@@ -16,13 +16,13 @@
     "dist"
   ],
   "scripts": {
-    "build": "tsc && cp src/styles/*.css dist/",
+    "build": "tsc && cp src/styles/*.css dist/ && cp src/components/*.css dist/components/",
     "dev": "tsc --watch",
     "test": "vitest run",
     "test:watch": "vitest"
   },
   "peerDependencies": {
-    "react": "^18.0.0"
+    "react": "^18.0.0 || ^19.0.0"
   },
   "devDependencies": {
     "@testing-library/jest-dom": "^6.9.1",

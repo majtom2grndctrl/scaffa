@@ -13,14 +13,16 @@
 // - Production can add providers that would interfere with Scaffa (analytics, error boundaries, etc.)
 // - Scaffa can preview the full routed app without production-only dependencies
 
-import React from 'react';
-import { createMemoryRouter, RouterProvider } from 'react-router-dom';
+import { createBrowserRouter, createMemoryRouter, RouterProvider } from 'react-router-dom';
 import { routes } from './routes';
 
 // Create router instance
-// Using MemoryRouter for compatibility with both production (main.tsx) and Scaffa preview (harness)
-// In production, main.tsx could swap this for createBrowserRouter if needed
-const router = createMemoryRouter(routes);
+// Use BrowserRouter in production so standalone builds have URL-backed navigation.
+// Keep MemoryRouter in dev/preview to avoid coupling Scaffa previews to browser history.
+const router =
+  import.meta.env.MODE === 'production'
+    ? createBrowserRouter(routes)
+    : createMemoryRouter(routes);
 
 export function App() {
   return <RouterProvider router={router} />;

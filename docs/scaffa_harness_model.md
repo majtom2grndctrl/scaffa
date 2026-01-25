@@ -7,7 +7,7 @@
 ## 0. Summary (Decisions)
 
 - Scaffa uses a **managed preview launcher** (first: `vite-launcher`) as the default way to run app previews.
-- Scaffa injects a **virtual harness entrypoint** at dev time; the project’s `src/main.tsx` remains a standard bootstrapper with **zero Scaffa references**.
+- Scaffa injects a **virtual harness entrypoint** at dev time; the project’s `src/main.tsx` remains a standard bootstrapper with **no Scaffa editor/runtime adapter references** (UI libraries under `@scaffa/*` are allowed).
 - Only **registry-listed** component types are selectable/editable in Editor View.
 - Selection/editability in the preview runtime is enabled via **dev-time instrumentation** driven by the composed component registry (including optional third-party registries like MUI).
 - The launcher runs against the **project’s installed Vite** (stable Vite), loading the project config and merging Scaffa’s injected config/plugins.
@@ -65,7 +65,7 @@ Mechanically, the launcher implements this as a Vite plugin that:
 Scaffa keeps production bootstrapping separate from the preview entry so it can control navigation and instrumentation without polluting production code.
 
 Example file structure (demo app):
-- Production entry: `demo/app/src/main.tsx` (no Scaffa deps; production-only providers like analytics/error boundaries/auth)
+- Production entry: `demo/app/src/main.tsx` (no Scaffa editor/runtime adapter deps; production-only providers like analytics/error boundaries/auth)
 - Preview entry: `demo/app/src/App.tsx` (imports route definitions and creates router instance)
 - Route definitions: `demo/app/src/routes.tsx` (exports route array; parsed by react-router-graph-producer)
 - Harness: `/@scaffa/harness.tsx` (virtual module served by Vite plugin) that wraps `App.tsx` with the Scaffa provider/adapter

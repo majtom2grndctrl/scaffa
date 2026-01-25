@@ -7,7 +7,7 @@
 // - Preview sessions
 // - Inspector editing with overrides
 
-import { defineScaffaConfig } from '../src/shared/config.js';
+import { defineScaffaConfig } from '@scaffa/config';
 
 export default defineScaffaConfig({
   schemaVersion: 'v0',
@@ -17,10 +17,20 @@ export default defineScaffaConfig({
       id: 'demo-module',
       path: './extensions/demo-module/index.js',
     },
+    // Component registry provider for shadcn/ui components
+    {
+      id: 'shadcn-ui-registry',
+      package: '@scaffa/shadcn-ui-registry',
+    },
+    // Component registry provider for layout primitives
+    {
+      id: 'layout-registry',
+      package: '@scaffa/layout-registry',
+    },
     // Graph producer for routes (React Router data-router API)
     {
       id: 'react-router-graph-producer',
-      path: '../extensions/react-router-graph-producer/module/index.js',
+      package: '@scaffa/react-router-graph-producer',
     },
     // Demo graph producer for component types (demo-only)
     {

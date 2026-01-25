@@ -6,29 +6,41 @@
 
 This demo workspace showcases all core v0 capabilities:
 
-1. **Component Registry** - Type-level metadata for Inspector editing
+1. **Component Registry** - Type-level metadata for Inspector editing (demo + shadcn + layout)
 2. **Runtime Adapter** - React adapter with click-to-select and override application
 3. **Preview Sessions** - Running React app in preview with live updates
 4. **Inspector Editing** - Edit component props with live preview updates
 5. **Override Persistence** - Non-destructive overrides saved to `.scaffa/overrides.v0.json`
 6. **Project Graph** - Routes and component types from graph producer
+7. **Multi-route App** - Navigation and routed pages with a realistic UI surface
 
 ## Structure
 
 ```
 demo/
+├── package.json               # Workspace-only dev dependencies (extension modules)
 ├── scaffa.config.js           # Workspace configuration
+├── vendor/                    # Packed extension modules + runtime packages (generated)
 ├── extensions/
 │   └── demo-module/           # Component registry provider
-│       ├── index.ts           # Registry for demo.button and demo.card
+│       ├── index.js           # Registry for demo.button and demo.card
 │       └── package.json
 ├── app/                       # Sample React application
 │   ├── src/
 │   │   ├── main.tsx          # Production entry (no Scaffa deps)
 │   │   ├── App.tsx           # Preview entry (router + UI)
-│   │   └── components/
-│   │       ├── DemoButton.tsx
-│   │       └── DemoCard.tsx
+│   │   ├── routes.tsx         # React Router routes
+│   │   ├── data/
+│   │   │   └── fixtures.ts    # Demo data
+│   │   ├── components/
+│   │   │   ├── AppShell.tsx   # Global layout + nav
+│   │   │   └── ui/            # shadcn/ui components
+│   │   └── pages/
+│   │       ├── OverviewPage.tsx
+│   │       ├── ModelsPage.tsx
+│   │       ├── ModelDetailPage.tsx
+│   │       ├── IncidentsPage.tsx
+│   │       └── ExperimentsPage.tsx
 │   ├── package.json
 │   ├── vite.config.ts
 │   └── index.html
@@ -38,7 +50,25 @@ demo/
 
 ## Usage
 
-### 1. Start Scaffa
+### 1. Prepare Workspace Extensions
+
+Build and pack the local extension modules, `@scaffa/config`, and layout
+primitives, then install them into the demo workspace:
+
+```bash
+pnpm demo:refresh-extensions
+```
+
+### 2. Install Demo App Dependencies
+
+```bash
+pnpm -C demo/app install
+```
+
+If you ran `pnpm demo:refresh-extensions`, this is already done; re-run if
+dependencies changed.
+
+### 3. Start Scaffa
 
 From the root of the Scaffa project:
 
@@ -46,32 +76,32 @@ From the root of the Scaffa project:
 pnpm dev
 ```
 
-### 2. Open Demo Workspace
+### 4. Open Demo Workspace
 
 - In Scaffa (Launcher), use **Open Workspace**
 - Navigate to and select the `demo/` directory
 - Scaffa will load `scaffa.config.js` and activate modules
 
-### 3. Start App Preview
+### 5. Start App Preview
 
 - Click **"Start App Preview"** in the Preview panel
 - The demo React app will load in the preview pane
-- You should see buttons and cards rendered
+- You should see the ModelOps console with navigation + routed pages
 
-### 4. Select Component Instances
+### 6. Select Component Instances
 
-- **Click on any button or card** in the preview
+- **Click on any UI component** (Button, Card, Badge, Input, Select, Layout primitives)
 - The Inspector panel will show the selected component's props
 - Editable props appear with controls, inspect-only props show values
 
-### 5. Edit Props in Inspector
+### 7. Edit Props in Inspector
 
-- Change a button's **label** or **variant**
-- Change a card's **title** or **variant**
+- Change a button's **variant** or **size**
+- Change a badge's **variant** or an input's **placeholder**
 - Preview updates **immediately** (non-destructive override applied)
 - Reset button appears to clear overrides
 
-### 6. Verify Override Persistence
+### 8. Verify Override Persistence
 
 - Make some edits in the Inspector
 - Close and reopen Scaffa
@@ -81,21 +111,33 @@ pnpm dev
 
 ## Components
 
-### demo.button
+### ui.* (shadcn/ui registry)
 
-**Editable Props:**
-- `label` (string) - Button text
-- `variant` (select: primary, secondary, danger) - Visual style
+Core components used by the demo app:
+- `ui.button`
+- `ui.card`
+- `ui.input`
+- `ui.select`
+- `ui.checkbox`
+- `ui.badge`
+- `ui.dialog`
 
-**Inspect-Only Props:**
-- `onClick` (function) - Click handler
+### layout.* (layout primitives registry)
 
-### demo.card
+Layout primitives used throughout the app:
+- `layout.box`
+- `layout.row`
+- `layout.stack`
 
-**Editable Props:**
-- `title` (string) - Card title
-- `description` (string, multiline) - Card description
-- `variant` (select: primary, secondary, accent) - Visual style
+## Runtime Dependency Exception
+
+The demo app intentionally depends on `@scaffa/layout-primitives-react` at runtime.
+This is the one approved exception to the "no @scaffa/* runtime dependencies" rule.
+In-repo, we install it from `demo/vendor` (local pack) to keep the workspace portable.
+If you move the demo app outside this repo, replace the local tarball with a published
+version of `@scaffa/layout-primitives-react`.
+Component source references in the demo graph producer are workspace-relative
+(`app/` and `node_modules/`) to keep the demo portable.
 
 ## Success Criteria
 

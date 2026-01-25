@@ -115,6 +115,23 @@ it('registers selection listener and updates state on selection change', async (
 - Shows IPC subscription lifecycle
 - Documents how selection flows into state
 
+## Example (Setup Prerequisites)
+
+Tests that validate workspace setup prerequisites are valuable because they
+document how filesystem layout impacts runtime behavior.
+
+```typescript
+it('loads scaffa.config.js when @scaffa/config is installed in the workspace', async () => {
+  const configModule = await import(configPath);
+
+  expect(configModule.default.schemaVersion).toBe('v0');
+});
+```
+
+**Why this helps**
+- Captures the package-resolution dependency for config loading
+- Guards against regressions in workspace portability
+
 ---
 
 ## Running Tests

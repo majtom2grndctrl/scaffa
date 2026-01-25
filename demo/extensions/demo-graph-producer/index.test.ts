@@ -45,21 +45,37 @@ describe('demo-graph-producer', () => {
     expect(registered).not.toBeNull();
 
     const snapshot = await registered!.initialize();
-    expect(snapshot.nodes).toHaveLength(2);
+    expect(snapshot.nodes).toHaveLength(10);
     expect(snapshot.edges).toHaveLength(0);
     expect(snapshot.nodes.every((node) => node.kind === 'componentType')).toBe(true);
 
     const componentTypeIds = snapshot.nodes.map((node) =>
       node.kind === 'componentType' ? node.id : ''
     );
-    expect(componentTypeIds).toEqual(expect.arrayContaining(['demo.button', 'demo.card']));
+    expect(componentTypeIds).toEqual(
+      expect.arrayContaining([
+        'ui.button',
+        'ui.card',
+        'ui.input',
+        'ui.checkbox',
+        'ui.select',
+        'ui.badge',
+        'ui.dialog',
+        'layout.box',
+        'layout.row',
+        'layout.stack',
+      ])
+    );
 
     for (const node of snapshot.nodes) {
       if (node.kind !== 'componentType' || !node.source) {
         continue;
       }
 
-      expect(node.source.filePath.startsWith('app/')).toBe(true);
+      expect(
+        node.source.filePath.startsWith('app/') ||
+          node.source.filePath.startsWith('app/node_modules/')
+      ).toBe(true);
       expect(node.source.filePath.startsWith('demo/')).toBe(false);
     }
   });

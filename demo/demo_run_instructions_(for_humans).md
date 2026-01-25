@@ -13,11 +13,12 @@ Demo Workspace Walkthrough
 
   This builds the Electron app, renderer, extension host, and React runtime adapter.
 
-  2. Install Demo App Dependencies
+  2. Pack Demo Workspace Extensions (and demo app deps)
 
-  cd demo/app
-  pnpm install
-  cd ../..  # Back to root
+  pnpm demo:refresh-extensions
+
+  This packs local extension modules + layout primitives into demo/vendor and installs
+  both demo/ and demo/app dependencies.
 
   ---
   🚀 Running the Demo
@@ -78,64 +79,57 @@ Demo Workspace Walkthrough
   3. Click Start or OK
 
   What to expect:
-  - The preview pane loads your React app
+  - The preview pane loads the ModelOps console UI
   - You should see:
-    - "Scaffa Demo App" heading
-    - Several colored cards with titles
-    - Two buttons: "Increment" and "Reset"
-    - An interactive counter
+    - Left navigation (Overview, Models, Incidents, Experiments)
+    - KPI cards and status panels on the Overview page
+    - Search input + environment select in the header
 
   ---
   🖱️ Test Click-to-Select
 
-  1. Click on the blue "Increment" button in the preview
+  1. Click the "New experiment" button in the header
   2. Watch the Inspector panel on the right
 
   What to expect:
   - Inspector activates and shows:
-    - Component: "Demo Button"
+    - Component: "Button"
     - Props:
-        - label (editable) - shows "Increment"
-      - variant (editable dropdown) - shows "primary"
-      - onClick (inspect-only) - shows function reference
+      - variant (editable dropdown)
+      - size (editable dropdown)
+      - onClick (inspect-only)
 
-  3. Now click on the "Welcome to Scaffa" card
+  3. Now click the search input in the header
 
   What to expect:
   - Inspector updates to show:
-    - Component: "Demo Card"
+    - Component: "Input"
     - Props:
-        - title (editable) - "Welcome to Scaffa"
-      - description (editable multiline) - the description text
-      - variant (editable dropdown) - "primary"
+      - placeholder (editable)
+      - type (editable dropdown)
 
   ---
   ✏️ Test Live Editing
 
   Edit a Button
 
-  1. Select the "Increment" button (click on it in preview)
-  2. In Inspector, find the label field
-  3. Change it to "Count Up"
-  4. Watch the preview update immediately! The button now says "Count Up"
-  5. Change the variant dropdown to "danger"
-  6. The button turns red immediately!
+  1. Select the "New experiment" button (click on it in preview)
+  2. In Inspector, change the variant to "outline"
+  3. The button updates immediately
 
-  Edit a Card
+  Edit an Input
 
-  1. Click on the "Welcome to Scaffa" card
-  2. Change the title to "Testing Overrides"
-  3. Card title updates live!
-  4. Change variant to "accent"
-  5. Card background turns yellow!
+  1. Click the search input
+  2. Change the placeholder text
+  3. The placeholder updates immediately
 
   ---
   🔄 Test Reset (Clear Overrides)
 
-  1. With the button still selected (the one you renamed to "Count Up")
+  1. With the button still selected (the one you changed to "outline")
   2. Look for a Reset or Clear button next to the overridden props
-  3. Click Reset on the label field
-  4. The button reverts to "Increment" (original value from code)
+  3. Click Reset on the variant field
+  4. The button reverts to its original styling
 
   You can also:
   - Reset individual props
@@ -148,9 +142,9 @@ Demo Workspace Walkthrough
   Save Overrides
 
   1. Make several edits:
-    - Change a button label
-    - Change a card variant
-    - Change another card title
+    - Change a button variant
+    - Change an input placeholder
+    - Change a badge variant
   2. Check that the file was created:
   ls -la demo/.scaffa/
 
@@ -166,20 +160,14 @@ Demo Workspace Walkthrough
   1. Close Scaffa completely (Cmd+Q or File → Quit)
   2. Restart Scaffa: pnpm dev
   3. Reopen the workspace: Open Workspace → Select demo/
-  4. Start app preview again: http://localhost:5173
+  4. Start app preview again (managed or attach-by-URL)
   5. Your overrides are restored! The preview shows your edited values, not the original code values
 
   ---
-  ✅ Test Interactive Behavior
+  ✅ Interaction Policy Check
 
-  Even with overrides applied, the app should still work:
-
-  1. Click the "Count Up" button (or whatever you renamed it)
-  2. The counter increments
-  3. Click "Reset" button
-  4. Counter resets to 0
-
-  The onClick handlers still work! Overrides are non-destructive and don't break app functionality.
+  Editor View consumes clicks for selection. It's expected that app interactions
+  (navigation, button handlers) do not fire in the editor session.
 
   ---
   🎯 What You've Validated
@@ -193,25 +181,27 @@ Demo Workspace Walkthrough
   ✅ Click-to-Select - Instance identification from DOM clicks
   ✅ Inspector UI - Editable and inspect-only props render correctly
   ✅ Live Updates - Overrides apply immediately without code changes
-  ✅ Non-Destructive - Original code unchanged, app behavior preserved
+  ✅ Non-Destructive - Original code unchanged
   ✅ Persistence - Overrides save to disk and restore on reload
 
   ---
   🐛 Troubleshooting
 
   Demo app won't load in preview?
-  - Make sure pnpm dev is running in demo/app/
+  - Managed preview: check the Scaffa logs for Vite launcher errors
+  - Attach-by-URL: make sure pnpm dev is running in demo/app/
   - Check the URL is http://localhost:5173 (or whatever Vite shows)
 
   Modules not activating?
   - Check Electron DevTools console for errors
-  - Verify demo/scaffa.config.js paths are correct
+  - Verify demo/scaffa.config.js package entries (including @scaffa/config) are installed in demo/node_modules
+  - Run pnpm demo:refresh-extensions to rebuild demo/vendor tarballs
 
   Click-to-select not working?
   - Check preview console for adapter handshake messages
   - In managed preview, confirm logs like:
     [ViteRunner] Serving virtual harness module
-    [ViteRunner] Instrumenting: ...DemoButton.tsx
+    [ViteRunner] Instrumenting: .../src/components/ui/button.tsx
 
   Edits not updating preview?
   - Confirm the session is managed (instrumentation is only injected there)

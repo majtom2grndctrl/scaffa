@@ -33,7 +33,7 @@ demo/
 
 ```
 demo/extensions/demo-module/
-├── index.ts                      # Registry provider for demo.button and demo.card
+├── index.js                      # Registry provider for demo.button and demo.card
 └── package.json
 ```
 
@@ -48,14 +48,14 @@ demo/extensions/demo-module/
 
 ```
 demo/extensions/demo-graph-producer/
-├── index.ts                      # Graph producer for demo workspace
+├── index.js                      # Graph producer for demo workspace
 └── package.json
 ```
 
 **Emits:**
-- Route: `/` (demo/app/src/App.tsx)
-- Component types: `demo.button`, `demo.card`
-- Edges: route uses both components
+- Routes: `/`, `/models`, `/models/:modelId`, `/incidents`, `/experiments`
+- Component types: `ui.*` (shadcn/ui), `layout.*` (layout primitives)
+- Edges: routes are emitted; component types are listed for graph visibility
 
 ### Demo React App
 
@@ -64,9 +64,18 @@ demo/app/
 ├── src/
 │   ├── main.tsx                  # Production entry (no Scaffa deps)
 │   ├── App.tsx                   # Preview entry (router + UI)
-│   └── components/
-│       ├── DemoButton.tsx        # Plain React component (instrumented in preview)
-│       └── DemoCard.tsx          # Plain React component (instrumented in preview)
+│   ├── routes.tsx                # React Router route definitions
+│   ├── data/
+│   │   └── fixtures.ts           # Demo data for pages
+│   ├── components/
+│   │   ├── AppShell.tsx          # Global layout + nav
+│   │   └── ui/                   # shadcn/ui components
+│   └── pages/
+│       ├── OverviewPage.tsx
+│       ├── ModelsPage.tsx
+│       ├── ModelDetailPage.tsx
+│       ├── IncidentsPage.tsx
+│       └── ExperimentsPage.tsx
 ├── package.json
 ├── vite.config.ts
 ├── tsconfig.json
@@ -78,14 +87,15 @@ demo/app/
 - `ScaffaProvider` is injected by the managed preview harness (not in app code)
 - Components are wrapped at export time by the Vite launcher (ScaffaInstanceBoundary)
 - Overrides apply via instrumentation; app code stays Scaffa-free
-- Interactive UI (counter, multiple instances)
+- Multi-route ModelOps console with navigation
+- Uses shadcn/ui components and layout primitives for a realistic UI surface
 
 ## Architecture Compliance
 
 ### Follows Scaffa Architectural Contracts
 
 ✅ **Component Registry Schema** (`docs/scaffa_component_registry_schema.md`)
-- Stable component type IDs (`demo.button`, `demo.card`)
+- Stable component type IDs (`ui.*`, `layout.*`, plus demo components)
 - Proper prop exposure (editable, inspectOnly)
 - Control definitions (string, select, multiline)
 - Grouping and ordering metadata
@@ -120,9 +130,14 @@ demo/app/
 - React DOM 19.0.0
 - Vite 5.4.10
 - TypeScript 5.6.3
+- Tailwind CSS 4.x
+- shadcn/ui dependencies (Radix UI, lucide-react, class-variance-authority)
 
 ### Internal Dependencies
-- `@scaffa/react-runtime-adapter` (local file dependency to `packages/react-runtime-adapter`)
+- `@scaffa/react-runtime-adapter` (preview-time harness import, not in app code)
+- `@scaffa/config` (workspace config helper, installed from `demo/vendor/`)
+- `@scaffa/layout-primitives-react` (runtime dependency exception for the demo app, installed from `demo/vendor/`)
+- Workspace extension modules (`@scaffa/shadcn-ui-registry`, `@scaffa/layout-registry`, `@scaffa/react-router-graph-producer`) installed from local tarballs in `demo/vendor/`
 - Scaffa core types (`src/shared/`, `src/extension-host/`)
 
 ## Testing Instructions
@@ -132,7 +147,7 @@ See `demo/TESTING.md` for comprehensive testing checklist.
 **Quick Start:**
 1. `pnpm install` (root)
 2. `pnpm build` (root)
-3. `cd demo/app && pnpm install` (one-time demo app deps)
+3. `pnpm demo:refresh-extensions` (packs modules + installs demo/app deps)
 4. `pnpm dev` (start Scaffa)
 5. Launcher → Open Workspace → Select `demo/`
 6. Start app preview (managed launcher starts Vite automatically)
@@ -142,10 +157,10 @@ See `demo/TESTING.md` for comprehensive testing checklist.
 
 ✅ `pnpm dev` starts Scaffa
 ✅ Open demo workspace from Launcher
-✅ Registry shows Button and Card components with prop metadata
+✅ Registry shows shadcn/ui + layout component metadata
 ✅ Start app preview session
 ✅ Preview shows running React app
-✅ Click Button/Card → Inspector shows props
+✅ Click UI components → Inspector shows props
 ✅ Edit props → Preview updates immediately
 ✅ Reset override → Preview returns to baseline
 ✅ `demo/.scaffa/overrides.v0.json` persists changes
@@ -159,7 +174,7 @@ See `demo/TESTING.md` for comprehensive testing checklist.
 
 3. **Advanced Controls**: Demo uses basic controls (string, select). Future demos could show color, number, slot editing.
 
-4. **Multi-Route Apps**: Demo has single route. Future: multi-route apps with route-specific overrides.
+4. **Layout Primitives Packaging**: Demo installs `@scaffa/layout-primitives-react` from a local tarball in `demo/vendor/`; swap to a published version if you move the app outside this repo.
 
 5. **Orphaned Overrides**: Demo doesn't explicitly test override orphaning (when instance identity changes). This is a known edge case.
 

@@ -1,5 +1,7 @@
 import { defineConfig } from 'vite';
 import react from '@vitejs/plugin-react';
+import path from 'node:path';
+import tailwindcss from '@tailwindcss/vite';
 
 // Demo App Vite Configuration
 // 
@@ -10,7 +12,12 @@ import react from '@vitejs/plugin-react';
 // No Scaffa-specific configuration needed here - the harness handles everything.
 
 export default defineConfig({
-  plugins: [react()],
+  plugins: [react(), tailwindcss()],
+  resolve: {
+    alias: {
+      '@': path.resolve(__dirname, './src'),
+    },
+  },
   server: {
     port: 3001,
   },

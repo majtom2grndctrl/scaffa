@@ -29,14 +29,16 @@ In your `scaffa.config.js`:
 export default {
   modules: [
     // Enable the shadcn/ui registry
-    './extensions/shadcn-ui-registry/module/index.js',
+    { id: 'shadcn-ui-registry', package: '@scaffa/shadcn-ui-registry' },
   ],
 };
 ```
 
 ### Implementation Hints
 
-This registry uses `kind: "file"` implementation hints pointing to the conventional shadcn layout:
+This registry uses `kind: "file"` implementation hints pointing to the conventional shadcn layout.
+If `app/src/components/ui` exists (Scaffa demo structure), it uses that; otherwise it falls back to
+`src/components/ui`:
 
 ```
 src/components/ui/
@@ -63,7 +65,7 @@ You can customize registry entries in `scaffa.config.js`.
 
 ```js
 export default {
-  modules: ['./extensions/shadcn-ui-registry/module/index.js'],
+  modules: [{ id: 'shadcn-ui-registry', package: '@scaffa/shadcn-ui-registry' }],
 
   registry: {
     overrides: {
@@ -84,7 +86,7 @@ export default {
 
 ```js
 export default {
-  modules: ['./extensions/shadcn-ui-registry/module/index.js'],
+  modules: [{ id: 'shadcn-ui-registry', package: '@scaffa/shadcn-ui-registry' }],
 
   registry: {
     overrides: {
@@ -105,7 +107,7 @@ export default {
 
 ```js
 export default {
-  modules: ['./extensions/shadcn-ui-registry/module/index.js'],
+  modules: [{ id: 'shadcn-ui-registry', package: '@scaffa/shadcn-ui-registry' }],
 
   registry: {
     overrides: {

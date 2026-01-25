@@ -33,10 +33,10 @@ describe('React Router Graph Producer - routes.tsx integration', () => {
     const content = await fs.promises.readFile(routesPath, 'utf-8');
 
     // Verify routes have id field (required for graph producer)
-    expect(content).toContain("id: 'home'");
+    expect(content).toContain('id: "root"');
 
     // Verify routes have path field
-    expect(content).toContain("path: '/'");
+    expect(content).toContain('path: "/"');
   });
 
   it('producer emits stable RouteIds using explicit route.id', async () => {
@@ -100,44 +100,50 @@ describe('React Router Graph Producer - routes.tsx integration', () => {
     expect(routes.length).toBeGreaterThan(0);
 
     // Verify at least one route has explicit id
-    const homeRoute = routes.find(r => r.path === '/');
-    expect(homeRoute).toBeDefined();
-    expect(homeRoute?.id).toBeDefined();
+    const rootRoute = routes.find(r => r.path === '/');
+    expect(rootRoute).toBeDefined();
+    expect(rootRoute?.id).toBeDefined();
 
     // Import the graph producer and test it produces correct RouteIds
     const { activate } = await import('./module/index.js');
+
+    let registeredProducer: any = null;
 
     // Mock ExtensionContext
     const mockContext = {
       workspaceRoot: workspaceRoot,
       graph: {
         registerProducer: (producer: any) => {
-          // Call initialize and verify the snapshot
-          producer.initialize().then((snapshot: any) => {
-            expect(snapshot.schemaVersion).toBe('v0');
-            expect(snapshot.nodes).toBeDefined();
-
-            // Find route nodes
-            const routeNodes = snapshot.nodes.filter((n: any) => n.kind === 'route');
-            expect(routeNodes.length).toBeGreaterThan(0);
-
-            // Verify home route uses explicit id format: routeId:home (not route:/)
-            const homeNode = routeNodes.find((n: any) => n.path === '/');
-            expect(homeNode).toBeDefined();
-            expect(homeNode?.id).toMatch(/^routeId:/);
-            expect(homeNode?.id).not.toBe('route:/');
-
-            // Verify the id matches the parsed route.id
-            if (homeRoute) {
-              expect(homeNode?.id).toBe(`routeId:${homeRoute.id}`);
-            }
-          });
+          registeredProducer = producer;
+          return { dispose: () => {} };
         },
       },
     };
 
     // Activate the producer
     activate(mockContext as any);
+
+    expect(registeredProducer).toBeDefined();
+
+    // Call initialize and verify the snapshot
+    const snapshot = await registeredProducer.initialize();
+    expect(snapshot.schemaVersion).toBe('v0');
+    expect(snapshot.nodes).toBeDefined();
+
+    // Find route nodes
+    const routeNodes = snapshot.nodes.filter((n: any) => n.kind === 'route');
+    expect(routeNodes.length).toBeGreaterThan(0);
+
+    // Verify home route uses explicit id format: routeId:home (not route:/)
+    const rootNode = routeNodes.find((n: any) => n.path === '/');
+    expect(rootNode).toBeDefined();
+    expect(rootNode?.id).toMatch(/^routeId:/);
+    expect(rootNode?.id).not.toBe('route:/');
+
+    // Verify the id matches the parsed route.id
+    if (rootRoute) {
+      expect(rootNode?.id).toBe(`routeId:${rootRoute.id}`);
+    }
   });
 
   it('producer handles routes with duplicate paths using stable IDs', async () => {

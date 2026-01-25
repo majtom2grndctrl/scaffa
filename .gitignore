@@ -4,9 +4,7 @@ dist/
 out/
 release/
 .vite/
-demo/extensions/**/index.js
-extensions/**/module/index.js
-src/shared/config.js
+demo/vendor/*.tgz
 .DS_Store
 .env
 .env.*

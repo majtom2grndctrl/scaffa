@@ -8,10 +8,12 @@
 
 ## 0. Update: Pure Harness Model Migration Complete (2026-01-19)
 
-✅ **Completed:** demo/app now demonstrates the pure harness model end-to-end with zero Scaffa imports in production code.
+✅ **Completed:** demo/app now demonstrates the pure harness model end-to-end with no Scaffa
+editor/runtime adapter imports in production code. (Exception: the demo app uses
+`@scaffa/layout-primitives-react` as a runtime UI dependency.)
 
 **Production build:**
-`index.html` -> `src/main.tsx` (production bootstrap) -> `src/App.tsx` (router instance) -> `src/routes.tsx` (route definitions) -> `src/pages/*.tsx` -> `src/components/*.tsx` (pure React, no Scaffa deps)
+`index.html` -> `src/main.tsx` (production bootstrap) -> `src/App.tsx` (router instance) -> `src/routes.tsx` (route definitions) -> `src/pages/*.tsx` -> `src/components/*.tsx` (pure React, no Scaffa editor/runtime deps)
 
 **Scaffa preview:**
 `index.html` (transformed by harness plugin) -> virtual harness entry (injected by vite-launcher) -> `ScaffaProvider` (real adapter) -> `src/App.tsx` (router instance) -> `src/routes.tsx` (parsed by graph producer) -> registry-listed components automatically wrapped with `ScaffaInstanceBoundary` (injected by vite-launcher instrumentation plugin)
@@ -21,7 +23,7 @@
 - Scaffa's harness replaces it in `index.html`
 - `App.tsx` is self-contained and creates a router instance by importing route definitions
 - Route definitions live in `routes.tsx` (required by react-router-graph-producer in v0)
-- Components have NO Scaffa imports - instrumentation is injected at dev-time for registry-listed types only
+- Components have NO Scaffa editor/runtime adapter imports - instrumentation is injected at dev-time for registry-listed types only
 
 **Migration artifacts removed:**
 - `demo/app/src/scaffa-shim.tsx` (deleted)
@@ -66,33 +68,34 @@ import type { GraphSnapshot, GraphPatch } from '../../../src/shared/project-grap
 
 ### ✅ RESOLVED (2026-01-11)
 - `extension-sdk.ts` provides a stable import surface for extension authors.
+- `pnpm build:modules` bundles it to `extension-sdk.js` for runtime imports.
 - Extension authoring guide points to the SDK entrypoint.
 
 ---
 
 ## 3. Workspace Config Relative Paths (2026-01-11)
 
-### Issue
+### Issue (historical)
 Module paths in `scaffa.config.js` are relative to the config file location, not the project root:
 
 ```typescript
 modules: [
   {
     id: 'demo-module',
-    path: './extensions/demo-module/index.ts', // Relative to demo/
+    path: './extensions/demo-module/index.js', // Relative to demo/
   }
 ]
 ```
 
-### Observation
-This works well for workspace-local modules, but:
-- Not immediately obvious from the config schema
-- No support for absolute paths or workspace-relative paths (e.g., `@/modules/...`)
-- Shared modules between workspaces would need symlinks or npm packages
+### Update (2026-01-24)
+This is now documented in `docs/scaffa_project_configuration_scaffa_config.md`, and v0 supports:
+- Workspace-anchored prefixes (`@/` and `workspace:/`) for clarity
+- Package-based modules via `package` (or `id` fallback) for portability
+- JS entrypoints (`index.js`) for runtime loading
 
 ### Recommendation
-- Document path resolution behavior explicitly in `scaffa_project_configuration_scaffa_config.md`
-- Consider supporting multiple path resolution strategies (relative, absolute, workspace-relative)
+- Keep path resolution rules centralized in the config doc
+- Prefer package-based modules for workspace portability
 
 ---
 
@@ -253,23 +256,23 @@ Preview URLs must be full URLs with protocol:
 
 ## 11. Dev Workflow: Two-Server Requirement (2026-01-11)
 
-### Issue
-Testing the v0 journey requires:
+### Issue (historical)
+Testing the v0 journey required:
 
 1. Scaffa running (`pnpm dev`)
 2. Demo app dev server running (`cd demo/app && pnpm dev`)
 
-There's no single "start everything" command.
+There was no single "start everything" command.
 
-### Observation
+### Observation (historical)
 - This is architecturally correct (separation of concerns)
 - But could be streamlined with tooling
 - Not explicitly documented as the intended workflow
 
-### Recommendation
-- Add "Development Workflows" doc section
-- Provide npm scripts or tooling to start multi-process setups
-- Consider `concurrently` or similar for local dev convenience
+### ✅ RESOLVED (2026-01-24)
+- `pnpm dev:demo` starts Scaffa + demo app together
+- `pnpm demo:refresh-extensions` prepares local tarballs for the demo workspace
+- Dev workflow is documented in `docs/scaffa_development_guide.md`
 
 ---
 
