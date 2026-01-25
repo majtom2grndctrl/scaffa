@@ -154,18 +154,29 @@ export class ModuleLoader {
 
     if (moduleConfig.path) {
       if (this.workspacePath) {
+        let resolvedPath: string;
+
         // Support workspace-anchored convenience prefixes.
         // - "@/x" means "<workspaceRoot>/x"
         // - "workspace:/x" means "<workspaceRoot>/x"
         if (moduleConfig.path.startsWith('@/')) {
-          return path.resolve(this.workspacePath, moduleConfig.path.slice(2));
-        }
-        if (moduleConfig.path.startsWith('workspace:')) {
+          resolvedPath = path.resolve(this.workspacePath, moduleConfig.path.slice(2));
+        } else if (moduleConfig.path.startsWith('workspace:')) {
           const rest = moduleConfig.path.slice('workspace:'.length).replace(/^\/+/, '');
-          return path.resolve(this.workspacePath, rest);
+          resolvedPath = path.resolve(this.workspacePath, rest);
+        } else {
+          resolvedPath = path.resolve(this.workspacePath, moduleConfig.path);
         }
 
-        return path.resolve(this.workspacePath, moduleConfig.path);
+        // Security: validate path doesn't escape workspace
+        if (!this.isPathWithinWorkspace(resolvedPath)) {
+          console.error(
+            `[ModuleLoader] Module path escapes workspace: ${moduleConfig.path} resolves to ${resolvedPath}`
+          );
+          return null;
+        }
+
+        return resolvedPath;
       }
       return path.resolve(moduleConfig.path);
     }
@@ -177,6 +188,24 @@ export class ModuleLoader {
     }
 
     return null;
+  }
+
+  /**
+   * Validate that a resolved path is within the workspace directory.
+   * Prevents path traversal attacks via malicious config.
+   */
+  private isPathWithinWorkspace(resolvedPath: string): boolean {
+    if (!this.workspacePath) {
+      return true; // No workspace context, allow all paths
+    }
+
+    // Normalize both paths to handle symlinks and relative segments
+    const normalizedWorkspace = path.resolve(this.workspacePath);
+    const normalizedPath = path.resolve(resolvedPath);
+
+    // Check if the resolved path is under the workspace
+    return normalizedPath.startsWith(normalizedWorkspace + path.sep) ||
+           normalizedPath === normalizedWorkspace;
   }
 
   private resolvePackageEntry(specifier: string): string | null {

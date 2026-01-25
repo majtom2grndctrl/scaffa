@@ -92,4 +92,81 @@ describe('Extension Host Activation', () => {
     expect(config.modules).toHaveLength(1);
     expect(config.modules?.[0].path).toMatch(/^extensions\/[^/]+\/module\/index\.ts$/);
   });
+
+  it('should reject path traversal attempts', async () => {
+    const errorSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
+    const mockSend = vi.fn();
+    const originalSend = process.send;
+    process.send = mockSend as any;
+
+    const config: ScaffaConfig = {
+      schemaVersion: 'v0',
+      modules: [
+        {
+          id: 'malicious-module',
+          path: '../../../etc/passwd',
+        },
+      ],
+    };
+
+    const loader = new ModuleLoader(process.cwd(), config);
+
+    await loader.loadAndActivateModules();
+
+    // Should have failed with path resolution error
+    const messages = mockSend.mock.calls.map((call) => call[0]);
+    const failureMessage = messages.find(
+      (msg: any) => msg.type === 'module-activation-status' && msg.status === 'failed'
+    );
+
+    expect(failureMessage).toBeDefined();
+    expect(failureMessage?.error?.message).toContain('Cannot resolve module path');
+
+    // Should have logged security warning
+    expect(errorSpy).toHaveBeenCalledWith(
+      expect.stringContaining('Module path escapes workspace')
+    );
+
+    process.send = originalSend;
+    errorSpy.mockRestore();
+  });
+
+  it('should allow workspace-anchored prefixes within workspace', async () => {
+    const mockSend = vi.fn();
+    const originalSend = process.send;
+    process.send = mockSend as any;
+
+    const config: ScaffaConfig = {
+      schemaVersion: 'v0',
+      modules: [
+        {
+          id: 'test-module-at',
+          path: '@/extensions/sample-module/index.js',
+        },
+        {
+          id: 'test-module-workspace',
+          path: 'workspace:/extensions/sample-module/index.js',
+        },
+      ],
+    };
+
+    const loader = new ModuleLoader(process.cwd(), config);
+
+    // Note: These will fail to load because the files don't exist,
+    // but they should pass path validation and attempt to import
+    await loader.loadAndActivateModules();
+
+    const messages = mockSend.mock.calls.map((call) => call[0]);
+    const failures = messages.filter(
+      (msg: any) => msg.type === 'module-activation-status' && msg.status === 'failed'
+    );
+
+    // Both should fail due to file not found, not path validation
+    expect(failures).toHaveLength(2);
+    failures.forEach((msg: any) => {
+      expect(msg.error.message).not.toContain('Cannot resolve module path');
+    });
+
+    process.send = originalSend;
+  });
 });

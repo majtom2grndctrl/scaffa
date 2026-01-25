@@ -32,7 +32,6 @@ export async function loadConfig(
   workspacePath: WorkspacePath | string
 ): Promise<ConfigLoadResult> {
   const jsConfigPath = path.join(workspacePath, 'scaffa.config.js');
-  const tsConfigPath = path.join(workspacePath, 'scaffa.config.ts');
 
   try {
     // Check if runtime config exists
@@ -40,27 +39,8 @@ export async function loadConfig(
       .access(jsConfigPath)
       .then(() => true)
       .catch(() => false);
-    const hasTsConfig = await fs
-      .access(tsConfigPath)
-      .then(() => true)
-      .catch(() => false);
 
     if (!hasJsConfig) {
-      if (hasTsConfig) {
-        return {
-          success: false,
-          error: {
-            code: 'INVALID_SYNTAX',
-            message:
-              'Scaffa config must be JavaScript at runtime. Compile scaffa.config.ts to scaffa.config.js.',
-            details: {
-              tsConfigPath,
-              hint: 'Ensure scaffa.config.js exists alongside scaffa.config.ts',
-            },
-          },
-        };
-      }
-
       return {
         success: false,
         error: {
@@ -116,12 +96,18 @@ export async function loadConfig(
     };
   } catch (error) {
     if (error instanceof Error && 'issues' in error) {
-      // Zod validation error
+      // Zod validation error - format issues into actionable messages
+      const zodError = error as { issues: Array<{ path: (string | number)[]; message: string }> };
+      const formattedIssues = zodError.issues.map((issue) => {
+        const path = issue.path.length > 0 ? issue.path.join('.') : 'root';
+        return `  • ${path}: ${issue.message}`;
+      });
+
       return {
         success: false,
         error: {
           code: 'VALIDATION_ERROR',
-          message: 'Config validation failed',
+          message: `Config validation failed:\n${formattedIssues.join('\n')}`,
           details: error,
         },
       };
