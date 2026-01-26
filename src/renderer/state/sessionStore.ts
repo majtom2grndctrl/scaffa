@@ -156,6 +156,11 @@ export const useSessionStore = create<SessionStore>((set, get) => ({
  * Call this once at app startup.
  */
 export function initializeSessionListeners() {
+  if (!window.scaffa?.preview) {
+    console.warn('[SessionStore] Scaffa bridge (window.scaffa.preview) not found. Skipping listener initialization.');
+    return;
+  }
+
   // Listen for session ready
   window.scaffa.preview.onSessionReady((event) => {
     console.log('[SessionStore] Session ready:', event);

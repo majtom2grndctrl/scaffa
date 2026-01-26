@@ -130,6 +130,17 @@ Instrumentation must attach the registry `typeId` as the runtime `componentTypeI
 - **Override application is automatic**: `ScaffaInstanceBoundary` applies overrides to props before passing them to the wrapped component, so app code does NOT need to import or use `ScaffaInstance` or `useScaffaInstance`.
 - Selection events emitted by the adapter must include `{ instanceId, componentTypeId }`.
 
+### 5.7 Supported Component Patterns (v0)
+
+The instrumentation transform should support common React component export patterns to ensure broad compatibility with existing codebases:
+
+- **Default exports**: `export default function Component`, `export default class Component`
+- **Named function exports**: `export function Component`
+- **Named constant exports**: `export const Component = ...`
+- **Named re-exports**: `export { Component }` (supports aliasing)
+
+This ensures that most component libraries (including Shadcn UI and functional primitives) can be wrapped without manual changes to the source code.
+
 ---
 
 ## 6. Using the Project’s Vite (Compatibility)

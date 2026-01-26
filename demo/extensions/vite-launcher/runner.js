@@ -14,7 +14,7 @@
 //      docs/scaffa_component_registry_schema.md (5.1/5.2)
 //      docs/scaffa_runtime_adapter_integration_guide.md (2.2.1/2.2.2)
 import { createRequire } from "node:module";
-import { pathToFileURL } from "node:url";
+import { pathToFileURL, fileURLToPath } from "node:url";
 import path from "node:path";
 import fs from "node:fs";
 
@@ -262,11 +262,65 @@ export function ${exportName}(props) {
       return wrappedExport;
     }
 
+    // Check for "export const/let/var Name ="
+    const namedVarPattern = new RegExp(`export\\s+(const|let|var)\\s+${exportName}\\b`);
+    if (namedVarPattern.test(code)) {
+      const originalName = `_Original${exportName}`;
+      return `
+import { ScaffaInstanceBoundary as _ScaffaInstanceBoundary } from '@scaffa/react-runtime-adapter';
+
+${code.replace(namedVarPattern, `const ${originalName}`)}
+
+export const ${exportName} = _ScaffaInstanceBoundary(${originalName}, ${JSON.stringify(typeId)});
+`;
+    }
+
     // Check for "export { Name }" or "export { something as Name }"
     const namedExportPattern = new RegExp(`export\\s*\\{[^}]*\\b${exportName}\\b[^}]*\\}`);
-    if (namedExportPattern.test(code)) {
-      console.warn(`[ViteRunner] Warning: Cannot wrap re-export "${exportName}" in ${moduleId}; skipping instrumentation`);
-      return code;
+    const match = code.match(namedExportPattern);
+
+    if (match) {
+      const exportBlock = match[0];
+      const contentMatch = exportBlock.match(/\{([^}]*)\}/);
+
+      if (contentMatch) {
+        const content = contentMatch[1];
+        const parts = content.split(',').map(p => p.trim()).filter(Boolean);
+
+        let localName = null;
+        const newParts = parts.map(part => {
+          // Case 1: "Button" (shorthand)
+          if (part === exportName) {
+            localName = exportName;
+            return `_ScaffaWrapped${exportName} as ${exportName}`;
+          }
+          // Case 2: "Local as Button" (aliased)
+          const asMatch = part.match(/^(\w+)\s+as\s+(\w+)$/);
+          if (asMatch && asMatch[2] === exportName) {
+            localName = asMatch[1];
+            return `_ScaffaWrapped${exportName} as ${exportName}`;
+          }
+          return part;
+        });
+
+        if (localName) {
+          const newExportBlock = `export { ${newParts.join(', ')} }`;
+          const wrappedName = `_ScaffaWrapped${exportName}`;
+
+          // Inject wrapper definition before the export block
+          // And inject imports at top via standard mechanism (not here, handled by string concat below)
+
+          const wrappedExport = `
+import { ScaffaInstanceBoundary as _ScaffaInstanceBoundary } from '@scaffa/react-runtime-adapter';
+
+${code.replace(namedExportPattern, `
+const ${wrappedName} = _ScaffaInstanceBoundary(${localName}, ${JSON.stringify(typeId)});
+${newExportBlock}
+`)}
+`;
+          return wrappedExport;
+        }
+      }
     }
   }
 
@@ -424,12 +478,24 @@ ReactDOM.createRoot(root).render(
       console.log("[ViteRunner] optimizeDeps.exclude:", packageExcludes);
     }
 
+    // Resolve adapter path (relative to this runner script)
+    // In monorepo: ../../../packages/react-runtime-adapter
+    const runnerDir = path.dirname(fileURLToPath(import.meta.url));
+    const adapterPath = path.resolve(runnerDir, "../../../packages/react-runtime-adapter");
+
+    console.log("[ViteRunner] Using adapter at:", adapterPath);
+
     const myConfig = {
       // Vite runs in the app directory
       root: appRoot,
       server: {
         port: randomPort,
         strictPort: false
+      },
+      resolve: {
+        alias: {
+          "@scaffa/react-runtime-adapter": adapterPath,
+        },
       },
       optimizeDeps: optimizeDepsConfig,
     };
