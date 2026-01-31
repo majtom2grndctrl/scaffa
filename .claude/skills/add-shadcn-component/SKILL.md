@@ -1,11 +1,11 @@
 ---
 name: add-shadcn-component
-description: Add shadcn/ui components via pnpm dlx, then normalize generated Tailwind color classes to Scaffa theme tokens
+description: Add shadcn/ui components via pnpm dlx, then normalize generated Tailwind color classes to Skaffa theme tokens
 ---
 
 # Add shadcn Component
 
-Add one or more shadcn/ui components, then replace any generated “design system” color utility classes with Scaffa’s Tailwind theme tokens.
+Add one or more shadcn/ui components, then replace any generated “design system” color utility classes with Skaffa’s Tailwind theme tokens.
 
 ## Usage
 
@@ -30,7 +30,7 @@ If shadcn is not initialized yet, STOP and ask the user to run init first.
 
 1. Adds shadcn components using `pnpm dlx … add <componentList>`
 2. Identifies the files that were created/modified
-3. Rewrites generated Tailwind color classes to Scaffa theme tokens (surfaces/fg/border/focus/selected/etc.)
+3. Rewrites generated Tailwind color classes to Skaffa theme tokens (surfaces/fg/border/focus/selected/etc.)
 4. Runs a build to verify TypeScript + CSS compilation
 5. Lands the change (commit + `bd sync` + push), respecting the repo workflow
 
@@ -64,13 +64,13 @@ You MUST follow these steps in order.
    git status --porcelain
    ```
 
-### Phase 2: Normalize generated colors to Scaffa theme tokens
+### Phase 2: Normalize generated colors to Skaffa theme tokens
 
-Scaffa’s renderer uses Tailwind v4 theme tokens defined in `src/renderer/styles.css` (e.g. `bg-surface-panel`, `bg-surface-card`, `bg-surface-overlay`, `text-fg-muted`, `border-default`, `ring-focus`, `bg-selected`, etc).
+Skaffa’s renderer uses Tailwind v4 theme tokens defined in `src/renderer/styles.css` (e.g. `bg-surface-panel`, `bg-surface-card`, `bg-surface-overlay`, `text-fg-muted`, `border-default`, `ring-focus`, `bg-selected`, etc).
 
-The shadcn generator commonly emits palette tokens like `bg-background`, `text-foreground`, `border-border`, `ring-ring`, `bg-primary`, `text-muted-foreground`, etc. Those MUST be replaced with Scaffa tokens.
+The shadcn generator commonly emits palette tokens like `bg-background`, `text-foreground`, `border-border`, `ring-ring`, `bg-primary`, `text-muted-foreground`, etc. Those MUST be replaced with Skaffa tokens.
 
-Prefer Scaffa’s **surface role** tokens over numeric surface levels:
+Prefer Skaffa’s **surface role** tokens over numeric surface levels:
 - `bg-surface-app`, `bg-surface-panel`, `bg-surface-pane` *(reserved; currently aliases panel)*, `bg-surface-card`, `bg-surface-overlay`, `bg-surface-inset`
 - For text/borders/rings, keep using `text-fg*`, `border-*`, `ring-focus`, etc.
 
@@ -113,7 +113,7 @@ Use this mapping as the baseline. Adjust only if the component semantics demand 
   - `focus-visible:ring-ring` → `focus-visible:ring-focus`
   - `focus-visible:ring-offset-background` → `focus-visible:ring-offset-surface-app`
 
-If you encounter shadcn tokens not covered above (e.g. `bg-input`, `text-primary`, etc.), prefer mapping them to the closest Scaffa semantic token from `src/renderer/styles.css` rather than introducing a new color.
+If you encounter shadcn tokens not covered above (e.g. `bg-input`, `text-primary`, etc.), prefer mapping them to the closest Skaffa semantic token from `src/renderer/styles.css` rather than introducing a new color.
 
 #### 2.2 How to apply the mapping safely
 
@@ -142,7 +142,7 @@ pnpm build
 
 2. Commit code changes (do NOT include `.beads/issues.jsonl`):
    ```bash
-   git commit -m \"feat(ui): add shadcn <components> (Scaffa theme)\"
+   git commit -m \"feat(ui): add shadcn <components> (Skaffa theme)\"
    ```
 
 3. Persist beads updates (if any) and push:
@@ -158,4 +158,4 @@ pnpm build
 
 - This repo uses Tailwind v4 `@theme` tokens; prefer `bg-surface-*`, `text-fg*`, `border-*`, `ring-focus`, `bg-selected`, etc over shadcn’s palette tokens.
 - Prefer surface roles (`bg-surface-app/panel/card/overlay/inset`) over numeric surface levels (`bg-surface-0..3`) when choosing container backgrounds.
-- If a generated component requires additional tokens not in the Scaffa theme, file a ticket instead of inventing new one-off colors inside components.
+- If a generated component requires additional tokens not in the Skaffa theme, file a ticket instead of inventing new one-off colors inside components.

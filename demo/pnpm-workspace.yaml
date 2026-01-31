@@ -1,3 +1,6 @@
 packages:
-  - "app"
-  - "extensions/*"
+  - app
+  - extensions/*
+
+onlyBuiltDependencies:
+  - esbuild

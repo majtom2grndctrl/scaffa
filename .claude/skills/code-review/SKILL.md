@@ -33,13 +33,13 @@ Perform a thorough code review with Staff Software Engineer rigor, grounded in t
 ### Example: review a ticket implementation
 Input:
 ```
-Please review the changes for scaffa-7iq.11
+Please review the changes for skaffa-7iq.11
 ```
 Output (abridged):
 ```
 Mindset: Acting as a Staff Software Engineer.
-Ticket review: scaffa-7iq.11 acceptance criteria understood.
-Docs reviewed: docs/index.md, docs/scaffa_extension_api.md.
+Ticket review: skaffa-7iq.11 acceptance criteria understood.
+Docs reviewed: docs/index.md, docs/skaffa_extension_api.md.
 
 Findings:
 - src/extension-host/extension-context.ts:42: initialize() returns Promise<GraphSnapshot> but caller expects Promise<void>; potential runtime mismatch.

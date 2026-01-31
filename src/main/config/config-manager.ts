@@ -1,4 +1,4 @@
-import type { ScaffaConfig } from '../../shared/index.js';
+import type { SkaffaConfig } from '../../shared/index.js';
 import { loadConfig, getDefaultConfig, type ConfigLoadResult } from './config-loader.js';
 import { registryManager } from '../registry/registry-manager.js';
 
@@ -11,7 +11,7 @@ import { registryManager } from '../registry/registry-manager.js';
 let extensionHostManager: typeof import('../extension-host/extension-host-manager.js').extensionHostManager | null = null;
 
 class ConfigManager {
-  private currentConfig: ScaffaConfig = getDefaultConfig();
+  private currentConfig: SkaffaConfig = getDefaultConfig();
   private loadResult: ConfigLoadResult | null = null;
 
   /**
@@ -85,7 +85,7 @@ class ConfigManager {
   /**
    * Get the current effective config.
    */
-  getCurrentConfig(): ScaffaConfig {
+  getCurrentConfig(): SkaffaConfig {
     return this.currentConfig;
   }
 

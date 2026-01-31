@@ -1,4 +1,4 @@
-import { Box, Row, Stack } from "@scaffa/layout-primitives-react";
+import { Box, Row, Stack } from "@skaffa/layout-primitives-react";
 import { Beaker, Flag } from "lucide-react";
 
 import { Badge } from "@/components/ui/badge";
@@ -90,14 +90,15 @@ export function ExperimentsPage() {
                     </span>
                   </Row>
                   <span className="text-xs text-slate-500">
-                    {experiment.owner} · {experiment.kind} · {experiment.started}
+                    {experiment.owner} · {experiment.kind} ·{" "}
+                    {experiment.started}
                   </span>
                 </Stack>
                 <Row align="center" gap={2} wrap="wrap">
                   <Badge
                     className={cn(
                       "rounded-full text-[0.65rem] uppercase tracking-widest",
-                      statusClass[experiment.status]
+                      statusClass[experiment.status],
                     )}
                   >
                     {experiment.status}

@@ -1,34 +1,34 @@
 // ─────────────────────────────────────────────────────────────────────────────
-// Scaffa React Provider (v0)
+// Skaffa React Provider (v0)
 // ─────────────────────────────────────────────────────────────────────────────
 
 import React, { createContext, useContext, useEffect, useState } from 'react';
-import { ScaffaReactAdapter } from './adapter.js';
-import type { ScaffaAdapterConfig, InstanceIdentity } from './types.js';
+import { SkaffaReactAdapter } from './adapter.js';
+import type { SkaffaAdapterConfig, InstanceIdentity } from './types.js';
 
 // ─────────────────────────────────────────────────────────────────────────────
-// Scaffa Context
+// Skaffa Context
 // ─────────────────────────────────────────────────────────────────────────────
 
-interface ScaffaContextValue {
-  adapter: ScaffaReactAdapter;
+interface SkaffaContextValue {
+  adapter: SkaffaReactAdapter;
   selectedInstance: InstanceIdentity | null;
   overrideVersion: number;
 }
 
-const ScaffaContext = createContext<ScaffaContextValue | null>(null);
+const SkaffaContext = createContext<SkaffaContextValue | null>(null);
 
 // ─────────────────────────────────────────────────────────────────────────────
-// Scaffa Provider
+// Skaffa Provider
 // ─────────────────────────────────────────────────────────────────────────────
 
-export interface ScaffaProviderProps {
-  config: ScaffaAdapterConfig;
+export interface SkaffaProviderProps {
+  config: SkaffaAdapterConfig;
   children: React.ReactNode;
 }
 
-export function ScaffaProvider({ config, children }: ScaffaProviderProps) {
-  const [adapter] = useState(() => new ScaffaReactAdapter(config));
+export function SkaffaProvider({ config, children }: SkaffaProviderProps) {
+  const [adapter] = useState(() => new SkaffaReactAdapter(config));
   const [selectedInstance, setSelectedInstance] = useState<InstanceIdentity | null>(null);
   const [overrideVersion, setOverrideVersion] = useState(0);
 
@@ -52,13 +52,13 @@ export function ScaffaProvider({ config, children }: ScaffaProviderProps) {
     };
   }, [adapter]);
 
-  const value: ScaffaContextValue = {
+  const value: SkaffaContextValue = {
     adapter,
     selectedInstance,
     overrideVersion,
   };
 
-  return <ScaffaContext.Provider value={value}>{children}</ScaffaContext.Provider>;
+  return <SkaffaContext.Provider value={value}>{children}</SkaffaContext.Provider>;
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -66,13 +66,13 @@ export function ScaffaProvider({ config, children }: ScaffaProviderProps) {
 // ─────────────────────────────────────────────────────────────────────────────
 
 /**
- * Get the Scaffa adapter context.
+ * Get the Skaffa adapter context.
  * @internal
  */
-export function useScaffaContext(): ScaffaContextValue {
-  const context = useContext(ScaffaContext);
+export function useSkaffaContext(): SkaffaContextValue {
+  const context = useContext(SkaffaContext);
   if (!context) {
-    throw new Error('useScaffaContext must be used within ScaffaProvider');
+    throw new Error('useSkaffaContext must be used within SkaffaProvider');
   }
   return context;
 }

@@ -1,10 +1,10 @@
-import { create } from 'zustand';
+import { create } from "zustand";
 import type {
   WorkspaceInfo,
   WorkspaceOpenError,
   WorkspacePath,
-} from '../../shared/index.js';
-import { useSessionStore } from './sessionStore';
+} from "../../shared/index.js";
+import { useSessionStore } from "./sessionStore";
 
 interface WorkspaceState {
   currentWorkspace: WorkspaceInfo | null;
@@ -12,7 +12,7 @@ interface WorkspaceState {
   stagingWorkspace: WorkspaceInfo | null;
   // New: Flag to indicate we are in the middle of a pick flow
   isPicking: boolean;
-  
+
   recents: WorkspaceInfo[];
   isLoading: boolean;
   error: WorkspaceOpenError | null;
@@ -25,7 +25,7 @@ interface WorkspaceState {
   removeRecent: (path: WorkspacePath) => Promise<void>;
   refreshRecents: () => Promise<void>;
   clearError: () => void;
-  
+
   pickWorkspace: () => Promise<WorkspaceInfo | null>;
   pickRecent: (path: WorkspacePath) => Promise<WorkspaceInfo | null>;
   pickDemo: () => Promise<WorkspaceInfo | null>;
@@ -51,8 +51,8 @@ export const useWorkspaceStore = create<WorkspaceState>((set, get) => ({
 
     try {
       const [workspaceResponse, recentsResponse] = await Promise.all([
-        window.scaffa.workspace.get({}),
-        window.scaffa.workspace.getRecents({}),
+        window.skaffa.workspace.get({}),
+        window.skaffa.workspace.getRecents({}),
       ]);
 
       set({
@@ -62,11 +62,14 @@ export const useWorkspaceStore = create<WorkspaceState>((set, get) => ({
         isInitialized: true,
       });
 
-      window.scaffa.workspace.onWorkspaceChanged(async (event) => {
+      window.skaffa.workspace.onWorkspaceChanged(async (event) => {
         const state = get();
         // If we are manually picking, trap the event in staging
         if (state.isPicking) {
-          console.log('[WorkspaceStore] Trapping workspace change in staging:', event.workspace?.name);
+          console.log(
+            "[WorkspaceStore] Trapping workspace change in staging:",
+            event.workspace?.name,
+          );
           set({ stagingWorkspace: event.workspace });
         } else {
           // Normal flow (e.g. open recent, or external change)
@@ -75,37 +78,47 @@ export const useWorkspaceStore = create<WorkspaceState>((set, get) => ({
         await state.refreshRecents();
       });
     } catch (error) {
-      console.error('[WorkspaceStore] Failed to initialize:', error);
+      console.error("[WorkspaceStore] Failed to initialize:", error);
       set({ isLoading: false, isInitialized: true });
     }
   },
 
   selectWorkspace: async () => {
-    await runWorkspaceOpen(async () => window.scaffa.workspace.select({}), set, get);
+    await runWorkspaceOpen(
+      async () => window.skaffa.workspace.select({}),
+      set,
+      get,
+    );
   },
 
   pickWorkspace: async () => {
-    set({ isLoading: true, error: null, isPicking: true, stagingWorkspace: null });
+    set({
+      isLoading: true,
+      error: null,
+      isPicking: true,
+      stagingWorkspace: null,
+    });
     try {
-      const response = await window.scaffa.workspace.select({});
-      
+      const response = await window.skaffa.workspace.select({});
+
       if (response.error) {
         set({ error: response.error, isLoading: false, isPicking: false });
         return null;
       }
-      
+
       // We don't turn off isPicking here; we wait for activateWorkspace or cancelPick
       // The onWorkspaceChanged event will fire and populate stagingWorkspace
       set({ isLoading: false });
       return response.workspace;
     } catch (error) {
-      console.error('[WorkspaceStore] Pick workspace failed:', error);
+      console.error("[WorkspaceStore] Pick workspace failed:", error);
       set({
         isLoading: false,
         isPicking: false,
         error: {
-          code: 'UNKNOWN_ERROR',
-          message: error instanceof Error ? error.message : 'Failed to pick workspace',
+          code: "UNKNOWN_ERROR",
+          message:
+            error instanceof Error ? error.message : "Failed to pick workspace",
         },
       });
       return null;
@@ -113,9 +126,14 @@ export const useWorkspaceStore = create<WorkspaceState>((set, get) => ({
   },
 
   pickRecent: async (path) => {
-    set({ isLoading: true, error: null, isPicking: true, stagingWorkspace: null });
+    set({
+      isLoading: true,
+      error: null,
+      isPicking: true,
+      stagingWorkspace: null,
+    });
     try {
-      const response = await window.scaffa.workspace.openRecent({ path });
+      const response = await window.skaffa.workspace.openRecent({ path });
 
       if (response.error) {
         set({ error: response.error, isLoading: false, isPicking: false });
@@ -125,13 +143,14 @@ export const useWorkspaceStore = create<WorkspaceState>((set, get) => ({
       set({ isLoading: false });
       return response.workspace;
     } catch (error) {
-      console.error('[WorkspaceStore] Pick recent failed:', error);
+      console.error("[WorkspaceStore] Pick recent failed:", error);
       set({
         isLoading: false,
         isPicking: false,
         error: {
-          code: 'UNKNOWN_ERROR',
-          message: error instanceof Error ? error.message : 'Failed to pick recent',
+          code: "UNKNOWN_ERROR",
+          message:
+            error instanceof Error ? error.message : "Failed to pick recent",
         },
       });
       return null;
@@ -139,9 +158,14 @@ export const useWorkspaceStore = create<WorkspaceState>((set, get) => ({
   },
 
   pickDemo: async () => {
-    set({ isLoading: true, error: null, isPicking: true, stagingWorkspace: null });
+    set({
+      isLoading: true,
+      error: null,
+      isPicking: true,
+      stagingWorkspace: null,
+    });
     try {
-      const response = await window.scaffa.workspace.openDemo({});
+      const response = await window.skaffa.workspace.openDemo({});
 
       if (response.error) {
         set({ error: response.error, isLoading: false, isPicking: false });
@@ -151,13 +175,14 @@ export const useWorkspaceStore = create<WorkspaceState>((set, get) => ({
       set({ isLoading: false });
       return response.workspace;
     } catch (error) {
-      console.error('[WorkspaceStore] Pick demo failed:', error);
+      console.error("[WorkspaceStore] Pick demo failed:", error);
       set({
         isLoading: false,
         isPicking: false,
         error: {
-          code: 'UNKNOWN_ERROR',
-          message: error instanceof Error ? error.message : 'Failed to pick demo',
+          code: "UNKNOWN_ERROR",
+          message:
+            error instanceof Error ? error.message : "Failed to pick demo",
         },
       });
       return null;
@@ -167,20 +192,25 @@ export const useWorkspaceStore = create<WorkspaceState>((set, get) => ({
   activateWorkspace: () => {
     const { stagingWorkspace } = get();
     if (stagingWorkspace) {
-      console.log('[WorkspaceStore] Activating staging workspace:', stagingWorkspace.name);
-      set({ 
-        currentWorkspace: stagingWorkspace, 
-        stagingWorkspace: null, 
-        isPicking: false 
+      console.log(
+        "[WorkspaceStore] Activating staging workspace:",
+        stagingWorkspace.name,
+      );
+      set({
+        currentWorkspace: stagingWorkspace,
+        stagingWorkspace: null,
+        isPicking: false,
       });
     } else {
-      console.warn('[WorkspaceStore] Activate called but no staging workspace found');
+      console.warn(
+        "[WorkspaceStore] Activate called but no staging workspace found",
+      );
       set({ isPicking: false });
     }
   },
 
   cancelPick: () => {
-    console.log('[WorkspaceStore] Cancelling pick');
+    console.log("[WorkspaceStore] Cancelling pick");
     set({ stagingWorkspace: null, isPicking: false });
     // TODO: Ideally tell backend to close workspace?
   },
@@ -188,31 +218,35 @@ export const useWorkspaceStore = create<WorkspaceState>((set, get) => ({
   openRecent: async (path) => {
     // Open Recent goes through the "fast path" (no staging)
     await runWorkspaceOpen(
-      async () => window.scaffa.workspace.openRecent({ path }),
+      async () => window.skaffa.workspace.openRecent({ path }),
       set,
-      get
+      get,
     );
   },
 
   openDemo: async () => {
     useSessionStore.getState().setAutoStartTarget({
-      type: 'app',
-      launcherId: 'vite-launcher',
+      type: "app",
+      launcherId: "vite-launcher",
     });
-    await runWorkspaceOpen(async () => window.scaffa.workspace.openDemo({}), set, get);
+    await runWorkspaceOpen(
+      async () => window.skaffa.workspace.openDemo({}),
+      set,
+      get,
+    );
   },
 
   removeRecent: async (path) => {
     try {
-      const response = await window.scaffa.workspace.removeRecent({ path });
+      const response = await window.skaffa.workspace.removeRecent({ path });
       set({ recents: response.recents });
     } catch (error) {
-      console.error('[WorkspaceStore] Failed to remove recent:', error);
+      console.error("[WorkspaceStore] Failed to remove recent:", error);
       set({
         error: {
-          code: 'UNKNOWN_ERROR',
+          code: "UNKNOWN_ERROR",
           message:
-            error instanceof Error ? error.message : 'Failed to remove recent',
+            error instanceof Error ? error.message : "Failed to remove recent",
         },
       });
     }
@@ -224,29 +258,33 @@ export const useWorkspaceStore = create<WorkspaceState>((set, get) => ({
 
   refreshRecents: async () => {
     try {
-      const response = await window.scaffa.workspace.getRecents({});
+      const response = await window.skaffa.workspace.getRecents({});
       set({ recents: response.recents });
     } catch (error) {
-      console.error('[WorkspaceStore] Failed to refresh recents:', error);
+      console.error("[WorkspaceStore] Failed to refresh recents:", error);
     }
   },
 }));
 
 async function runWorkspaceOpen(
-  action: () => Promise<{ workspace: WorkspaceInfo | null; error: WorkspaceOpenError | null }>,
+  action: () => Promise<{
+    workspace: WorkspaceInfo | null;
+    error: WorkspaceOpenError | null;
+  }>,
   set: (partial: Partial<WorkspaceState>) => void,
-  get: () => WorkspaceState
+  get: () => WorkspaceState,
 ): Promise<void> {
   set({ isLoading: true, isPicking: false }); // Ensure we are NOT picking
   try {
     const response = await action();
     await handleOpenResult(response, set, get);
   } catch (error) {
-    console.error('[WorkspaceStore] Workspace open failed:', error);
+    console.error("[WorkspaceStore] Workspace open failed:", error);
     set({
       error: {
-        code: 'UNKNOWN_ERROR',
-        message: error instanceof Error ? error.message : 'Failed to open workspace',
+        code: "UNKNOWN_ERROR",
+        message:
+          error instanceof Error ? error.message : "Failed to open workspace",
       },
     });
   } finally {
@@ -255,9 +293,12 @@ async function runWorkspaceOpen(
 }
 
 async function handleOpenResult(
-  response: { workspace: WorkspaceInfo | null; error: WorkspaceOpenError | null },
+  response: {
+    workspace: WorkspaceInfo | null;
+    error: WorkspaceOpenError | null;
+  },
   set: (partial: Partial<WorkspaceState>) => void,
-  get: () => WorkspaceState
+  get: () => WorkspaceState,
 ): Promise<void> {
   if (response.workspace) {
     set({ currentWorkspace: response.workspace });

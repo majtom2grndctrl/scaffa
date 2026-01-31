@@ -12,7 +12,7 @@ import { SourceRefSchema, type SourceRef } from './common.js';
 // ─────────────────────────────────────────────────────────────────────────────
 // Project Graph Schema (v0)
 // ─────────────────────────────────────────────────────────────────────────────
-// See: docs/scaffa_project_graph_schema.md
+// See: docs/skaffa_project_graph_schema.md
 
 export const GraphRevisionSchema = z.number().int().nonnegative();
 export type GraphRevision = z.infer<typeof GraphRevisionSchema>;

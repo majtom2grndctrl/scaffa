@@ -8,27 +8,27 @@
 
 ## 0. Update: Pure Harness Model Migration Complete (2026-01-19)
 
-✅ **Completed:** demo/app now demonstrates the pure harness model end-to-end with no Scaffa
+✅ **Completed:** demo/app now demonstrates the pure harness model end-to-end with no Skaffa
 editor/runtime adapter imports in production code. (Exception: the demo app uses
-`@scaffa/layout-primitives-react` as a runtime UI dependency.)
+`@skaffa/layout-primitives-react` as a runtime UI dependency.)
 
 **Production build:**
-`index.html` -> `src/main.tsx` (production bootstrap) -> `src/App.tsx` (router instance) -> `src/routes.tsx` (route definitions) -> `src/pages/*.tsx` -> `src/components/*.tsx` (pure React, no Scaffa editor/runtime deps)
+`index.html` -> `src/main.tsx` (production bootstrap) -> `src/App.tsx` (router instance) -> `src/routes.tsx` (route definitions) -> `src/pages/*.tsx` -> `src/components/*.tsx` (pure React, no Skaffa editor/runtime deps)
 
-**Scaffa preview:**
-`index.html` (transformed by harness plugin) -> virtual harness entry (injected by vite-launcher) -> `ScaffaProvider` (real adapter) -> `src/App.tsx` (router instance) -> `src/routes.tsx` (parsed by graph producer) -> registry-listed components automatically wrapped with `ScaffaInstanceBoundary` (injected by vite-launcher instrumentation plugin)
+**Skaffa preview:**
+`index.html` (transformed by harness plugin) -> virtual harness entry (injected by vite-launcher) -> `SkaffaProvider` (real adapter) -> `src/App.tsx` (router instance) -> `src/routes.tsx` (parsed by graph producer) -> registry-listed components automatically wrapped with `SkaffaInstanceBoundary` (injected by vite-launcher instrumentation plugin)
 
 **Key boundary:**
-- `main.tsx` is production-only and NEVER loaded by Scaffa
-- Scaffa's harness replaces it in `index.html`
+- `main.tsx` is production-only and NEVER loaded by Skaffa
+- Skaffa's harness replaces it in `index.html`
 - `App.tsx` is self-contained and creates a router instance by importing route definitions
 - Route definitions live in `routes.tsx` (required by react-router-graph-producer in v0)
-- Components have NO Scaffa editor/runtime adapter imports - instrumentation is injected at dev-time for registry-listed types only
+- Components have NO Skaffa editor/runtime adapter imports - instrumentation is injected at dev-time for registry-listed types only
 
 **Migration artifacts removed:**
-- `demo/app/src/scaffa-shim.tsx` (deleted)
-- `demo/app/.scaffa-harness.tsx` (deleted, now served as virtual module `/@scaffa/harness.tsx`)
-- `@scaffa/react-runtime-adapter` removed from demo/app dependencies
+- `demo/app/src/skaffa-shim.tsx` (deleted)
+- `demo/app/.skaffa-harness.tsx` (deleted, now served as virtual module `/@skaffa/harness.tsx`)
+- `@skaffa/react-runtime-adapter` removed from demo/app dependencies
 
 ---
 
@@ -76,7 +76,7 @@ import type { GraphSnapshot, GraphPatch } from '../../../src/shared/project-grap
 ## 3. Workspace Config Relative Paths (2026-01-11)
 
 ### Issue (historical)
-Module paths in `scaffa.config.js` are relative to the config file location, not the project root:
+Module paths in `skaffa.config.js` are relative to the config file location, not the project root:
 
 ```typescript
 modules: [
@@ -88,7 +88,7 @@ modules: [
 ```
 
 ### Update (2026-01-24)
-This is now documented in `docs/scaffa_project_configuration_scaffa_config.md`, and v0 supports:
+This is now documented in `docs/skaffa_project_configuration_skaffa_config.md`, and v0 supports:
 - Workspace-anchored prefixes (`@/` and `workspace:/`) for clarity
 - Package-based modules via `package` (or `id` fallback) for portability
 - JS entrypoints (`index.js`) for runtime loading
@@ -102,15 +102,15 @@ This is now documented in `docs/scaffa_project_configuration_scaffa_config.md`, 
 ## 4. Demo App as Separate Runnable (2026-01-11)
 
 ### Issue
-The demo app is a separate Vite dev server that must run independently. Scaffa previews it via HTTP URL.
+The demo app is a separate Vite dev server that must run independently. Skaffa previews it via HTTP URL.
 
 ### Architectural Implication
-- Preview target is not "bundled" with Scaffa
-- Requires an external dev server runtime (but Scaffa may manage it via a preview launcher)
+- Preview target is not "bundled" with Skaffa
+- Requires an external dev server runtime (but Skaffa may manage it via a preview launcher)
 
 ### Observation
 This is the correct architecture (separation of concerns), but it's not explicitly called out in docs. First-time users might expect:
-- A single "start Scaffa with demo" command
+- A single "start Skaffa with demo" command
 - Auto-starting of dev servers
 - Embedded preview without HTTP
 
@@ -124,10 +124,10 @@ This is the correct architecture (separation of concerns), but it's not explicit
 ## 5. Runtime Adapter Integration Pattern (Recipe) (2026-01-11)
 
 ### Issue
-Early guidance implied a three-part in-app recipe (provider + per-component wrapper + hook), which conflicted with the Harness Model and suggested Scaffa imports in app code.
+Early guidance implied a three-part in-app recipe (provider + per-component wrapper + hook), which conflicted with the Harness Model and suggested Skaffa imports in app code.
 
 ### Update
-The preferred v0 direction is the Harness Model: the launcher injects `ScaffaProvider` and instruments registry-listed component exports to provide instance identity and override application. App source code remains Scaffa-free.
+The preferred v0 direction is the Harness Model: the launcher injects `SkaffaProvider` and instruments registry-listed component exports to provide instance identity and override application. App source code remains Skaffa-free.
 
 ### Observation
 - Instance identity and overrides are provided by launcher instrumentation, not app code.
@@ -135,7 +135,7 @@ The preferred v0 direction is the Harness Model: the launcher injects `ScaffaPro
 - Guidance must stay centralized to avoid mixed signals about production dependencies.
 
 ### ✅ RESOLVED (2026-01-11)
-- `docs/scaffa_runtime_adapter_integration_guide.md` now documents the harness model recipe, common pitfalls, and shim usage.
+- `docs/skaffa_runtime_adapter_integration_guide.md` now documents the harness model recipe, common pitfalls, and shim usage.
 
 ---
 
@@ -176,18 +176,18 @@ Extension authors hit friction when constructing graph snapshots:
 ## 7. Override Persistence Directory (2026-01-11)
 
 ### Issue
-Overrides persist to `<workspace>/.scaffa/overrides.v0.json`, but:
-- The `.scaffa/` directory is not auto-created
+Overrides persist to `<workspace>/.skaffa/overrides.v0.json`, but:
+- The `.skaffa/` directory is not auto-created
 - Unclear if this should be `.gitignore`d or committed
 - No error handling documented if directory doesn't exist
 
 ### Observation
-- I created `.scaffa/.gitkeep` manually
-- Scaffa might handle directory creation (not tested)
+- I created `.skaffa/.gitkeep` manually
+- Skaffa might handle directory creation (not tested)
 - Project policy (commit vs ignore) should be documented
 
 ### Recommendation
-- Document that Scaffa auto-creates `.scaffa/` on first override (if true)
+- Document that Skaffa auto-creates `.skaffa/` on first override (if true)
 - Provide guidance on whether to commit override files
 - Add to workspace setup checklist in docs
 
@@ -217,7 +217,7 @@ The `typeId` must match across three places:
 
 1. Component registry: `components: { 'demo.button': { ... } }`
 2. Graph producer: `{ kind: 'componentType', id: 'demo.button' }`
-3. Runtime instrumentation typeId (launcher wraps exports with `ScaffaInstanceBoundary`)
+3. Runtime instrumentation typeId (launcher wraps exports with `SkaffaInstanceBoundary`)
 
 If any mismatch, Inspector won't show metadata for selected instances.
 
@@ -259,7 +259,7 @@ Preview URLs must be full URLs with protocol:
 ### Issue (historical)
 Testing the v0 journey required:
 
-1. Scaffa running (`pnpm dev`)
+1. Skaffa running (`pnpm dev`)
 2. Demo app dev server running (`cd demo/app && pnpm dev`)
 
 There was no single "start everything" command.
@@ -270,9 +270,9 @@ There was no single "start everything" command.
 - Not explicitly documented as the intended workflow
 
 ### ✅ RESOLVED (2026-01-24)
-- `pnpm dev:demo` starts Scaffa + demo app together
+- `pnpm dev:demo` starts Skaffa + demo app together
 - `pnpm demo:refresh-extensions` prepares local tarballs for the demo workspace
-- Dev workflow is documented in `docs/scaffa_development_guide.md`
+- Dev workflow is documented in `docs/skaffa_development_guide.md`
 
 ---
 
@@ -357,10 +357,10 @@ exposure: {
 
 ---
 
-## 16. Scaffa Config Schema Validation (2026-01-11)
+## 16. Skaffa Config Schema Validation (2026-01-11)
 
 ### Issue
-`scaffa.config.js` is loaded by extension host, but validation errors might not surface clearly.
+`skaffa.config.js` is loaded by extension host, but validation errors might not surface clearly.
 
 ### Observation
 - Zod validation happens, but error messages might be in console

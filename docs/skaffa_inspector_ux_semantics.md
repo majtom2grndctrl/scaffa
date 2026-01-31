@@ -1,7 +1,7 @@
-# Scaffa Inspector UX Rules & Semantics (v0)
+# Skaffa Inspector UX Rules & Semantics (v0)
 
 > **Status:** Draft / v0 shape  
-> **Audience:** Scaffa core contributors and extension/module authors  
+> **Audience:** Skaffa core contributors and extension/module authors  
 > **Goal:** Define the Inspector’s semantics and affordances so core + extensions present consistent meaning for editability, overrides, and escape hatches.
 
 ## Agent TL;DR
@@ -10,13 +10,13 @@
 - Primary semantics: editability (`editable | inspect-only | opaque`) and override state (`not overridden | overridden | orphaned`).
 - Key rule: extensions may add sections, but must not invent new meanings or hidden side effects.
 - Visual language is defined elsewhere: `docs/design/visual-language.md` and `docs/design/colors.md`.
-- Also load: `docs/scaffa_component_registry_schema.md` (controls), `docs/scaffa_override_model.md` (data/persistence).
+- Also load: `docs/skaffa_component_registry_schema.md` (controls), `docs/skaffa_override_model.md` (data/persistence).
 
 Related:
 - [Architecture Plan](./index.md)
-- [Scaffa Component Registry Schema](./scaffa_component_registry_schema.md)
-- [Scaffa Override Model + Persistence](./scaffa_override_model.md)
-- [Scaffa Preview Session Protocol](./scaffa_preview_session_protocol.md)
+- [Skaffa Component Registry Schema](./skaffa_component_registry_schema.md)
+- [Skaffa Override Model + Persistence](./skaffa_override_model.md)
+- [Skaffa Preview Session Protocol](./skaffa_preview_session_protocol.md)
 
 ---
 
@@ -35,9 +35,9 @@ For each prop on that instance, the Inspector answers:
 - Is the value overridden? If so, how do I reset it?
 - If I can’t edit it here, how do I inspect/escape to code?
 
-The Inspector is the primary UX manifestation of Scaffa’s guiding principle:
+The Inspector is the primary UX manifestation of Skaffa’s guiding principle:
 
-> Scaffa edits what it can prove is safe to edit, displays what it cannot, and always provides an escape hatch to code.
+> Skaffa edits what it can prove is safe to edit, displays what it cannot, and always provides an escape hatch to code.
 
 ### 1.1 “Current Value” Source of Truth (v0)
 
@@ -60,7 +60,7 @@ Notes:
 Each prop MUST be in exactly one of:
 
 - **Editable**: UI control is available; edits create/update overrides.
-- **Inspect-only**: value is visible but cannot be edited in Scaffa.
+- **Inspect-only**: value is visible but cannot be edited in Skaffa.
 - **Opaque**: value is not safely representable; show placeholder + escape hatch.
 
 Editability is declared by the **component registry** and refined by **project config overrides**.
@@ -83,8 +83,8 @@ Each prop MUST be in exactly one of:
 
 When a prop is **editable**:
 
-- Render a control defined by `docs/scaffa_component_registry_schema.md` (`ControlDefinition`)
-- Committing a new value creates a **non-destructive override** (see `docs/scaffa_override_model.md`)
+- Render a control defined by `docs/skaffa_component_registry_schema.md` (`ControlDefinition`)
+- Committing a new value creates a **non-destructive override** (see `docs/skaffa_override_model.md`)
 - Show validation errors inline if constraints are declared (required/min/max/pattern)
 - If overridden, show a clear “Overridden” indicator and a reset action
 
@@ -98,7 +98,7 @@ When a prop is **inspect-only**:
   - **Inspect Source** (open file/line), or
   - **Copy Source Location** (fallback)
 
-Inspect-only means: “Scaffa knows what this is, but will not mutate it in v0.”
+Inspect-only means: “Skaffa knows what this is, but will not mutate it in v0.”
 
 ### 3.3 Opaque
 
@@ -108,7 +108,7 @@ When a prop is **opaque**:
 - Provide a reason if available (“function”, “class instance”, “non-serializable”, “unsafe to edit”)
 - Always provide an escape hatch (inspect source / open code)
 
-Opaque means: “Scaffa cannot safely represent this value, even read-only.”
+Opaque means: “Skaffa cannot safely represent this value, even read-only.”
 
 ---
 
@@ -141,9 +141,9 @@ Reset MUST be reversible by re-applying the same override (undo/redo is a separa
 v0 includes a “Save” action that converts draft overrides into concrete workspace edits (working tree):
 
 - Saving writes code changes to disk and clears draft overrides that were successfully applied.
-- If some overrides cannot be safely saved, Scaffa keeps them as draft overrides and surfaces an error (no silent dropping).
+- If some overrides cannot be safely saved, Skaffa keeps them as draft overrides and surfaces an error (no silent dropping).
 
-See also: [Scaffa Save-to-Disk Protocol](./scaffa_save_to_disk_protocol.md) for validation timing (blur + idle debounce) and revert-on-failure UX.
+See also: [Skaffa Save-to-Disk Protocol](./skaffa_save_to_disk_protocol.md) for validation timing (blur + idle debounce) and revert-on-failure UX.
 
 ### 4.3 Orphaned Overrides
 
@@ -169,7 +169,7 @@ v0 includes “Save” at the workspace level. Future versions may add per-prop 
 
 ## 6. Consistency Rules for Extensions
 
-Extensions may contribute Inspector sections (see `docs/scaffa_extension_api.md`), but MUST comply with core semantics:
+Extensions may contribute Inspector sections (see `docs/skaffa_extension_api.md`), but MUST comply with core semantics:
 
 1. **No new meanings.** Extensions cannot introduce alternative editability states beyond editable/inspect-only/opaque.
 2. **No hidden side effects.** Inspector interactions must translate to:

@@ -10,7 +10,7 @@ import { FileEditSchema } from './workspace-edits.js';
 // ─────────────────────────────────────────────────────────────────────────────
 // Save-to-Disk Types (v0)
 // ─────────────────────────────────────────────────────────────────────────────
-// See: docs/scaffa_save_to_disk_protocol.md
+// See: docs/skaffa_save_to_disk_protocol.md
 
 export const DraftOverrideAddressSchema = z.object({
   sessionId: PreviewSessionIdSchema,

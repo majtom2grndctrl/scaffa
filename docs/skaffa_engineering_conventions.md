@@ -1,13 +1,13 @@
-# Scaffa Engineering Conventions (v0)
+# Skaffa Engineering Conventions (v0)
 
 > **Status:** Living document  
-> **Audience:** Scaffa core contributors (humans + coding agents)  
-> **Goal:** Keep changes cohesive, readable, and safe across Scaffa’s multi-process Electron architecture.
+> **Audience:** Skaffa core contributors (humans + coding agents)  
+> **Goal:** Keep changes cohesive, readable, and safe across Skaffa’s multi-process Electron architecture.
 
 Related:
 - [Architecture Plan](./index.md)
-- [IPC Boundaries + Key Sequence Diagrams](./scaffa_ipc_boundaries_and_sequences.md)
-- [Scaffa Development Guide](./scaffa_development_guide.md)
+- [IPC Boundaries + Key Sequence Diagrams](./skaffa_ipc_boundaries_and_sequences.md)
+- [Skaffa Development Guide](./skaffa_development_guide.md)
 
 ---
 
@@ -26,7 +26,7 @@ Related:
 **Rule: code lives where it runs.** Do not “reach across” boundaries with imports.
 
 - `src/main/` — Electron **main** (host). Owns windows, `BrowserView`, privileged OS + workspace writes.
-- `src/preload/` — **preload** capability gateway. Minimal, typed surface exposed as `window.scaffa.*`.
+- `src/preload/` — **preload** capability gateway. Minimal, typed surface exposed as `window.skaffa.*`.
 - `src/renderer/` — **renderer** (React workbench UI). No Electron/Node APIs.
 - `src/extension-host/` — **extension host** process (modules, adapters, promoters).
 - `src/shared/` — **cross-boundary contracts**: Zod schemas + types shared by main/preload/renderer/ext-host.
@@ -64,7 +64,7 @@ Keep them in `src/shared/` and re-export through `src/shared/index.ts` when appr
 - **Main** defines handlers in `src/main/ipc/*` using `ipcMain.handle(...)`.
 - **Main** broadcasts events using `validateEvent(...)` before `webContents.send(...)`.
 - **Preload** exposes a minimal API in `src/preload/preload.ts` via `contextBridge`.
-- **Renderer** only calls `window.scaffa.*` (never `ipcRenderer` directly).
+- **Renderer** only calls `window.skaffa.*` (never `ipcRenderer` directly).
 
 ### 3.2 IPC safety rules
 
@@ -89,7 +89,7 @@ Keep them in `src/shared/` and re-export through `src/shared/index.ts` when appr
 
 - `contextIsolation: true`
 - `nodeIntegration: false`
-- Do not use Electron `webviewTag` for Scaffa UI.
+- Do not use Electron `webviewTag` for Skaffa UI.
 - Prefer host-owned policies over “trusting the guest”.
 
 ### 4.2 Preload module format

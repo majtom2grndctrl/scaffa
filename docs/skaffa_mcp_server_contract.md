@@ -1,27 +1,27 @@
-# Scaffa MCP Server Contract (v0)
+# Skaffa MCP Server Contract (v0)
 
 > **Status:** Draft / v0 shape  
-> **Audience:** Scaffa core contributors and AI tool authors  
-> **Goal:** Define the Scaffa-hosted MCP server that exposes the same canonical workspace + preview context consumed by the Workbench UI (selection, graph, registry, overrides), aligned with Scaffa’s multi-process architecture.
+> **Audience:** Skaffa core contributors and AI tool authors  
+> **Goal:** Define the Skaffa-hosted MCP server that exposes the same canonical workspace + preview context consumed by the Workbench UI (selection, graph, registry, overrides), aligned with Skaffa’s multi-process architecture.
 
 Related:
 - [Architecture Plan](./index.md)
-- [IPC Boundaries + Key Sequence Diagrams](./scaffa_ipc_boundaries_and_sequences.md)
-- [Scaffa Preview Session Protocol](./scaffa_preview_session_protocol.md)
-- [Scaffa Runtime Adapter Contract](./scaffa_runtime_adapter_contract.md)
-- [Scaffa Project Graph Schema + Patch Protocol](./scaffa_project_graph_schema.md)
-- [Scaffa Component Registry Schema](./scaffa_component_registry_schema.md)
-- [Scaffa Override Model + Persistence](./scaffa_override_model.md)
+- [IPC Boundaries + Key Sequence Diagrams](./skaffa_ipc_boundaries_and_sequences.md)
+- [Skaffa Preview Session Protocol](./skaffa_preview_session_protocol.md)
+- [Skaffa Runtime Adapter Contract](./skaffa_runtime_adapter_contract.md)
+- [Skaffa Project Graph Schema + Patch Protocol](./skaffa_project_graph_schema.md)
+- [Skaffa Component Registry Schema](./skaffa_component_registry_schema.md)
+- [Skaffa Override Model + Persistence](./skaffa_override_model.md)
 
 ---
 
 ## 1. Purpose
 
-Scaffa’s Workbench UI is only one “client” of Scaffa’s authoritative state. An MCP server lets **external AI coding tools** (e.g. CLI-based editors/agents) access that same state so they can:
+Skaffa’s Workbench UI is only one “client” of Skaffa’s authoritative state. An MCP server lets **external AI coding tools** (e.g. CLI-based editors/agents) access that same state so they can:
 
 - ground answers in the current workspace model (registry, project graph)
 - ground actions in the current preview context (active sessions, current selection)
-- stay aligned with Scaffa’s “code is the source of truth” philosophy (file-backed artifacts + deterministic state)
+- stay aligned with Skaffa’s “code is the source of truth” philosophy (file-backed artifacts + deterministic state)
 
 The MCP server is a **northbound integration surface**. It is not a runtime adapter and does not run inside the preview runtime.
 
@@ -29,7 +29,7 @@ The MCP server is a **northbound integration surface**. It is not a runtime adap
 
 ## 2. Placement in the Stack (Process Model)
 
-The MCP server MUST be implemented adjacent to Scaffa’s **authoritative stores and brokers** (typically the **Main process**), so it can expose the same composed state the renderer consumes via preload APIs.
+The MCP server MUST be implemented adjacent to Skaffa’s **authoritative stores and brokers** (typically the **Main process**), so it can expose the same composed state the renderer consumes via preload APIs.
 
 Constraints:
 - MCP clients NEVER talk directly to:
@@ -38,14 +38,14 @@ Constraints:
   - the renderer process.
 - Preview/runtime information exposed via MCP is mediated through Main (and originates from the runtime adapter only via the existing session transport).
 
-This preserves the process boundaries in `docs/index.md` and `docs/scaffa_ipc_boundaries_and_sequences.md`.
+This preserves the process boundaries in `docs/index.md` and `docs/skaffa_ipc_boundaries_and_sequences.md`.
 
 ---
 
 ## 3. Lifecycle and Availability
 
 v0 intent:
-- The MCP server runs **only while the Scaffa desktop app is running**.
+- The MCP server runs **only while the Skaffa desktop app is running**.
 - The MCP server is tied to a specific loaded workspace (it can return “no workspace loaded” when applicable).
 
 Availability rules:
@@ -53,7 +53,7 @@ Availability rules:
 - Preview-scoped resources (sessions, current selection, runtime adapter readiness) are available only when a preview session exists; otherwise return empty/null with clear status.
 
 Out of scope for v0:
-- “Headless Scaffa” (running without the desktop app UI) as a required mode.
+- “Headless Skaffa” (running without the desktop app UI) as a required mode.
 
 ---
 
@@ -69,7 +69,7 @@ Network exposure defaults:
 Authentication:
 - Require a bearer token for all requests (even on localhost).
 - Tokens SHOULD be short-lived (rotated on app launch and/or workspace open).
-- Scaffa UI SHOULD provide a copyable connection string (base URL + token).
+- Skaffa UI SHOULD provide a copyable connection string (base URL + token).
 
 Browser hardening:
 - Do not enable permissive CORS.
@@ -81,12 +81,12 @@ Browser hardening:
 
 ### 5.1 v0: Observability (first win)
 
-Primary goal: make external AI tools “aware” of Scaffa state without letting them mutate the workspace.
+Primary goal: make external AI tools “aware” of Skaffa state without letting them mutate the workspace.
 
 v0 SHOULD expose read-only context for:
 - Effective component registry (composed modules + project overrides)
 - Project graph snapshot (and optionally revision + patch stream)
-- Override store state (and the persisted `/.scaffa/overrides.v0.json` representation)
+- Override store state (and the persisted `/.skaffa/overrides.v0.json` representation)
 - Preview sessions (active sessions, readiness, targets)
 - Current selection (`InstanceDescriptor`) and its resolved context (matching registry entry / graph nodes when available)
 
@@ -99,27 +99,27 @@ Once there is user-driven UX around review/confirmation, the MCP server MAY add 
 - applying `OverrideOp[]` batches
 - preview navigation (routes) where supported
 
-All mutations MUST be validated against the same canonical schemas and invariants used by Scaffa’s UI flows.
+All mutations MUST be validated against the same canonical schemas and invariants used by Skaffa’s UI flows.
 
 ---
 
 ## 6. Canonical Data Shapes (Re-use Existing Contracts)
 
-The MCP server should re-use Scaffa’s shared v0 protocol shapes rather than inventing new ones.
+The MCP server should re-use Skaffa’s shared v0 protocol shapes rather than inventing new ones.
 
 Key joins (source of truth):
 - `ComponentTypeId` is the join key across registry ↔ graph ↔ runtime adapter ↔ overrides.
 - Runtime selection uses the `InstanceDescriptor` contract.
 
 Relevant contracts:
-- `docs/scaffa_runtime_adapter_contract.md`:
+- `docs/skaffa_runtime_adapter_contract.md`:
   - `InstanceDescriptor`
   - `OverrideOp[]`
-- `docs/scaffa_component_registry_schema.md`:
+- `docs/skaffa_component_registry_schema.md`:
   - `ComponentRegistry` (`schemaVersion: "v0"`)
-- `docs/scaffa_project_graph_schema.md`:
+- `docs/skaffa_project_graph_schema.md`:
   - `GraphPatch` / snapshot + `revision`
-- `docs/scaffa_preview_session_protocol.md`:
+- `docs/skaffa_preview_session_protocol.md`:
   - preview session types, lifecycle, readiness
 
 ---
@@ -129,17 +129,17 @@ Relevant contracts:
 v0 resources should reflect **effective state** (post-composition), not raw module contributions.
 
 Recommended resources (names are illustrative; exact MCP naming can vary):
-- `scaffa.server.info`  
-  - Scaffa version, workspace root, schema versions supported, MCP features enabled.
-- `scaffa.workspace.registry.effective`  
+- `skaffa.server.info`  
+  - Skaffa version, workspace root, schema versions supported, MCP features enabled.
+- `skaffa.workspace.registry.effective`  
   - Effective `ComponentRegistry` for the loaded workspace.
-- `scaffa.workspace.graph.snapshot`  
+- `skaffa.workspace.graph.snapshot`  
   - Current graph snapshot + revision.
-- `scaffa.workspace.overrides.state`  
+- `skaffa.workspace.overrides.state`  
   - Current override model (including any orphaned overrides) and the persisted file representation.
-- `scaffa.preview.sessions`  
+- `skaffa.preview.sessions`  
   - Active sessions + targets + readiness states.
-- `scaffa.preview.selection.current`  
+- `skaffa.preview.selection.current`  
   - Current selection per session (or active session), returning `selected: InstanceDescriptor | null`.
 
 Enriched selection response SHOULD include:
@@ -155,4 +155,3 @@ Enriched selection response SHOULD include:
 - Letting MCP clients directly patch source files
 - Letting MCP clients talk directly to preview runtime content
 - Making MCP a replacement for the Workbench UI (it is an integration surface)
-

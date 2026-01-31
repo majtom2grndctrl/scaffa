@@ -1,26 +1,26 @@
-/** @typedef {import('zod').infer<typeof ScaffaConfigSchema>} ScaffaConfig */
+/** @typedef {import('zod').infer<typeof SkaffaConfigSchema>} SkaffaConfig */
 /**
  * Helper function for user-facing config definition.
- * This will be exported from @scaffa/config package.
+ * This will be exported from @skaffa/config package.
  *
- * @param {ScaffaConfig} config
- * @returns {ScaffaConfig}
+ * @param {SkaffaConfig} config
+ * @returns {SkaffaConfig}
  */
-export function defineScaffaConfig(config: ScaffaConfig): ScaffaConfig;
+export function defineSkaffaConfig(config: SkaffaConfig): SkaffaConfig;
 /**
  * Module instance contributed to the project.
  * v0: Simple path-based loading. Future: factory functions + npm packages.
  */
-export const ScaffaModuleSchema: z.ZodObject<{
+export const SkaffaModuleSchema: z.ZodObject<{
     id: z.ZodString;
     path: z.ZodOptional<z.ZodString>;
     /**
      * Optional npm package specifier for package-based modules.
      * When provided, the extension host will resolve it using Node's module resolution
-     * anchored at the workspace root (directory containing scaffa.config.js).
+     * anchored at the workspace root (directory containing skaffa.config.js).
      *
      * Examples:
-     * - "@scaffa/module-react-router"
+     * - "@skaffa/module-react-router"
      * - "./relative-package" (workspace local via package.json "name")
      */
     package: z.ZodOptional<z.ZodString>;
@@ -36,7 +36,7 @@ export const ScaffaModuleSchema: z.ZodObject<{
     package?: string;
     contributions?: unknown;
 }>;
-/** @typedef {import('zod').infer<typeof ScaffaModuleSchema>} ScaffaModule */
+/** @typedef {import('zod').infer<typeof SkaffaModuleSchema>} SkaffaModule */
 /**
  * Preview decorator function (opaque at config layer).
  */
@@ -487,9 +487,9 @@ export const AiConfigSchema: z.ZodObject<{
 }>;
 /** @typedef {import('zod').infer<typeof AiConfigSchema>} AiConfig */
 /**
- * Full scaffa.config.js schema.
+ * Full skaffa.config.js schema.
  */
-export const ScaffaConfigSchema: z.ZodObject<{
+export const SkaffaConfigSchema: z.ZodObject<{
     schemaVersion: z.ZodDefault<z.ZodOptional<z.ZodLiteral<"v0">>>;
     modules: z.ZodDefault<z.ZodOptional<z.ZodArray<z.ZodObject<{
         id: z.ZodString;
@@ -497,10 +497,10 @@ export const ScaffaConfigSchema: z.ZodObject<{
         /**
          * Optional npm package specifier for package-based modules.
          * When provided, the extension host will resolve it using Node's module resolution
-         * anchored at the workspace root (directory containing scaffa.config.js).
+         * anchored at the workspace root (directory containing skaffa.config.js).
          *
          * Examples:
-         * - "@scaffa/module-react-router"
+         * - "@skaffa/module-react-router"
          * - "./relative-package" (workspace local via package.json "name")
          */
         package: z.ZodOptional<z.ZodString>;
@@ -811,8 +811,8 @@ export const ScaffaConfigSchema: z.ZodObject<{
         }[];
     };
 }>;
-export type ScaffaConfig = import("zod").infer<typeof ScaffaConfigSchema>;
-export type ScaffaModule = import("zod").infer<typeof ScaffaModuleSchema>;
+export type SkaffaConfig = import("zod").infer<typeof SkaffaConfigSchema>;
+export type SkaffaModule = import("zod").infer<typeof SkaffaModuleSchema>;
 export type PreviewDecorator = import("zod").infer<typeof PreviewDecoratorSchema>;
 export type PreviewConfig = import("zod").infer<typeof PreviewConfigSchema>;
 export type ControlOverride = import("zod").infer<typeof ControlOverrideSchema>;

@@ -2,7 +2,7 @@
 // Demo App Route Definitions (React Router data-router API)
 // ─────────────────────────────────────────────────────────────────────────────
 // This file defines routes using React Router's data-router (object) API.
-// Scaffa will statically parse this file to populate the Project Graph.
+// Skaffa will statically parse this file to populate the Project Graph.
 
 import type { RouteObject } from "react-router-dom";
 import { AppShell } from "./components/AppShell";
@@ -13,9 +13,9 @@ import { ModelsPage } from "./pages/ModelsPage";
 import { OverviewPage } from "./pages/OverviewPage";
 
 /**
- * Canonical route definitions for Scaffa-enabled demo app.
+ * Canonical route definitions for Skaffa-enabled demo app.
  *
- * IMPORTANT: Each route MUST have a stable `id` for Scaffa to:
+ * IMPORTANT: Each route MUST have a stable `id` for Skaffa to:
  * - Join graph route nodes with runtime router state
  * - Highlight the active route in the Routes panel
  * - Enable route-based navigation

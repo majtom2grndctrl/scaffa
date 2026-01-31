@@ -1,12 +1,6 @@
 import { NavLink, Outlet } from "react-router-dom";
-import { Box, Row, Stack } from "@scaffa/layout-primitives-react";
-import {
-  Activity,
-  AlertTriangle,
-  Beaker,
-  Layers,
-  Radar,
-} from "lucide-react";
+import { Box, Row, Stack } from "@skaffa/layout-primitives-react";
+import { Activity, AlertTriangle, Beaker, Layers, Radar } from "lucide-react";
 
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -66,7 +60,7 @@ export function AppShell() {
                         "flex items-center justify-between rounded-lg px-3 py-2 text-sm font-medium transition",
                         isActive
                           ? "bg-slate-900 text-white shadow-sm"
-                          : "text-slate-600 hover:bg-slate-100"
+                          : "text-slate-600 hover:bg-slate-100",
                       )
                     }
                   >
@@ -75,10 +69,13 @@ export function AppShell() {
                       {item.label}
                     </span>
                     <Badge
-                      variant={item.label === "Incidents" ? "destructive" : "secondary"}
+                      variant={
+                        item.label === "Incidents" ? "destructive" : "secondary"
+                      }
                       className={cn(
                         "h-5 rounded-full px-2 text-[0.65rem]",
-                        item.label === "Overview" && "bg-slate-200 text-slate-700"
+                        item.label === "Overview" &&
+                          "bg-slate-200 text-slate-700",
                       )}
                     >
                       {item.badge}
@@ -153,7 +150,7 @@ export function AppShell() {
                   className={({ isActive }) =>
                     cn(
                       "flex items-center gap-2 rounded-full border border-slate-200 bg-white/80 px-3 py-1 text-xs font-semibold text-slate-600",
-                      isActive && "border-slate-900 text-slate-900"
+                      isActive && "border-slate-900 text-slate-900",
                     )
                   }
                 >

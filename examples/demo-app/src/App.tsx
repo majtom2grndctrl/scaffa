@@ -14,11 +14,11 @@ export function App() {
         margin: '0 auto',
       }}
     >
-      <h1 style={{ marginBottom: '2rem' }}>Scaffa Demo App</h1>
+      <h1 style={{ marginBottom: '2rem' }}>Skaffa Demo App</h1>
 
       <div style={{ display: 'flex', flexDirection: 'column', gap: '2rem' }}>
         <DemoCard
-          title="Welcome to Scaffa"
+          title="Welcome to Skaffa"
           description="This is a demo app to validate the React runtime adapter. Click on components to select them!"
           variant="primary"
         />
@@ -40,7 +40,7 @@ export function App() {
 
         <DemoCard
           title="Try Override"
-          description="Select this card and try changing the title or variant in Scaffa's inspector!"
+          description="Select this card and try changing the title or variant in Skaffa's inspector!"
           variant="accent"
         />
       </div>

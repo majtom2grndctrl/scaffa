@@ -1,8 +1,8 @@
-import { useMemo, useState } from 'react';
-import { useWorkspaceStore } from '../state/workspaceStore';
-import { useSessionStore } from '../state/sessionStore';
-import { StartPreviewDialog } from '../components/StartPreviewDialog';
-import type { WorkspaceInfo } from '../../shared/index.js';
+import { useMemo, useState } from "react";
+import { useWorkspaceStore } from "../state/workspaceStore";
+import { useSessionStore } from "../state/sessionStore";
+import { StartPreviewDialog } from "../components/StartPreviewDialog";
+import type { WorkspaceInfo } from "../../shared/index.js";
 
 export const Launcher = () => {
   const {
@@ -33,21 +33,23 @@ export const Launcher = () => {
     removeRecent: state.removeRecent,
   }));
 
-  const setAutoStartTarget = useSessionStore((state) => state.setAutoStartTarget);
+  const setAutoStartTarget = useSessionStore(
+    (state) => state.setAutoStartTarget,
+  );
 
   const [isBusy, setIsBusy] = useState(false);
-  
+
   // State for the configuration flow
   const [isConfiguringSession, setIsConfiguringSession] = useState(false);
 
   const showDemo = import.meta.env.DEV;
 
   const errorPath = useMemo(() => {
-    if (!error?.details || typeof error.details !== 'object') {
+    if (!error?.details || typeof error.details !== "object") {
       return null;
     }
     const details = error.details as { path?: unknown };
-    return typeof details.path === 'string' ? details.path : null;
+    return typeof details.path === "string" ? details.path : null;
   }, [error]);
 
   const errorRecent = errorPath
@@ -57,18 +59,18 @@ export const Launcher = () => {
   const formatter = useMemo(
     () =>
       new Intl.DateTimeFormat(undefined, {
-        month: 'short',
-        day: 'numeric',
-        hour: '2-digit',
-        minute: '2-digit',
+        month: "short",
+        day: "numeric",
+        hour: "2-digit",
+        minute: "2-digit",
       }),
-    []
+    [],
   );
 
   const formatLastOpened = (value?: string) => {
-    if (!value) return 'Unknown';
+    if (!value) return "Unknown";
     const date = new Date(value);
-    if (Number.isNaN(date.getTime())) return 'Unknown';
+    if (Number.isNaN(date.getTime())) return "Unknown";
     return formatter.format(date);
   };
 
@@ -120,17 +122,17 @@ export const Launcher = () => {
 
   // Handle Session Configuration Confirmation
   const handleStartSession = async (target: {
-    type: 'app';
+    type: "app";
     url?: string;
     launcherId?: string;
     launcherOptions?: Record<string, unknown>;
   }) => {
     // 1. Set the auto-start target for the workbench
     setAutoStartTarget(target);
-    
+
     // 2. Activate the workspace (promotes staging -> current -> transitions route)
     activateWorkspace();
-    
+
     // Reset local state
     setIsConfiguringSession(false);
   };
@@ -191,12 +193,12 @@ export const Launcher = () => {
                 Open a workspace to begin
               </h2>
               <p className="mt-2 text-sm text-fg-subtle">
-                Scaffa loads your project config, starts the extension host, and
+                Skaffa loads your project config, starts the extension host, and
                 drops you into the Workbench.
               </p>
             </div>
             <div className="rounded-md border border-subtle bg-surface-inset px-3 py-2 text-xs text-fg-subtle">
-              <p className="font-mono">scaffa.config.js</p>
+              <p className="font-mono">skaffa.config.js</p>
               <p className="mt-1">Required at workspace root</p>
             </div>
           </div>
@@ -234,7 +236,7 @@ export const Launcher = () => {
             <div className="rounded-md border border-subtle bg-surface-inset p-3">
               <p className="text-xs font-semibold text-fg">Need to prep?</p>
               <p className="mt-2 text-xs text-fg-subtle">
-                Scaffa loads <span className="font-mono">scaffa.config.js</span>{' '}
+                Skaffa loads <span className="font-mono">skaffa.config.js</span>{" "}
                 at runtime. Ensure the file exists before opening the workspace.
               </p>
             </div>

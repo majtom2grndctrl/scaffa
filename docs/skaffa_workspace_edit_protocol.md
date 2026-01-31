@@ -1,8 +1,8 @@
-# Scaffa Workspace Edit Protocol (v0)
+# Skaffa Workspace Edit Protocol (v0)
 
 > **Status:** Draft / v0 shape  
-> **Audience:** Scaffa core contributors and extension authors  
-> **Goal:** Define the canonical, framework-agnostic contract for writing deterministic, transactional workspace edits (working tree) from Scaffa core and extensions.
+> **Audience:** Skaffa core contributors and extension authors  
+> **Goal:** Define the canonical, framework-agnostic contract for writing deterministic, transactional workspace edits (working tree) from Skaffa core and extensions.
 
 ## Agent TL;DR
 
@@ -11,8 +11,8 @@
 
 Related:
 - [Architecture Plan](./index.md)
-- [Scaffa Extension API – v0 Sketch](./scaffa_extension_api.md)
-- [Scaffa Save-to-Disk Protocol](./scaffa_save_to_disk_protocol.md)
+- [Skaffa Extension API – v0 Sketch](./skaffa_extension_api.md)
+- [Skaffa Save-to-Disk Protocol](./skaffa_save_to_disk_protocol.md)
 
 ---
 

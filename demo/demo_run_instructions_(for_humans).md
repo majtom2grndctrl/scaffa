@@ -4,9 +4,9 @@ Demo Workspace Walkthrough
 
   🔧 Initial Setup (One-Time)
 
-  1. Build Scaffa and Install Dependencies
+  1. Build Skaffa and Install Dependencies
 
-  From the Scaffa root directory:
+  From the Skaffa root directory:
 
   pnpm install
   pnpm build
@@ -25,11 +25,11 @@ Demo Workspace Walkthrough
 
   Option A (Recommended): Managed Preview (single terminal)
 
-  From the Scaffa root:
+  From the Skaffa root:
 
   pnpm dev
 
-  The Scaffa Electron app should launch. When you start a session, the Vite launcher
+  The Skaffa Electron app should launch. When you start a session, the Vite launcher
   will start the demo app dev server automatically.
 
   Option B: Attach-by-URL (two terminals)
@@ -43,16 +43,16 @@ Demo Workspace Walkthrough
   VITE v5.x.x ready in xxx ms
   ➜ Local: http://localhost:5173/
 
-  Terminal 2: Start Scaffa
+  Terminal 2: Start Skaffa
 
-  From the Scaffa root:
+  From the Skaffa root:
 
   pnpm dev
 
   ---
   📂 Open the Demo Workspace (Launcher)
 
-  1. In Scaffa, click Open Workspace
+  1. In Skaffa, click Open Workspace
   2. Navigate to and select the demo/ folder
   3. Click Open
 
@@ -146,19 +146,19 @@ Demo Workspace Walkthrough
     - Change an input placeholder
     - Change a badge variant
   2. Check that the file was created:
-  ls -la demo/.scaffa/
+  ls -la demo/.skaffa/
 
   You should see overrides.v0.json (might be created on first edit, or when you close).
 
   3. You can peek at the file:
-  cat demo/.scaffa/overrides.v0.json
+  cat demo/.skaffa/overrides.v0.json
 
   You'll see JSON with your override values.
 
   Test Reload
 
-  1. Close Scaffa completely (Cmd+Q or File → Quit)
-  2. Restart Scaffa: pnpm dev
+  1. Close Skaffa completely (Cmd+Q or File → Quit)
+  2. Restart Skaffa: pnpm dev
   3. Reopen the workspace: Open Workspace → Select demo/
   4. Start app preview again (managed or attach-by-URL)
   5. Your overrides are restored! The preview shows your edited values, not the original code values
@@ -188,13 +188,13 @@ Demo Workspace Walkthrough
   🐛 Troubleshooting
 
   Demo app won't load in preview?
-  - Managed preview: check the Scaffa logs for Vite launcher errors
+  - Managed preview: check the Skaffa logs for Vite launcher errors
   - Attach-by-URL: make sure pnpm dev is running in demo/app/
   - Check the URL is http://localhost:5173 (or whatever Vite shows)
 
   Modules not activating?
   - Check Electron DevTools console for errors
-  - Verify demo/scaffa.config.js package entries (including @scaffa/config) are installed in demo/node_modules
+  - Verify demo/skaffa.config.js package entries (including @skaffa/config) are installed in demo/node_modules
   - Run pnpm demo:refresh-extensions to rebuild demo/vendor tarballs
 
   Click-to-select not working?
@@ -209,4 +209,4 @@ Demo Workspace Walkthrough
   - Check override messages in preview console
 
   ---
-  Ready to start? Open those two terminals and let's validate Scaffa v0! 🚀
+  Ready to start? Open those two terminals and let's validate Skaffa v0! 🚀

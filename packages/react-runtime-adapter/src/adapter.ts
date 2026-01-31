@@ -1,14 +1,14 @@
 // ─────────────────────────────────────────────────────────────────────────────
-// Scaffa React Runtime Adapter Core (v0)
+// Skaffa React Runtime Adapter Core (v0)
 // ─────────────────────────────────────────────────────────────────────────────
 
 import type {
-  ScaffaAdapterConfig,
+  SkaffaAdapterConfig,
   InstanceIdentity,
   OverrideOp,
   PropPath,
   OverrideEntry,
-} from './types.js';
+} from "./types.js";
 
 // ─────────────────────────────────────────────────────────────────────────────
 // Transport Types (from preload)
@@ -20,12 +20,15 @@ interface RuntimeTransport {
 }
 
 interface RuntimeEvent {
-  type: 'runtime.ready' | 'runtime.selectionChanged' | 'runtime.routerStateChanged';
+  type:
+    | "runtime.ready"
+    | "runtime.selectionChanged"
+    | "runtime.routerStateChanged";
   [key: string]: unknown;
 }
 
 interface HostCommand {
-  type: 'host.init' | 'host.applyOverrides';
+  type: "host.init" | "host.applyOverrides";
   sessionId?: string;
   initialOverrides?: OverrideOp[];
   ops?: OverrideOp[];
@@ -33,30 +36,32 @@ interface HostCommand {
 
 declare global {
   interface Window {
-    scaffaRuntimeTransport?: RuntimeTransport;
+    skaffaRuntimeTransport?: RuntimeTransport;
   }
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
-// Scaffa React Runtime Adapter
+// Skaffa React Runtime Adapter
 // ─────────────────────────────────────────────────────────────────────────────
 
-export class ScaffaReactAdapter {
-  private config: ScaffaAdapterConfig;
+export class SkaffaReactAdapter {
+  private config: SkaffaAdapterConfig;
   private transport: RuntimeTransport | null = null;
   private sessionId: string | null = null;
   private overrides = new Map<string, Map<PropPath, unknown>>();
   private instanceRegistry = new Map<string, InstanceIdentity>();
   private instanceTypeCounters = new Map<string, number>();
-  private selectionHandlers = new Set<(identity: InstanceIdentity | null) => void>();
+  private selectionHandlers = new Set<
+    (identity: InstanceIdentity | null) => void
+  >();
   private overrideChangeHandlers = new Set<() => void>();
   private isReady = false;
   private selectedInstanceId: string | null = null;
   private hoveredInstanceId: string | null = null;
 
-  constructor(config: ScaffaAdapterConfig) {
+  constructor(config: SkaffaAdapterConfig) {
     this.config = config;
-    this.log('Adapter initialized', config);
+    this.log("Adapter initialized", config);
   }
 
   /**
@@ -64,13 +69,13 @@ export class ScaffaReactAdapter {
    */
   async init(): Promise<void> {
     // Get transport from preload
-    this.transport = window.scaffaRuntimeTransport ?? null;
+    this.transport = window.skaffaRuntimeTransport ?? null;
     if (!this.transport) {
-      console.error('[ScaffaReactAdapter] Transport not available');
+      console.error("[SkaffaReactAdapter] Transport not available");
       return;
     }
 
-    this.log('Transport connected');
+    this.log("Transport connected");
 
     // Register command handler
     this.transport.onCommand((command) => {
@@ -82,7 +87,7 @@ export class ScaffaReactAdapter {
 
     // Emit runtime.ready
     this.sendToHost({
-      type: 'runtime.ready',
+      type: "runtime.ready",
       adapterId: this.config.adapterId,
       adapterVersion: this.config.adapterVersion,
       capabilities: {
@@ -92,7 +97,7 @@ export class ScaffaReactAdapter {
     });
 
     this.isReady = true;
-    this.log('Runtime ready');
+    this.log("Runtime ready");
   }
 
   /**
@@ -103,11 +108,13 @@ export class ScaffaReactAdapter {
       return;
     }
 
-    const typeCount = this.instanceTypeCounters.get(identity.componentTypeId) ?? 0;
+    const typeCount =
+      this.instanceTypeCounters.get(identity.componentTypeId) ?? 0;
     this.instanceTypeCounters.set(identity.componentTypeId, typeCount + 1);
 
     const instanceLocator =
-      identity.instanceLocator ?? ({ kind: 'renderIndex', index: typeCount } as const);
+      identity.instanceLocator ??
+      ({ kind: "renderIndex", index: typeCount } as const);
 
     const storedIdentity: InstanceIdentity = {
       ...identity,
@@ -115,7 +122,7 @@ export class ScaffaReactAdapter {
     };
 
     this.instanceRegistry.set(identity.instanceId, storedIdentity);
-    this.log('Instance registered:', storedIdentity);
+    this.log("Instance registered:", storedIdentity);
   }
 
   /**
@@ -123,7 +130,7 @@ export class ScaffaReactAdapter {
    */
   unregisterInstance(instanceId: string): void {
     this.instanceRegistry.delete(instanceId);
-    this.log('Instance unregistered:', instanceId);
+    this.log("Instance unregistered:", instanceId);
   }
 
   /**
@@ -136,7 +143,9 @@ export class ScaffaReactAdapter {
   /**
    * Subscribe to selection changes.
    */
-  onSelectionChange(handler: (identity: InstanceIdentity | null) => void): () => void {
+  onSelectionChange(
+    handler: (identity: InstanceIdentity | null) => void,
+  ): () => void {
     this.selectionHandlers.add(handler);
     return () => this.selectionHandlers.delete(handler);
   }
@@ -153,19 +162,22 @@ export class ScaffaReactAdapter {
    * Handle command from host.
    */
   private handleCommand(command: HostCommand): void {
-    this.log('Received command:', command);
+    this.log("Received command:", command);
 
     switch (command.type) {
-      case 'host.init':
+      case "host.init":
         this.handleInit(command.sessionId!, command.initialOverrides ?? []);
         break;
 
-      case 'host.applyOverrides':
+      case "host.applyOverrides":
         this.handleApplyOverrides(command.ops ?? []);
         break;
 
       default:
-        console.warn('[ScaffaReactAdapter] Unknown command:', (command as any).type);
+        console.warn(
+          "[SkaffaReactAdapter] Unknown command:",
+          (command as any).type,
+        );
     }
   }
 
@@ -174,7 +186,7 @@ export class ScaffaReactAdapter {
    */
   private handleInit(sessionId: string, initialOverrides: OverrideOp[]): void {
     this.sessionId = sessionId;
-    this.log('Session initialized:', sessionId);
+    this.log("Session initialized:", sessionId);
 
     // Apply initial overrides
     if (initialOverrides.length > 0) {
@@ -186,23 +198,23 @@ export class ScaffaReactAdapter {
    * Handle host.applyOverrides command.
    */
   private handleApplyOverrides(ops: OverrideOp[]): void {
-    this.log('Applying overrides:', ops);
+    this.log("Applying overrides:", ops);
 
     for (const op of ops) {
       switch (op.op) {
-        case 'set':
+        case "set":
           this.setOverride(op.instanceId!, op.path!, op.value);
           break;
 
-        case 'clear':
+        case "clear":
           this.clearOverride(op.instanceId!, op.path!);
           break;
 
-        case 'clearInstance':
+        case "clearInstance":
           this.clearInstanceOverrides(op.instanceId!);
           break;
 
-        case 'clearAll':
+        case "clearAll":
           this.clearAllOverrides();
           break;
       }
@@ -215,7 +227,11 @@ export class ScaffaReactAdapter {
   /**
    * Set an override for an instance prop.
    */
-  private setOverride(instanceId: string, path: PropPath, value: unknown): void {
+  private setOverride(
+    instanceId: string,
+    path: PropPath,
+    value: unknown,
+  ): void {
     let instanceOverrides = this.overrides.get(instanceId);
     if (!instanceOverrides) {
       instanceOverrides = new Map();
@@ -252,7 +268,7 @@ export class ScaffaReactAdapter {
    */
   private clearAllOverrides(): void {
     this.overrides.clear();
-    this.log('All overrides cleared');
+    this.log("All overrides cleared");
   }
 
   /**
@@ -265,25 +281,25 @@ export class ScaffaReactAdapter {
    * - outline-offset separates highlight from element boundary
    */
   private ensurePreviewUxInjected(): void {
-    const existingStyles = document.getElementById('scaffa-preview-ux-styles');
+    const existingStyles = document.getElementById("skaffa-preview-ux-styles");
     if (!existingStyles) {
-      const style = document.createElement('style');
-      style.id = 'scaffa-preview-ux-styles';
+      const style = document.createElement("style");
+      style.id = "skaffa-preview-ux-styles";
       style.textContent = `
         /* Hover highlight: dashed outline indicates transient candidate state */
-        [data-scaffa-instance-id][data-scaffa-pick-hover="true"] {
+        [data-skaffa-instance-id][data-skaffa-pick-hover="true"] {
           outline: 2px dashed #d946ef;
           outline-offset: 2px;
           box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.3), 0 0 8px rgba(217, 70, 239, 0.4);
         }
         /* Selected highlight: solid outline indicates persistent selection */
-        [data-scaffa-instance-id][data-scaffa-selected="true"] {
+        [data-skaffa-instance-id][data-skaffa-selected="true"] {
           outline: 3px solid #22d3ee;
           outline-offset: 2px;
           box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.4), 0 0 12px rgba(34, 211, 238, 0.5);
         }
         /* When both states apply, selected wins (user already picked this instance) */
-        [data-scaffa-instance-id][data-scaffa-selected="true"][data-scaffa-pick-hover="true"] {
+        [data-skaffa-instance-id][data-skaffa-selected="true"][data-skaffa-pick-hover="true"] {
           outline: 3px solid #22d3ee;
           outline-offset: 2px;
           box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.4), 0 0 12px rgba(34, 211, 238, 0.5);
@@ -292,8 +308,8 @@ export class ScaffaReactAdapter {
       document.head.appendChild(style);
     }
 
-    // Note: Discoverability hint is now owned by Scaffa UI (not injected into app DOM)
-    // See PreviewHint component in renderer for the Scaffa-owned hint overlay
+    // Note: Discoverability hint is now owned by Skaffa UI (not injected into app DOM)
+    // See PreviewHint component in renderer for the Skaffa-owned hint overlay
   }
 
   /**
@@ -308,20 +324,20 @@ export class ScaffaReactAdapter {
   private setupPreviewInputHandlers(): void {
     // Esc to clear selection
     window.addEventListener(
-      'keydown',
+      "keydown",
       (event) => {
-        if (event.key === 'Escape' && this.selectedInstanceId) {
+        if (event.key === "Escape" && this.selectedInstanceId) {
           event.preventDefault();
           event.stopPropagation();
           this.selectInstance(null);
         }
       },
-      true
+      true,
     );
 
     // Hover to show selection candidate
     document.addEventListener(
-      'mousemove',
+      "mousemove",
       (event) => {
         const target = event.target as HTMLElement | null;
         if (!target) {
@@ -329,19 +345,24 @@ export class ScaffaReactAdapter {
           return;
         }
 
-        const instanceElement = target.closest('[data-scaffa-instance-id]') as HTMLElement | null;
-        const instanceId = instanceElement?.getAttribute('data-scaffa-instance-id') ?? null;
+        const instanceElement = target.closest(
+          "[data-skaffa-instance-id]",
+        ) as HTMLElement | null;
+        const instanceId =
+          instanceElement?.getAttribute("data-skaffa-instance-id") ?? null;
         this.setHoveredInstanceId(instanceId);
       },
-      true
+      true,
     );
 
     // Click to select (always, no modifier required)
     document.addEventListener(
-      'click',
+      "click",
       (event) => {
         const target = event.target as HTMLElement | null;
-        const instanceElement = target?.closest?.('[data-scaffa-instance-id]') as HTMLElement | null;
+        const instanceElement = target?.closest?.(
+          "[data-skaffa-instance-id]",
+        ) as HTMLElement | null;
 
         // Always prevent default and stop propagation to suppress app interaction
         event.preventDefault();
@@ -352,7 +373,9 @@ export class ScaffaReactAdapter {
           return;
         }
 
-        const instanceId = instanceElement.getAttribute('data-scaffa-instance-id');
+        const instanceId = instanceElement.getAttribute(
+          "data-skaffa-instance-id",
+        );
         if (!instanceId) {
           this.selectInstance(null);
           return;
@@ -366,7 +389,7 @@ export class ScaffaReactAdapter {
 
         this.selectInstance(identity);
       },
-      true
+      true,
     );
   }
 
@@ -377,14 +400,14 @@ export class ScaffaReactAdapter {
 
     if (this.hoveredInstanceId) {
       const prev = this.getInstanceElement(this.hoveredInstanceId);
-      if (prev) prev.removeAttribute('data-scaffa-pick-hover');
+      if (prev) prev.removeAttribute("data-skaffa-pick-hover");
     }
 
     this.hoveredInstanceId = instanceId;
 
     if (instanceId) {
       const next = this.getInstanceElement(instanceId);
-      if (next) next.setAttribute('data-scaffa-pick-hover', 'true');
+      if (next) next.setAttribute("data-skaffa-pick-hover", "true");
     }
   }
 
@@ -395,22 +418,26 @@ export class ScaffaReactAdapter {
 
     if (this.selectedInstanceId) {
       const prev = this.getInstanceElement(this.selectedInstanceId);
-      if (prev) prev.removeAttribute('data-scaffa-selected');
+      if (prev) prev.removeAttribute("data-skaffa-selected");
     }
 
     this.selectedInstanceId = instanceId;
 
     if (instanceId) {
       const next = this.getInstanceElement(instanceId);
-      if (next) next.setAttribute('data-scaffa-selected', 'true');
+      if (next) next.setAttribute("data-skaffa-selected", "true");
     }
   }
 
   private getInstanceElement(instanceId: string): HTMLElement | null {
     try {
-      return document.querySelector(`[data-scaffa-instance-id="${CSS.escape(instanceId)}"]`);
+      return document.querySelector(
+        `[data-skaffa-instance-id="${CSS.escape(instanceId)}"]`,
+      );
     } catch {
-      return document.querySelector(`[data-scaffa-instance-id="${instanceId}"]`);
+      return document.querySelector(
+        `[data-skaffa-instance-id="${instanceId}"]`,
+      );
     }
   }
 
@@ -418,7 +445,7 @@ export class ScaffaReactAdapter {
    * Select an instance and emit selection event.
    */
   private selectInstance(identity: InstanceIdentity | null): void {
-    this.log('Selection changed:', identity);
+    this.log("Selection changed:", identity);
     this.setSelectedInstanceId(identity?.instanceId ?? null);
 
     // Notify selection handlers
@@ -426,12 +453,12 @@ export class ScaffaReactAdapter {
 
     // Emit to host
     if (!this.sessionId) {
-      console.warn('[ScaffaReactAdapter] Cannot emit selection: no session ID');
+      console.warn("[SkaffaReactAdapter] Cannot emit selection: no session ID");
       return;
     }
 
     this.sendToHost({
-      type: 'runtime.selectionChanged',
+      type: "runtime.selectionChanged",
       sessionId: this.sessionId,
       selected: identity
         ? {
@@ -442,7 +469,7 @@ export class ScaffaReactAdapter {
             instanceLocator: identity.instanceLocator,
           }
         : null,
-      causedBy: 'click',
+      causedBy: "click",
     });
   }
 
@@ -458,7 +485,9 @@ export class ScaffaReactAdapter {
    */
   private sendToHost(event: RuntimeEvent): void {
     if (!this.transport) {
-      console.error('[ScaffaReactAdapter] Cannot send: transport not connected');
+      console.error(
+        "[SkaffaReactAdapter] Cannot send: transport not connected",
+      );
       return;
     }
     this.transport.sendToHost(event);
@@ -473,17 +502,19 @@ export class ScaffaReactAdapter {
     matchedPaths?: string[];
   }): void {
     if (!this.sessionId) {
-      console.warn('[ScaffaReactAdapter] Cannot emit router state: no session ID');
+      console.warn(
+        "[SkaffaReactAdapter] Cannot emit router state: no session ID",
+      );
       return;
     }
 
     this.sendToHost({
-      type: 'runtime.routerStateChanged',
+      type: "runtime.routerStateChanged",
       sessionId: this.sessionId,
       routerState,
     });
 
-    this.log('Router state changed:', routerState);
+    this.log("Router state changed:", routerState);
   }
 
   /**
@@ -491,7 +522,7 @@ export class ScaffaReactAdapter {
    */
   private log(...args: unknown[]): void {
     if (this.config.debug) {
-      console.log('[ScaffaReactAdapter]', ...args);
+      console.log("[SkaffaReactAdapter]", ...args);
     }
   }
 }

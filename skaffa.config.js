@@ -1,15 +1,15 @@
 // ─────────────────────────────────────────────────────────────────────────────
-// Scaffa Project Configuration (v0 development)
+// Skaffa Project Configuration (v0 development)
 // ─────────────────────────────────────────────────────────────────────────────
 
-import { defineScaffaConfig } from './src/shared/config.js';
+import { defineSkaffaConfig } from "./src/shared/config.js";
 
-export default defineScaffaConfig({
-  schemaVersion: 'v0',
+export default defineSkaffaConfig({
+  schemaVersion: "v0",
   modules: [
     {
-      id: 'sample-graph-producer',
-      path: './extensions/sample-graph-producer/module/index.js',
+      id: "sample-graph-producer",
+      path: "./extensions/sample-graph-producer/module/index.js",
     },
   ],
 });

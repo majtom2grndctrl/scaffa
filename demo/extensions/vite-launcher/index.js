@@ -3,9 +3,9 @@
 // ─────────────────────────────────────────────────────────────────────────────
 // Launches and manages the Vite dev server for the demo app.
 
-import { spawn } from 'node:child_process';
-import { join, dirname, resolve } from 'node:path';
-import { fileURLToPath } from 'node:url';
+import { spawn } from "node:child_process";
+import { join, dirname, resolve } from "node:path";
+import { fileURLToPath } from "node:url";
 
 // ─────────────────────────────────────────────────────────────────────────────
 // Vite Launcher Implementation
@@ -13,80 +13,84 @@ import { fileURLToPath } from 'node:url';
 
 class ViteLauncher {
   descriptor = {
-    id: 'vite-react',
-    displayName: 'Vite + React',
-    description: 'Launch Vite dev server for React applications',
-    supportedSessionTypes: ['app'],
+    id: "vite-react",
+    displayName: "Vite + React",
+    description: "Launch Vite dev server for React applications",
+    supportedSessionTypes: ["app"],
   };
 
   process = null;
   logListeners = [];
-  appPath = '';
+  appPath = "";
   workspaceRoot = null;
 
   constructor(workspaceRoot) {
     this.workspaceRoot = workspaceRoot;
     // Resolve demo/app path relative to workspace root
     this.appPath = workspaceRoot
-      ? join(workspaceRoot, 'app')
-      : join(process.cwd(), 'demo', 'app');
+      ? join(workspaceRoot, "app")
+      : join(process.cwd(), "demo", "app");
   }
 
   async start(options, context) {
     if (this.process) {
-      throw new Error('Launcher already running');
+      throw new Error("Launcher already running");
     }
 
-    console.log('[ViteLauncher] Starting Vite dev server at:', this.appPath);
+    console.log("[ViteLauncher] Starting Vite dev server at:", this.appPath);
 
     const runnerPath = join(
       dirname(fileURLToPath(import.meta.url)),
-      'runner.js'
+      "runner.js",
     );
 
     // Prepare absolute paths for runner
     const entry = context.projectEntry
-      ? (this.workspaceRoot ? resolve(this.workspaceRoot, context.projectEntry) : resolve(context.projectEntry))
+      ? this.workspaceRoot
+        ? resolve(this.workspaceRoot, context.projectEntry)
+        : resolve(context.projectEntry)
       : undefined;
 
-    const styles = context.projectStyles?.map(s =>
-      this.workspaceRoot ? resolve(this.workspaceRoot, s) : resolve(s)
+    const styles = context.projectStyles?.map((s) =>
+      this.workspaceRoot ? resolve(this.workspaceRoot, s) : resolve(s),
     );
 
     return new Promise((resolvePromise, reject) => {
       const timeout = setTimeout(() => {
         this.cleanup();
-        reject(new Error('Vite dev server start timeout (30s)'));
+        reject(new Error("Vite dev server start timeout (30s)"));
       }, 30000);
 
       try {
         const env = {
           ...process.env,
-          FORCE_COLOR: '0',
+          FORCE_COLOR: "0",
           SCAFFA_ROOT: this.appPath, // Runner runs in app dir
           // Pass the actual workspace root for resolving implementation hint paths
           // Implementation hints in registry are relative to workspace root, not app dir
           SCAFFA_WORKSPACE_ROOT: this.workspaceRoot || this.appPath,
-          SCAFFA_ENTRY: entry || '',
+          SCAFFA_ENTRY: entry || "",
           SCAFFA_STYLES: JSON.stringify(styles || []),
           // Pass registry snapshot for instrumentation matchers
-          // See: docs/scaffa_harness_model.md (5.4-5.6)
-          SCAFFA_REGISTRY: JSON.stringify(context.registrySnapshot || { schemaVersion: 'v0', components: {} }),
+          // See: docs/skaffa_harness_model.md (5.4-5.6)
+          SCAFFA_REGISTRY: JSON.stringify(
+            context.registrySnapshot || { schemaVersion: "v0", components: {} },
+          ),
         };
 
-        this.process = spawn('node', [runnerPath], {
+        this.process = spawn("node", [runnerPath], {
           cwd: this.appPath,
-          stdio: ['ignore', 'pipe', 'pipe'],
+          stdio: ["ignore", "pipe", "pipe"],
           env,
         });
 
         let urlResolved = false;
 
         // Listen for URL in stdout
-        this.process.stdout?.on('data', (data) => {
+        this.process.stdout?.on("data", (data) => {
           const output = data.toString();
-          console.log('[ViteLauncher] Runner stdout:', output.trim());
-          this.emitLog('info', output);
+          console.log("[ViteLauncher] Runner stdout:", output.trim());
+          this.emitLog("info", output);
 
           // Look for Vite's "Local: http://..." line
           const urlMatch = output.match(/Local:\s+(https?:\/\/[^\s]+)/i);
@@ -95,7 +99,7 @@ class ViteLauncher {
             clearTimeout(timeout);
 
             const url = urlMatch[1].trim();
-            console.log('[ViteLauncher] Vite dev server ready at:', url);
+            console.log("[ViteLauncher] Vite dev server ready at:", url);
 
             resolvePromise({
               url,
@@ -105,15 +109,15 @@ class ViteLauncher {
         });
 
         // Listen for errors in stderr
-        this.process.stderr?.on('data', (data) => {
+        this.process.stderr?.on("data", (data) => {
           const output = data.toString();
-          this.emitLog('error', output);
+          this.emitLog("error", output);
         });
 
         // Handle process exit
-        this.process.on('exit', (code, signal) => {
+        this.process.on("exit", (code, signal) => {
           console.log(
-            `[ViteLauncher] Process exited (code: ${code}, signal: ${signal})`
+            `[ViteLauncher] Process exited (code: ${code}, signal: ${signal})`,
           );
           this.process = null;
 
@@ -121,19 +125,19 @@ class ViteLauncher {
             clearTimeout(timeout);
             reject(
               new Error(
-                `Vite dev server failed to start (exit code: ${code}, signal: ${signal})`
-              )
+                `Vite dev server failed to start (exit code: ${code}, signal: ${signal})`,
+              ),
             );
           }
         });
 
         // Handle spawn errors
-        this.process.on('error', (error) => {
-          console.error('[ViteLauncher] Process error:', error);
+        this.process.on("error", (error) => {
+          console.error("[ViteLauncher] Process error:", error);
           clearTimeout(timeout);
           this.cleanup();
           reject(
-            new Error(`Failed to spawn Vite dev server: ${error.message}`)
+            new Error(`Failed to spawn Vite dev server: ${error.message}`),
           );
         });
       } catch (error) {
@@ -146,11 +150,11 @@ class ViteLauncher {
 
   async stop() {
     if (!this.process) {
-      console.warn('[ViteLauncher] No process to stop');
+      console.warn("[ViteLauncher] No process to stop");
       return;
     }
 
-    console.log('[ViteLauncher] Stopping Vite dev server...');
+    console.log("[ViteLauncher] Stopping Vite dev server...");
 
     return new Promise((resolve) => {
       if (!this.process) {
@@ -159,23 +163,23 @@ class ViteLauncher {
       }
 
       const timeout = setTimeout(() => {
-        console.warn('[ViteLauncher] Graceful shutdown timeout, force killing');
+        console.warn("[ViteLauncher] Graceful shutdown timeout, force killing");
         if (this.process) {
-          this.process.kill('SIGKILL');
+          this.process.kill("SIGKILL");
         }
         this.cleanup();
         resolve();
       }, 5000);
 
-      this.process.once('exit', () => {
+      this.process.once("exit", () => {
         clearTimeout(timeout);
         this.cleanup();
-        console.log('[ViteLauncher] Vite dev server stopped');
+        console.log("[ViteLauncher] Vite dev server stopped");
         resolve();
       });
 
       // Try graceful shutdown first
-      this.process.kill('SIGTERM');
+      this.process.kill("SIGTERM");
     });
   }
 
@@ -206,7 +210,7 @@ class ViteLauncher {
   cleanup() {
     if (this.process) {
       try {
-        this.process.kill('SIGKILL');
+        this.process.kill("SIGKILL");
       } catch (error) {
         // Ignore errors during cleanup
       }
@@ -220,16 +224,16 @@ class ViteLauncher {
 // ─────────────────────────────────────────────────────────────────────────────
 
 export function activate(context) {
-  console.log('[ViteLauncher] Activating...');
+  console.log("[ViteLauncher] Activating...");
 
   const launcher = new ViteLauncher(context.workspaceRoot);
 
   context.preview.registerLauncher(launcher);
-  console.log('[ViteLauncher] Registered Vite+React launcher');
+  console.log("[ViteLauncher] Registered Vite+React launcher");
 
-  console.log('[ViteLauncher] Activated');
+  console.log("[ViteLauncher] Activated");
 }
 
 export function deactivate() {
-  console.log('[ViteLauncher] Deactivated');
+  console.log("[ViteLauncher] Deactivated");
 }

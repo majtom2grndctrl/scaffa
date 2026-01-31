@@ -1,14 +1,14 @@
-# Scaffa Runtime Adapter Integration Guide (v0)
+# Skaffa Runtime Adapter Integration Guide (v0)
 
 > **Status:** Draft / v0 guide  
-> **Audience:** App/framework engineers integrating preview runtimes with Scaffa  
+> **Audience:** App/framework engineers integrating preview runtimes with Skaffa  
 > **Goal:** Provide a single, end-to-end “recipe” for enabling click-to-select and non-destructive overrides in a preview runtime, aligned with the runtime adapter contract.
 
 Related:
 - [Architecture Plan](./index.md)
-- [Scaffa Preview Session Protocol](./scaffa_preview_session_protocol.md)
-- [Scaffa Runtime Adapter Contract](./scaffa_runtime_adapter_contract.md)
-- [Scaffa Override Model + Persistence](./scaffa_override_model.md)
+- [Skaffa Preview Session Protocol](./skaffa_preview_session_protocol.md)
+- [Skaffa Runtime Adapter Contract](./skaffa_runtime_adapter_contract.md)
+- [Skaffa Override Model + Persistence](./skaffa_override_model.md)
 
 ---
 
@@ -22,19 +22,19 @@ In v0, the runtime adapter is responsible for three things inside the preview ru
 For React preview runtimes in this repo, those responsibilities are implemented by `packages/react-runtime-adapter`.
 
 Editor View interaction policy (v0):
-- Scaffa uses the embedded runtime as an editor canvas: click-to-select is the default.
+- Skaffa uses the embedded runtime as an editor canvas: click-to-select is the default.
 - Clicks are consumed for selection (app navigation/handlers should not fire in the editor session).
 
 ### 1.1 Production Compatibility (Recommended)
 
-Scaffa integration should not be required for your app to build and run in production.
+Skaffa integration should not be required for your app to build and run in production.
 
 Recommended approach:
-- Use the **Harness Model** for managed previews: Scaffa mounts the app via a launcher-injected harness entrypoint, so your app code has **no Scaffa editor/runtime adapter imports** (UI libraries are allowed).
-- Keep all Scaffa runtime logic **dev-only** and scoped to preview sessions started by Scaffa (managed mode).
-- Install `@scaffa/react-runtime-adapter` as a **devDependency** (the launcher needs it at dev-time even though your source code doesn't import it).
+- Use the **Harness Model** for managed previews: Skaffa mounts the app via a launcher-injected harness entrypoint, so your app code has **no Skaffa editor/runtime adapter imports** (UI libraries are allowed).
+- Keep all Skaffa runtime logic **dev-only** and scoped to preview sessions started by Skaffa (managed mode).
+- Install `@skaffa/react-runtime-adapter` as a **devDependency** (the launcher needs it at dev-time even though your source code doesn't import it).
 
-See: `docs/scaffa_harness_model.md`.
+See: `docs/skaffa_harness_model.md`.
 
 ---
 
@@ -42,13 +42,13 @@ See: `docs/scaffa_harness_model.md`.
 
 In the Harness Model, the "three parts" still exist, but they are injected by the launcher/runtime adapter rather than authored in the app code.
 
-**Important:** Even though your app source code has no Scaffa editor/runtime adapter imports, the runtime adapter package must be available at dev-time because the vite-launcher generates code that imports it (harness entrypoint + component instrumentation). Add `@scaffa/react-runtime-adapter` to `devDependencies` (NOT `dependencies`) so it's excluded from production builds.
+**Important:** Even though your app source code has no Skaffa editor/runtime adapter imports, the runtime adapter package must be available at dev-time because the vite-launcher generates code that imports it (harness entrypoint + component instrumentation). Add `@skaffa/react-runtime-adapter` to `devDependencies` (NOT `dependencies`) so it's excluded from production builds.
 
 ### 2.1 Mount via a virtual harness entry
 
-- The preview launcher (e.g. Vite launcher) serves a virtual module entry (e.g. `"/@scaffa/harness.tsx"`).
-- That entry imports the project’s preview root and styles from `scaffa.config.js` and mounts to the DOM.
-- The harness installs the runtime adapter provider/event wiring (equivalent of “wrap the app root with `ScaffaProvider`”).
+- The preview launcher (e.g. Vite launcher) serves a virtual module entry (e.g. `"/@skaffa/harness.tsx"`).
+- That entry imports the project’s preview root and styles from `skaffa.config.js` and mounts to the DOM.
+- The harness installs the runtime adapter provider/event wiring (equivalent of “wrap the app root with `SkaffaProvider`”).
 
 ### 2.2 Instrument registry-listed components
 
@@ -71,42 +71,42 @@ For third-party packages, ensure the transform runs on dependency sources:
 ### 2.2.2 `componentTypeId` join key (v0)
 
 Instrumentation should wrap the target export with a boundary that provides the join key to the adapter:
-- The wrapper (`ScaffaInstanceBoundary`) passes `componentTypeId` from the registry entry `typeId`.
+- The wrapper (`SkaffaInstanceBoundary`) passes `componentTypeId` from the registry entry `typeId`.
 - The adapter owns `instanceId` generation; wrappers should not generate ids directly.
-- **The boundary applies overrides automatically**: `ScaffaInstanceBoundary` retrieves overrides from the adapter and applies them to props before passing them to the wrapped component. App code does NOT need to import or use `ScaffaInstance` or `useScaffaInstance`.
+- **The boundary applies overrides automatically**: `SkaffaInstanceBoundary` retrieves overrides from the adapter and applies them to props before passing them to the wrapped component. App code does NOT need to import or use `SkaffaInstance` or `useSkaffaInstance`.
 - Selection events emitted by the adapter must include `{ instanceId, componentTypeId }`.
 
 ### 2.3 Apply overrides via adapter-owned boundaries
 
 - Overrides must be applied non-destructively in the preview runtime.
 - The adapter owns the override map and rerender mechanism; app source files are not rewritten at runtime.
-- **Automatic override application**: `ScaffaInstanceBoundary` (injected by instrumentation) applies overrides to props transparently, so component code remains clean of Scaffa imports.
+- **Automatic override application**: `SkaffaInstanceBoundary` (injected by instrumentation) applies overrides to props transparently, so component code remains clean of Skaffa imports.
 
-For the full decision record and constraints, see: `docs/scaffa_harness_model.md`.
+For the full decision record and constraints, see: `docs/skaffa_harness_model.md`.
 
 ---
 
 ## 3. Architecture: Pure Harness Model
 
-This clarifies the boundaries between production bootstrap and Scaffa preview bootstrap. In the pure harness model, Scaffa never loads your production entrypoint; it replaces it.
+This clarifies the boundaries between production bootstrap and Skaffa preview bootstrap. In the pure harness model, Skaffa never loads your production entrypoint; it replaces it.
 
-See also: `docs/scaffa_harness_model.md` for the managed preview entrypoint and Vite plugin behavior.
+See also: `docs/skaffa_harness_model.md` for the managed preview entrypoint and Vite plugin behavior.
 
 ### 3.1 Production build
 
 `index.html` -> `src/main.tsx` (production bootstrap) -> `src/App.tsx` (router + UI) -> `src/pages/*.tsx` -> `src/components/*.tsx`
 
-**No Scaffa editor/runtime adapter imports required**: Components are written as standard React components with no Scaffa editor/runtime adapter dependencies.
+**No Skaffa editor/runtime adapter imports required**: Components are written as standard React components with no Skaffa editor/runtime adapter dependencies.
 
-### 3.2 Scaffa preview
+### 3.2 Skaffa preview
 
-`index.html` (transformed by harness plugin) -> `/@scaffa/harness.tsx` (virtual module served by Vite plugin) -> `ScaffaProvider` (real adapter) -> `src/App.tsx` (router + UI) -> registry-listed components are automatically wrapped with `ScaffaInstanceBoundary` (injected by vite-launcher instrumentation plugin) -> overrides applied transparently
+`index.html` (transformed by harness plugin) -> `/@skaffa/harness.tsx` (virtual module served by Vite plugin) -> `SkaffaProvider` (real adapter) -> `src/App.tsx` (router + UI) -> registry-listed components are automatically wrapped with `SkaffaInstanceBoundary` (injected by vite-launcher instrumentation plugin) -> overrides applied transparently
 
 ### 3.3 Key boundary
 
-`main.tsx` is NEVER loaded by Scaffa:
+`main.tsx` is NEVER loaded by Skaffa:
 - `main.tsx` is production-only
-- Scaffa's harness replaces it in `index.html`
+- Skaffa's harness replaces it in `index.html`
 - `App.tsx` must be self-contained and create its own router instance
 - Route definitions should live in `routes.tsx` (required by react-router-graph-producer in v0)
 
@@ -115,7 +115,7 @@ See also: `docs/scaffa_harness_model.md` for the managed preview entrypoint and 
 ## 4. Common Pitfalls
 
 - **`typeId` mismatch**: selection works, but Inspector lacks metadata (registry ↔ runtime mismatch).
-- **Incorrect preview URL**: preview sessions require a full URL with protocol (see `docs/scaffa_preview_session_protocol.md:30`).
+- **Incorrect preview URL**: preview sessions require a full URL with protocol (see `docs/skaffa_preview_session_protocol.md:30`).
 - **Attached mode mismatch**: attaching to an arbitrary dev server does not guarantee harness/instrumentation is installed; use managed mode for Harness Model behavior.
 - **Third-party instrumentation not running**: selected `node_modules` packages may be prebundled; the launcher may need Vite `optimizeDeps` tuning to ensure transforms run on intended sources.
 
@@ -123,17 +123,17 @@ See also: `docs/scaffa_harness_model.md` for the managed preview entrypoint and 
 
 ## Appendix: Project-Local Shim (Legacy / Escape Hatch)
 
-If you cannot use managed mode (or need an incremental migration), a project-local shim can provide a dev-only provider mount. This is not the preferred v0 direction for Scaffa-managed previews.
+If you cannot use managed mode (or need an incremental migration), a project-local shim can provide a dev-only provider mount. This is not the preferred v0 direction for Skaffa-managed previews.
 
-Note: Instance identity still comes from launcher instrumentation; app components should not import `ScaffaInstance` or `useScaffaInstance`.
+Note: Instance identity still comes from launcher instrumentation; app components should not import `SkaffaInstance` or `useSkaffaInstance`.
 
 Then, switch that module between:
 - **No-op provider exports** for production (and/or normal dev).
-- **Real provider exports** for Scaffa-enabled preview.
+- **Real provider exports** for Skaffa-enabled preview.
 
 How you switch is toolchain-specific (Vite alias, conditional entrypoints, environment-flagged builds). The important invariant is:
-- your production build must not require `@scaffa/*` packages to be installed.
-  - Exception: the demo workspace uses `@scaffa/layout-primitives-react` as a runtime
+- your production build must not require `@skaffa/*` packages to be installed.
+  - Exception: the demo workspace uses `@skaffa/layout-primitives-react` as a runtime
     dependency for layout primitives. In-repo we install it from a local tarball in
     `demo/vendor/`, but if you extract the demo app, treat it like a normal UI package
     and install it from your registry.
@@ -142,18 +142,18 @@ How you switch is toolchain-specific (Vite alias, conditional entrypoints, envir
 
 For Vite projects, use mode-based aliases to switch between dev and production shims:
 
-**1. Create dev shim** (`src/scaffa-runtime.dev.ts`):
+**1. Create dev shim** (`src/skaffa-runtime.dev.ts`):
 ```ts
 export {
-  ScaffaProvider,
-} from '@scaffa/react-runtime-adapter';
+  SkaffaProvider,
+} from '@skaffa/react-runtime-adapter';
 ```
 
-**2. Create production shim** (`src/scaffa-runtime.prod.ts`):
+**2. Create production shim** (`src/skaffa-runtime.prod.ts`):
 ```ts
 import type { ReactNode } from 'react';
 
-export function ScaffaProvider({ children }: { children: ReactNode; config?: unknown }) {
+export function SkaffaProvider({ children }: { children: ReactNode; config?: unknown }) {
   return children;
 }
 ```
@@ -166,9 +166,9 @@ import path from 'path';
 export default defineConfig(({ mode }) => ({
   resolve: {
     alias: {
-      '@/scaffa-runtime': path.resolve(
+      '@/skaffa-runtime': path.resolve(
         __dirname,
-        `src/scaffa-runtime.${mode === 'production' ? 'prod' : 'dev'}.ts`
+        `src/skaffa-runtime.${mode === 'production' ? 'prod' : 'dev'}.ts`
       ),
     },
   },
@@ -181,7 +181,7 @@ export default defineConfig(({ mode }) => ({
   "compilerOptions": {
     "baseUrl": ".",
     "paths": {
-      "@/scaffa-runtime": ["./src/scaffa-runtime.dev.ts"]
+      "@/skaffa-runtime": ["./src/skaffa-runtime.dev.ts"]
     }
   }
 }
@@ -191,22 +191,22 @@ export default defineConfig(({ mode }) => ({
 ```json
 {
   "devDependencies": {
-    "@scaffa/react-runtime-adapter": "workspace:*"
+    "@skaffa/react-runtime-adapter": "workspace:*"
   }
 }
 ```
 
 **6. Import from shim in your preview entrypoint**:
 ```tsx
-import { ScaffaProvider } from '@/scaffa-runtime';
+import { SkaffaProvider } from '@/skaffa-runtime';
 ```
 
 With this setup:
 - `pnpm dev` uses the real adapter (mode='development')
 - `pnpm build` uses no-ops (mode='production')
-- Production builds have zero runtime dependency on @scaffa/* packages
+- Production builds have zero runtime dependency on @skaffa/* packages
   - Exception: the demo workspace intentionally depends on
-    `@scaffa/layout-primitives-react` at runtime.
+    `@skaffa/layout-primitives-react` at runtime.
 
 ---
 

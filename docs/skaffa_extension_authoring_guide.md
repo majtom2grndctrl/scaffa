@@ -1,15 +1,15 @@
-# Scaffa Extension Authoring Guide (v0)
+# Skaffa Extension Authoring Guide (v0)
 
 > **Status:** Draft / v0 guide  
 > **Audience:** Module and extension authors (first‑party and internal)  
-> **Goal:** Document how to author Scaffa extensions against the current v0 Extension Context, with clear process boundaries, type import conventions, and debugging guidance.
+> **Goal:** Document how to author Skaffa extensions against the current v0 Extension Context, with clear process boundaries, type import conventions, and debugging guidance.
 
 Related:
 - [Architecture Plan](./index.md)
-- [Scaffa Extension API – v0 Sketch](./scaffa_extension_api.md)
-- [IPC Boundaries + Key Sequence Diagrams](./scaffa_ipc_boundaries_and_sequences.md)
-- [Scaffa Component Registry Schema](./scaffa_component_registry_schema.md)
-- [Scaffa Project Graph Schema + Patch Protocol](./scaffa_project_graph_schema.md)
+- [Skaffa Extension API – v0 Sketch](./skaffa_extension_api.md)
+- [IPC Boundaries + Key Sequence Diagrams](./skaffa_ipc_boundaries_and_sequences.md)
+- [Skaffa Component Registry Schema](./skaffa_component_registry_schema.md)
+- [Skaffa Project Graph Schema + Patch Protocol](./skaffa_project_graph_schema.md)
 
 ---
 
@@ -27,7 +27,7 @@ Implications:
 
 If you’re unsure where a behavior belongs, consult:
 - `docs/index.md:88` (process model)
-- `docs/scaffa_ipc_boundaries_and_sequences.md:1` (canonical flows)
+- `docs/skaffa_ipc_boundaries_and_sequences.md:1` (canonical flows)
 
 ### 1.1 Extension Bundle Layout (Recommended)
 
@@ -41,7 +41,7 @@ Recommended layout:
 extensions/
   layout/
     module/
-      index.js           # extension-host entrypoint (referenced by scaffa.config.js)
+      index.js           # extension-host entrypoint (referenced by skaffa.config.js)
     packages/
       layout-primitives/
         src/
@@ -109,13 +109,13 @@ import type { ExtensionContext } from '../../../src/extension-host/extension-con
 import type { ComponentRegistry } from '../../../src/shared/index.js';
 ```
 
-Planned (not v0): a published package such as `@scaffa/extension-api` so extensions do not need workspace-relative paths.
+Planned (not v0): a published package such as `@skaffa/extension-api` so extensions do not need workspace-relative paths.
 
 ---
 
 ## 4. Branded Types (Zod) and Graph Construction Helpers
 
-Scaffa's shared protocol uses Zod-branded identifiers for safety (e.g. `ComponentTypeId`, `RouteId`).
+Skaffa's shared protocol uses Zod-branded identifiers for safety (e.g. `ComponentTypeId`, `RouteId`).
 
 **RECOMMENDED**: Use the graph construction helpers provided by the Extension SDK to avoid `as any` casts:
 
@@ -179,7 +179,7 @@ const typeId = ComponentTypeIdSchema.parse('demo.button');
 2. Project graph component type node id (`{ kind: 'componentType', id: 'demo.button' }`)
 3. Preview runtime instance identity (e.g. harness-model instrumentation that associates instances to `componentTypeId`)
 
-If these don’t match, Scaffa can still select an instance, but the Inspector won’t have type-level metadata.
+If these don’t match, Skaffa can still select an instance, but the Inspector won’t have type-level metadata.
 
 ---
 
@@ -196,6 +196,6 @@ Recommended workflow:
 
 ## 7. Common Failure Modes (v0)
 
-- **Module loads but "does nothing"**: check DevTools for activation errors and confirm the module path in `scaffa.config.js`.
+- **Module loads but "does nothing"**: check DevTools for activation errors and confirm the module path in `skaffa.config.js`.
 - **Registry contributed but Inspector shows raw props**: confirm `ComponentTypeId` matches registry ↔ graph ↔ runtime identity.
 - **TypeScript friction in producers**: use the graph construction helpers (`createRouteNode`, `createComponentTypeNode`, etc.) from the Extension SDK to avoid `as any` casts. See section 4 for examples.

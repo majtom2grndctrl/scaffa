@@ -8,18 +8,18 @@ importers:
 
   .:
     devDependencies:
-      '@scaffa/config':
-        specifier: file:./vendor/scaffa-config-0.1.0.tgz
-        version: file:vendor/scaffa-config-0.1.0.tgz
-      '@scaffa/layout-registry':
-        specifier: file:./vendor/scaffa-layout-registry-0.1.0.tgz
-        version: file:vendor/scaffa-layout-registry-0.1.0.tgz
-      '@scaffa/react-router-graph-producer':
-        specifier: file:./vendor/scaffa-react-router-graph-producer-0.1.0.tgz
-        version: file:vendor/scaffa-react-router-graph-producer-0.1.0.tgz
-      '@scaffa/shadcn-ui-registry':
-        specifier: file:./vendor/scaffa-shadcn-ui-registry-0.1.0.tgz
-        version: file:vendor/scaffa-shadcn-ui-registry-0.1.0.tgz
+      '@skaffa/config':
+        specifier: file:./vendor/skaffa-config-0.1.0.tgz
+        version: file:vendor/skaffa-config-0.1.0.tgz
+      '@skaffa/layout-registry':
+        specifier: file:./vendor/skaffa-layout-registry-0.1.0.tgz
+        version: file:vendor/skaffa-layout-registry-0.1.0.tgz
+      '@skaffa/react-router-graph-producer':
+        specifier: file:./vendor/skaffa-react-router-graph-producer-0.1.0.tgz
+        version: file:vendor/skaffa-react-router-graph-producer-0.1.0.tgz
+      '@skaffa/shadcn-ui-registry':
+        specifier: file:./vendor/skaffa-shadcn-ui-registry-0.1.0.tgz
+        version: file:vendor/skaffa-shadcn-ui-registry-0.1.0.tgz
 
   app:
     dependencies:
@@ -35,9 +35,9 @@ importers:
       '@radix-ui/react-slot':
         specifier: ^1.2.4
         version: 1.2.4(react@19.2.3)
-      '@scaffa/layout-primitives-react':
-        specifier: file:../vendor/scaffa-layout-primitives-react-0.1.0.tgz
-        version: file:vendor/scaffa-layout-primitives-react-0.1.0.tgz(react@19.2.3)
+      '@skaffa/layout-primitives-react':
+        specifier: file:../vendor/skaffa-layout-primitives-react-0.1.0.tgz
+        version: file:vendor/skaffa-layout-primitives-react-0.1.0.tgz(react@19.2.3)
       class-variance-authority:
         specifier: ^0.7.1
         version: 0.7.1
@@ -60,6 +60,9 @@ importers:
         specifier: ^3.4.0
         version: 3.4.0
     devDependencies:
+      '@skaffa/react-runtime-adapter':
+        specifier: file:../vendor/skaffa-react-runtime-adapter-0.1.0.tgz
+        version: file:vendor/skaffa-react-runtime-adapter-0.1.0.tgz(react-router-dom@6.30.3(react-dom@19.2.3(react@19.2.3))(react@19.2.3))(react@19.2.3)
       '@tailwindcss/vite':
         specifier: ^4.1.18
         version: 4.1.18(vite@5.4.21(@types/node@25.0.10)(lightningcss@1.30.2))
@@ -782,26 +785,33 @@ packages:
     cpu: [x64]
     os: [win32]
 
-  '@scaffa/config@file:vendor/scaffa-config-0.1.0.tgz':
-    resolution: {integrity: sha512-aM1wYHklfawrsITElFrKz7UxfbycgMwJkQ1NoBt5TyUl1THtOQN6CE27g32i36WGDF/oq0Omx3NLKY3Yp4Kjkg==, tarball: file:vendor/scaffa-config-0.1.0.tgz}
+  '@skaffa/config@file:vendor/skaffa-config-0.1.0.tgz':
+    resolution: {integrity: sha512-GYqIc6zKiMTkJdD65KQijTyVuQHiCDmHs7d9wIIML8CL0C1Y/Ddeu1APN5fq4R2VVoY2suZSgoQ3ZHaqoizm+A==, tarball: file:vendor/skaffa-config-0.1.0.tgz}
     version: 0.1.0
 
-  '@scaffa/layout-primitives-react@file:vendor/scaffa-layout-primitives-react-0.1.0.tgz':
-    resolution: {integrity: sha512-cPoVazolSrFPw86+3yX9iMk5jw4uYHMjCzUjrdBNjmyBQzyFDM/Ynlzsg8ixzfBAiDlfrHsNjbRRRpFf6b3VYg==, tarball: file:vendor/scaffa-layout-primitives-react-0.1.0.tgz}
+  '@skaffa/layout-primitives-react@file:vendor/skaffa-layout-primitives-react-0.1.0.tgz':
+    resolution: {integrity: sha512-v7dt1eIDVSOGubyS4Oy3mYp8zwYbOF+OubXg3n+4TIxYUadKRTWeC1aCahNRaoMcjYSnY0fT904N3sanPf+YpA==, tarball: file:vendor/skaffa-layout-primitives-react-0.1.0.tgz}
     version: 0.1.0
     peerDependencies:
       react: ^18.0.0 || ^19.0.0
 
-  '@scaffa/layout-registry@file:vendor/scaffa-layout-registry-0.1.0.tgz':
-    resolution: {integrity: sha512-Asn+TfsvhNKZCK7EOEzPzSqgXScB1d0yaq7G7sg8R5Joht7Ue/gliqI3+zoxG8aK6J8J7PCZ2XVRTrri6yS1nA==, tarball: file:vendor/scaffa-layout-registry-0.1.0.tgz}
+  '@skaffa/layout-registry@file:vendor/skaffa-layout-registry-0.1.0.tgz':
+    resolution: {integrity: sha512-OSuizVDevvXcMPY/2bAkrCH6ENPKFXrcTHTsWV02kcEEEY6aEywcDVuPM3ALvKbhL3rV3JL9ci3DB7IkF78oNg==, tarball: file:vendor/skaffa-layout-registry-0.1.0.tgz}
     version: 0.1.0
 
-  '@scaffa/react-router-graph-producer@file:vendor/scaffa-react-router-graph-producer-0.1.0.tgz':
-    resolution: {integrity: sha512-UmqthEImuINqTg/dQbelVdnQcjszqHj8SJLcPHfBAfCodyvxYrEWjytLxXXr8yf956Oujpx8pKK44lVhAo8QqA==, tarball: file:vendor/scaffa-react-router-graph-producer-0.1.0.tgz}
+  '@skaffa/react-router-graph-producer@file:vendor/skaffa-react-router-graph-producer-0.1.0.tgz':
+    resolution: {integrity: sha512-BB/oN7ee6vhAJmei8cG6ZLFFebBC1edpV0S2uHZox5AOhopeZF4J5lziq3+6Ml1+RjeguBbZfECwLPyvayOtpg==, tarball: file:vendor/skaffa-react-router-graph-producer-0.1.0.tgz}
     version: 0.1.0
 
-  '@scaffa/shadcn-ui-registry@file:vendor/scaffa-shadcn-ui-registry-0.1.0.tgz':
-    resolution: {integrity: sha512-CAVZPMAFRsHNjvdKysNsNXEuZ3XIS++a89tXHuZK/PNVz1MjhNnYyQiNQ6uys70VvTe6fRR3hgtUTSd+jvtsdg==, tarball: file:vendor/scaffa-shadcn-ui-registry-0.1.0.tgz}
+  '@skaffa/react-runtime-adapter@file:vendor/skaffa-react-runtime-adapter-0.1.0.tgz':
+    resolution: {integrity: sha512-vyOyAc5tOHnZqk8dMvAFx18/228E2bE2wkbkmRUBrKgbZrt+n9NBfF3cPsaDY83tszmLC2u1GVTeYfIyUgaBqA==, tarball: file:vendor/skaffa-react-runtime-adapter-0.1.0.tgz}
+    version: 0.1.0
+    peerDependencies:
+      react: ^18.0.0 || ^19.0.0
+      react-router-dom: ^6.0.0
+
+  '@skaffa/shadcn-ui-registry@file:vendor/skaffa-shadcn-ui-registry-0.1.0.tgz':
+    resolution: {integrity: sha512-tK06AbJyPFLlNTPEpk6qgdZppaXO9NvcZbz2BbikRr3n8bsnPllQOWltIGyjoa/5XJ7LlkEL/Qw09zI0Jcw/wQ==, tarball: file:vendor/skaffa-shadcn-ui-registry-0.1.0.tgz}
     version: 0.1.0
 
   '@tailwindcss/node@4.1.18':
@@ -1787,21 +1797,26 @@ snapshots:
   '@rollup/rollup-win32-x64-msvc@4.56.0':
     optional: true
 
-  '@scaffa/config@file:vendor/scaffa-config-0.1.0.tgz':
+  '@skaffa/config@file:vendor/skaffa-config-0.1.0.tgz':
     dependencies:
       zod: 3.25.76
 
-  '@scaffa/layout-primitives-react@file:vendor/scaffa-layout-primitives-react-0.1.0.tgz(react@19.2.3)':
+  '@skaffa/layout-primitives-react@file:vendor/skaffa-layout-primitives-react-0.1.0.tgz(react@19.2.3)':
     dependencies:
       react: 19.2.3
 
-  '@scaffa/layout-registry@file:vendor/scaffa-layout-registry-0.1.0.tgz': {}
+  '@skaffa/layout-registry@file:vendor/skaffa-layout-registry-0.1.0.tgz': {}
 
-  '@scaffa/react-router-graph-producer@file:vendor/scaffa-react-router-graph-producer-0.1.0.tgz':
+  '@skaffa/react-router-graph-producer@file:vendor/skaffa-react-router-graph-producer-0.1.0.tgz':
     dependencies:
       typescript: 5.9.3
 
-  '@scaffa/shadcn-ui-registry@file:vendor/scaffa-shadcn-ui-registry-0.1.0.tgz': {}
+  '@skaffa/react-runtime-adapter@file:vendor/skaffa-react-runtime-adapter-0.1.0.tgz(react-router-dom@6.30.3(react-dom@19.2.3(react@19.2.3))(react@19.2.3))(react@19.2.3)':
+    dependencies:
+      react: 19.2.3
+      react-router-dom: 6.30.3(react-dom@19.2.3(react@19.2.3))(react@19.2.3)
+
+  '@skaffa/shadcn-ui-registry@file:vendor/skaffa-shadcn-ui-registry-0.1.0.tgz': {}
 
   '@tailwindcss/node@4.1.18':
     dependencies:

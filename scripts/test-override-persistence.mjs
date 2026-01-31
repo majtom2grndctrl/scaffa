@@ -4,29 +4,29 @@
  * Manual regression test for override persistence
  *
  * Tests:
- * 1. Directory creation (/.scaffa)
+ * 1. Directory creation (/.skaffa)
  * 2. Transactional write (temp file + atomic rename)
  * 3. Error handling for common failure modes
  *
  * Usage:
  *   node scripts/test-override-persistence.mjs [workspace-path]
  *
- * If no workspace path provided, uses /tmp/scaffa-override-test
+ * If no workspace path provided, uses /tmp/skaffa-override-test
  */
 
 import { mkdir, writeFile, readFile, rm } from 'node:fs/promises';
 import { existsSync } from 'node:fs';
 import { join } from 'node:path';
 
-const testWorkspacePath = process.argv[2] || '/tmp/scaffa-override-test';
-const scaffaDir = join(testWorkspacePath, '.scaffa');
-const overridesFile = join(scaffaDir, 'overrides.v0.json');
+const testWorkspacePath = process.argv[2] || '/tmp/skaffa-override-test';
+const skaffaDir = join(testWorkspacePath, '.skaffa');
+const overridesFile = join(skaffaDir, 'overrides.v0.json');
 
 console.log('═══════════════════════════════════════════════════════════');
 console.log('Override Persistence Regression Test');
 console.log('═══════════════════════════════════════════════════════════');
 console.log('Workspace:', testWorkspacePath);
-console.log('Target directory:', scaffaDir);
+console.log('Target directory:', skaffaDir);
 console.log('Target file:', overridesFile);
 console.log('');
 
@@ -43,21 +43,21 @@ async function test1_DirectoryCreation() {
 
   try {
     // Ensure workspace doesn't exist yet
-    if (existsSync(scaffaDir)) {
-      throw new Error('.scaffa directory already exists before test');
+    if (existsSync(skaffaDir)) {
+      throw new Error('.skaffa directory already exists before test');
     }
 
-    // Create workspace root (simulating a workspace with no .scaffa yet)
+    // Create workspace root (simulating a workspace with no .skaffa yet)
     await mkdir(testWorkspacePath, { recursive: true });
     console.log('✓ Created workspace root:', testWorkspacePath);
 
-    // Create .scaffa directory (mimicking override-store.ts logic)
-    if (!existsSync(scaffaDir)) {
-      await mkdir(scaffaDir, { recursive: true });
+    // Create .skaffa directory (mimicking override-store.ts logic)
+    if (!existsSync(skaffaDir)) {
+      await mkdir(skaffaDir, { recursive: true });
     }
-    console.log('✓ Created .scaffa directory:', scaffaDir);
+    console.log('✓ Created .skaffa directory:', skaffaDir);
 
-    if (!existsSync(scaffaDir)) {
+    if (!existsSync(skaffaDir)) {
       throw new Error('Directory creation failed');
     }
 

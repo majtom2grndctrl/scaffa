@@ -1,4 +1,4 @@
-import { contextBridge, ipcRenderer } from 'electron';
+import { contextBridge, ipcRenderer } from "electron";
 import type {
   StartSessionRequest,
   StartSessionResponse,
@@ -33,24 +33,24 @@ import type {
   RemoveRecentWorkspaceResponse,
   OpenDemoWorkspaceRequest,
   OpenDemoWorkspaceResponse,
-} from '../shared/index.js';
+} from "../shared/index.js";
 import type {
   GetConfigRequest,
   GetConfigResponse,
-} from '../main/ipc/config.js';
+} from "../main/ipc/config.js";
 import type {
   GetRegistryRequest,
   GetRegistryResponse,
-} from '../main/ipc/registry.js';
+} from "../main/ipc/registry.js";
 import type {
   GetInspectorSectionsRequest,
   GetInspectorSectionsResponse,
-} from '../shared/ipc.js';
+} from "../shared/ipc.js";
 
 // ─────────────────────────────────────────────────────────────────────────────
-// Preload: Typed window.scaffa APIs (v0)
+// Preload: Typed window.skaffa APIs (v0)
 // ─────────────────────────────────────────────────────────────────────────────
-// See: docs/scaffa_ipc_boundaries_and_sequences.md
+// See: docs/skaffa_ipc_boundaries_and_sequences.md
 
 /**
  * Typed callback handler for IPC events.
@@ -62,7 +62,7 @@ type EventCallback<T> = (event: T) => void;
  */
 type Unsubscribe = () => void;
 
-const scaffaApi = {
+const skaffaApi = {
   versions: {
     node: process.versions.node,
     chrome: process.versions.chrome,
@@ -74,50 +74,52 @@ const scaffaApi = {
   // ───────────────────────────────────────────────────────────────────────────
 
   workspace: {
-    select: (request: SelectWorkspaceRequest): Promise<SelectWorkspaceResponse> => {
-      return ipcRenderer.invoke('workspace:select', request);
+    select: (
+      request: SelectWorkspaceRequest,
+    ): Promise<SelectWorkspaceResponse> => {
+      return ipcRenderer.invoke("workspace:select", request);
     },
 
     get: (request: GetWorkspaceRequest): Promise<GetWorkspaceResponse> => {
-      return ipcRenderer.invoke('workspace:get', request);
+      return ipcRenderer.invoke("workspace:get", request);
     },
 
     getRecents: (
-      request: GetRecentWorkspacesRequest
+      request: GetRecentWorkspacesRequest,
     ): Promise<GetRecentWorkspacesResponse> => {
-      return ipcRenderer.invoke('workspace:getRecents', request);
+      return ipcRenderer.invoke("workspace:getRecents", request);
     },
 
     openRecent: (
-      request: OpenRecentWorkspaceRequest
+      request: OpenRecentWorkspaceRequest,
     ): Promise<OpenRecentWorkspaceResponse> => {
-      return ipcRenderer.invoke('workspace:openRecent', request);
+      return ipcRenderer.invoke("workspace:openRecent", request);
     },
 
     removeRecent: (
-      request: RemoveRecentWorkspaceRequest
+      request: RemoveRecentWorkspaceRequest,
     ): Promise<RemoveRecentWorkspaceResponse> => {
-      return ipcRenderer.invoke('workspace:removeRecent', request);
+      return ipcRenderer.invoke("workspace:removeRecent", request);
     },
 
     openDemo: (
-      request: OpenDemoWorkspaceRequest
+      request: OpenDemoWorkspaceRequest,
     ): Promise<OpenDemoWorkspaceResponse> => {
-      return ipcRenderer.invoke('workspace:openDemo', request);
+      return ipcRenderer.invoke("workspace:openDemo", request);
     },
 
     onWorkspaceChanged: (
-      callback: EventCallback<WorkspaceChangedEvent>
+      callback: EventCallback<WorkspaceChangedEvent>,
     ): Unsubscribe => {
       const listener = (
         _event: Electron.IpcRendererEvent,
-        data: WorkspaceChangedEvent
+        data: WorkspaceChangedEvent,
       ) => {
         callback(data);
       };
-      ipcRenderer.on('workspace:changed', listener);
+      ipcRenderer.on("workspace:changed", listener);
       return () => {
-        ipcRenderer.removeListener('workspace:changed', listener);
+        ipcRenderer.removeListener("workspace:changed", listener);
       };
     },
   },
@@ -128,7 +130,7 @@ const scaffaApi = {
 
   config: {
     get: (request: GetConfigRequest): Promise<GetConfigResponse> => {
-      return ipcRenderer.invoke('config:get', request);
+      return ipcRenderer.invoke("config:get", request);
     },
   },
 
@@ -138,7 +140,7 @@ const scaffaApi = {
 
   registry: {
     get: (request: GetRegistryRequest): Promise<GetRegistryResponse> => {
-      return ipcRenderer.invoke('registry:get', request);
+      return ipcRenderer.invoke("registry:get", request);
     },
   },
 
@@ -147,49 +149,68 @@ const scaffaApi = {
   // ───────────────────────────────────────────────────────────────────────────
 
   preview: {
-    startSession: (request: StartSessionRequest): Promise<StartSessionResponse> => {
-      return ipcRenderer.invoke('preview:startSession', request);
+    startSession: (
+      request: StartSessionRequest,
+    ): Promise<StartSessionResponse> => {
+      return ipcRenderer.invoke("preview:startSession", request);
     },
 
     stopSession: (request: StopSessionRequest): Promise<void> => {
-      return ipcRenderer.invoke('preview:stopSession', request);
+      return ipcRenderer.invoke("preview:stopSession", request);
     },
 
-    getLaunchers: (request: GetLaunchersRequest): Promise<GetLaunchersResponse> => {
-      return ipcRenderer.invoke('preview:getLaunchers', request);
+    getLaunchers: (
+      request: GetLaunchersRequest,
+    ): Promise<GetLaunchersResponse> => {
+      return ipcRenderer.invoke("preview:getLaunchers", request);
     },
 
     setViewport: (request: SetPreviewViewportRequest): Promise<void> => {
-      return ipcRenderer.invoke('preview:setViewport', request);
+      return ipcRenderer.invoke("preview:setViewport", request);
     },
 
-    onSessionReady: (callback: EventCallback<SessionReadyEvent>): Unsubscribe => {
-      const listener = (_event: Electron.IpcRendererEvent, data: SessionReadyEvent) => {
+    onSessionReady: (
+      callback: EventCallback<SessionReadyEvent>,
+    ): Unsubscribe => {
+      const listener = (
+        _event: Electron.IpcRendererEvent,
+        data: SessionReadyEvent,
+      ) => {
         callback(data);
       };
-      ipcRenderer.on('preview:sessionReady', listener);
+      ipcRenderer.on("preview:sessionReady", listener);
       return () => {
-        ipcRenderer.removeListener('preview:sessionReady', listener);
-      };
-    },
-
-    onSessionError: (callback: EventCallback<SessionErrorEvent>): Unsubscribe => {
-      const listener = (_event: Electron.IpcRendererEvent, data: SessionErrorEvent) => {
-        callback(data);
-      };
-      ipcRenderer.on('preview:sessionError', listener);
-      return () => {
-        ipcRenderer.removeListener('preview:sessionError', listener);
+        ipcRenderer.removeListener("preview:sessionReady", listener);
       };
     },
 
-    onSessionStopped: (callback: EventCallback<SessionStoppedEvent>): Unsubscribe => {
-      const listener = (_event: Electron.IpcRendererEvent, data: SessionStoppedEvent) => {
+    onSessionError: (
+      callback: EventCallback<SessionErrorEvent>,
+    ): Unsubscribe => {
+      const listener = (
+        _event: Electron.IpcRendererEvent,
+        data: SessionErrorEvent,
+      ) => {
         callback(data);
       };
-      ipcRenderer.on('preview:sessionStopped', listener);
+      ipcRenderer.on("preview:sessionError", listener);
       return () => {
-        ipcRenderer.removeListener('preview:sessionStopped', listener);
+        ipcRenderer.removeListener("preview:sessionError", listener);
+      };
+    },
+
+    onSessionStopped: (
+      callback: EventCallback<SessionStoppedEvent>,
+    ): Unsubscribe => {
+      const listener = (
+        _event: Electron.IpcRendererEvent,
+        data: SessionStoppedEvent,
+      ) => {
+        callback(data);
+      };
+      ipcRenderer.on("preview:sessionStopped", listener);
+      return () => {
+        ipcRenderer.removeListener("preview:sessionStopped", listener);
       };
     },
   },
@@ -200,17 +221,17 @@ const scaffaApi = {
 
   selection: {
     onSelectionChanged: (
-      callback: EventCallback<SelectionChangedEvent>
+      callback: EventCallback<SelectionChangedEvent>,
     ): Unsubscribe => {
       const listener = (
         _event: Electron.IpcRendererEvent,
-        data: SelectionChangedEvent
+        data: SelectionChangedEvent,
       ) => {
         callback(data);
       };
-      ipcRenderer.on('selection:changed', listener);
+      ipcRenderer.on("selection:changed", listener);
       return () => {
-        ipcRenderer.removeListener('selection:changed', listener);
+        ipcRenderer.removeListener("selection:changed", listener);
       };
     },
   },
@@ -221,37 +242,37 @@ const scaffaApi = {
 
   overrides: {
     set: (request: SetOverrideRequest): Promise<void> => {
-      return ipcRenderer.invoke('overrides:set', request);
+      return ipcRenderer.invoke("overrides:set", request);
     },
 
     clear: (request: ClearOverrideRequest): Promise<void> => {
-      return ipcRenderer.invoke('overrides:clear', request);
+      return ipcRenderer.invoke("overrides:clear", request);
     },
 
     clearInstance: (request: ClearInstanceOverridesRequest): Promise<void> => {
-      return ipcRenderer.invoke('overrides:clearInstance', request);
+      return ipcRenderer.invoke("overrides:clearInstance", request);
     },
 
     clearAll: (request: ClearAllOverridesRequest): Promise<void> => {
-      return ipcRenderer.invoke('overrides:clearAll', request);
+      return ipcRenderer.invoke("overrides:clearAll", request);
     },
 
     save: (request: SaveOverridesRequest): Promise<SaveOverridesResponse> => {
-      return ipcRenderer.invoke('overrides:save', request);
+      return ipcRenderer.invoke("overrides:save", request);
     },
 
     onOverridesChanged: (
-      callback: EventCallback<OverridesChangedEvent>
+      callback: EventCallback<OverridesChangedEvent>,
     ): Unsubscribe => {
       const listener = (
         _event: Electron.IpcRendererEvent,
-        data: OverridesChangedEvent
+        data: OverridesChangedEvent,
       ) => {
         callback(data);
       };
-      ipcRenderer.on('overrides:changed', listener);
+      ipcRenderer.on("overrides:changed", listener);
       return () => {
-        ipcRenderer.removeListener('overrides:changed', listener);
+        ipcRenderer.removeListener("overrides:changed", listener);
       };
     },
   },
@@ -262,18 +283,21 @@ const scaffaApi = {
 
   graph: {
     getSnapshot: (
-      request: GetGraphSnapshotRequest
+      request: GetGraphSnapshotRequest,
     ): Promise<GetGraphSnapshotResponse> => {
-      return ipcRenderer.invoke('graph:getSnapshot', request);
+      return ipcRenderer.invoke("graph:getSnapshot", request);
     },
 
     onPatch: (callback: EventCallback<GraphPatch>): Unsubscribe => {
-      const listener = (_event: Electron.IpcRendererEvent, data: GraphPatch) => {
+      const listener = (
+        _event: Electron.IpcRendererEvent,
+        data: GraphPatch,
+      ) => {
         callback(data);
       };
-      ipcRenderer.on('graph:patch', listener);
+      ipcRenderer.on("graph:patch", listener);
       return () => {
-        ipcRenderer.removeListener('graph:patch', listener);
+        ipcRenderer.removeListener("graph:patch", listener);
       };
     },
   },
@@ -284,23 +308,23 @@ const scaffaApi = {
 
   inspector: {
     getSections: (
-      request: GetInspectorSectionsRequest
+      request: GetInspectorSectionsRequest,
     ): Promise<GetInspectorSectionsResponse> => {
-      return ipcRenderer.invoke('inspector:getSections', request);
+      return ipcRenderer.invoke("inspector:getSections", request);
     },
   },
 };
 
-contextBridge.exposeInMainWorld('scaffa', scaffaApi);
+contextBridge.exposeInMainWorld("skaffa", skaffaApi);
 
 // ─────────────────────────────────────────────────────────────────────────────
-// Type Augmentation for window.scaffa
+// Type Augmentation for window.skaffa
 // ─────────────────────────────────────────────────────────────────────────────
 
-export type ScaffaApi = typeof scaffaApi;
+export type SkaffaApi = typeof skaffaApi;
 
 declare global {
   interface Window {
-    scaffa: ScaffaApi;
+    skaffa: SkaffaApi;
   }
 }

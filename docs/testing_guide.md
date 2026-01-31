@@ -1,18 +1,18 @@
-# Scaffa Testing Guide
+# Skaffa Testing Guide
 
 ## Purpose
 
-Tests in Scaffa serve two primary purposes:
+Tests in Skaffa serve two primary purposes:
 1. **Verify correctness**
 2. **Document system behavior** for AI agents and developers
 
-This means tests should focus on **Scaffa-specific behavior and interactions**, not language or framework basics.
+This means tests should focus on **Skaffa-specific behavior and interactions**, not language or framework basics.
 
 ---
 
 ## What to Test
 
-### ✅ Prioritize Scaffa-Specific Behavior
+### ✅ Prioritize Skaffa-Specific Behavior
 
 **1) Cross-process communication (IPC)**
 - Renderer ⇄ Main ⇄ Extension Host flows
@@ -27,7 +27,7 @@ This means tests should focus on **Scaffa-specific behavior and interactions**, 
 - User action → state change → IPC → effect
 - Error handling and edge cases that impact workflow
 
-**4) Scaffa-specific logic**
+**4) Skaffa-specific logic**
 - JSON parsing/validation in JsonControl
 - Override conflict detection (orphaned overrides)
 - Graph or registry transformations
@@ -70,7 +70,7 @@ Avoid over-mocking that hides the interaction.
 Names should describe the exact behavior and boundary being validated.
 
 ### 4) Keep test harnesses stable and quiet
-- In jsdom tests, **never replace `globalThis.window`**; attach `window.scaffa` instead.
+- In jsdom tests, **never replace `globalThis.window`**; attach `window.skaffa` instead.
 - Use `waitFor`/`act` for async UI updates (avoid `setTimeout`-based waits).
 - If a test intentionally triggers a warning/error, suppress it **inside that test only** and restore afterward.
 - Prefer local fixture modules for module-loader tests (avoid relying on build artifacts).
@@ -79,7 +79,7 @@ Names should describe the exact behavior and boundary being validated.
 
 ## Quick Decision Tree
 
-1) **Is this Scaffa-specific behavior?**
+1) **Is this Skaffa-specific behavior?**
    - Yes → write it
    - No → skip it
 
@@ -121,7 +121,7 @@ Tests that validate workspace setup prerequisites are valuable because they
 document how filesystem layout impacts runtime behavior.
 
 ```typescript
-it('loads scaffa.config.js when @scaffa/config is installed in the workspace', async () => {
+it('loads skaffa.config.js when @skaffa/config is installed in the workspace', async () => {
   const configModule = await import(configPath);
 
   expect(configModule.default.schemaVersion).toBe('v0');
@@ -150,7 +150,7 @@ pnpm test:coverage
 Write tests that:
 - Document IPC and registry-driven behavior
 - Cover real user workflows and failure modes
-- Teach AI agents how Scaffa works
+- Teach AI agents how Skaffa works
 
 Avoid tests that:
 - Only prove frameworks or language features

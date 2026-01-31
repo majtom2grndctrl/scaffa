@@ -2,14 +2,14 @@ import type {
   ComponentRegistry,
   ComponentRegistryEntry,
   PropDefinition,
-  ScaffaConfig,
-} from '../../shared/index.js';
+  SkaffaConfig,
+} from "../../shared/index.js";
 
 // ─────────────────────────────────────────────────────────────────────────────
 // Registry Composer (v0)
 // ─────────────────────────────────────────────────────────────────────────────
 // Composes module registries and applies project overrides.
-// See: docs/scaffa_component_registry_schema.md
+// See: docs/skaffa_component_registry_schema.md
 
 /**
  * Compose an effective registry from module registries and project config.
@@ -25,10 +25,10 @@ import type {
  */
 export function composeRegistry(
   moduleRegistries: ComponentRegistry[],
-  config: ScaffaConfig
+  config: SkaffaConfig,
 ): ComponentRegistry {
   const composed: ComponentRegistry = {
-    schemaVersion: 'v0',
+    schemaVersion: "v0",
     components: {},
   };
 
@@ -54,7 +54,7 @@ export function composeRegistry(
     // If component doesn't exist yet, skip (can't override non-existent component)
     if (!existingEntry) {
       console.warn(
-        `[Registry] Cannot override non-existent component: ${typeId}`
+        `[Registry] Cannot override non-existent component: ${typeId}`,
       );
       continue;
     }
@@ -73,7 +73,7 @@ export function composeRegistry(
 
         if (!existingProp) {
           console.warn(
-            `[Registry] Cannot override non-existent prop: ${typeId}.${propName}`
+            `[Registry] Cannot override non-existent prop: ${typeId}.${propName}`,
           );
           continue;
         }
@@ -105,7 +105,7 @@ export function composeRegistry(
   }
 
   console.log(
-    `[Registry] Composed registry: ${Object.keys(composed.components).length} components`
+    `[Registry] Composed registry: ${Object.keys(composed.components).length} components`,
   );
 
   return composed;
@@ -116,7 +116,7 @@ export function composeRegistry(
  */
 export function getEmptyRegistry(): ComponentRegistry {
   return {
-    schemaVersion: 'v0',
+    schemaVersion: "v0",
     components: {},
   };
 }

@@ -1,7 +1,7 @@
-# Scaffa – Architecture Plan (Living Document)
+# Skaffa – Architecture Plan (Living Document)
 
 > **Status:** Draft / Living document  
-> **Intent:** This document captures the agreed architectural shape of Scaffa as of now. It is designed to be edited, amended, and versioned as Scaffa evolves.
+> **Intent:** This document captures the agreed architectural shape of Skaffa as of now. It is designed to be edited, amended, and versioned as Skaffa evolves.
 
 ---
 
@@ -14,52 +14,53 @@
 
 ## Agent Router (Task → Minimal Docs)
 
-- **Engineering conventions / code style** → `docs/scaffa_engineering_conventions.md`, `docs/scaffa_development_guide.md`
+- **Engineering conventions / code style** → `docs/skaffa_engineering_conventions.md`, `docs/skaffa_development_guide.md`
+- **Documentation writing style** → `docs/documentation_style_guide.md`
 - **UI visual language / theme tokens** → `docs/design/visual-language.md`, `docs/design/colors.md`
 - **Add/normalize UI components (shadcn)** → `.claude/skills/add-shadcn-component/SKILL.md`, `docs/design/colors.md`
-- **Inspector behavior & editing semantics** → `docs/scaffa_inspector_ux_semantics.md`, `docs/scaffa_component_registry_schema.md`, `docs/scaffa_override_model.md`
-- **Override model (data + persistence)** → `docs/scaffa_override_model.md`, `docs/scaffa_preview_session_protocol.md`
-- **Save to disk (validation + promotion)** → `docs/scaffa_save_to_disk_protocol.md`, `docs/scaffa_override_model.md`, `docs/scaffa_inspector_ux_semantics.md`
-- **Workspace file edits** → `docs/scaffa_workspace_edit_protocol.md`, `docs/scaffa_extension_api.md`
-- **Preview sessions & selection flows** → `docs/scaffa_preview_session_protocol.md`, `docs/scaffa_ipc_boundaries_and_sequences.md`, `docs/scaffa_runtime_adapter_contract.md`
-- **Runtime adapter implementation** → `docs/scaffa_runtime_adapter_contract.md`, `docs/scaffa_runtime_adapter_integration_guide.md`
-- **Harness model (managed Vite previews)** → `docs/scaffa_harness_model.md`, `docs/scaffa_preview_session_protocol.md`, `docs/scaffa_project_configuration_scaffa_config.md`
-- **Project configuration** → `docs/scaffa_project_configuration_scaffa_config.md`
-- **Extension API / modules** → `docs/scaffa_extension_api.md`, `docs/scaffa_extension_authoring_guide.md`
-- **Cross-process IPC debugging** → `docs/scaffa_ipc_boundaries_and_sequences.md`, `docs/scaffa_development_guide.md`
-- **MCP server/tooling** → `docs/scaffa_mcp_server_contract.md`
-- **Dev environment / pitfalls** → `docs/scaffa_development_guide.md` (optional: `docs/lessons_learned.md`)
+- **Inspector behavior & editing semantics** → `docs/skaffa_inspector_ux_semantics.md`, `docs/skaffa_component_registry_schema.md`, `docs/skaffa_override_model.md`
+- **Override model (data + persistence)** → `docs/skaffa_override_model.md`, `docs/skaffa_preview_session_protocol.md`
+- **Save to disk (validation + promotion)** → `docs/skaffa_save_to_disk_protocol.md`, `docs/skaffa_override_model.md`, `docs/skaffa_inspector_ux_semantics.md`
+- **Workspace file edits** → `docs/skaffa_workspace_edit_protocol.md`, `docs/skaffa_extension_api.md`
+- **Preview sessions & selection flows** → `docs/skaffa_preview_session_protocol.md`, `docs/skaffa_ipc_boundaries_and_sequences.md`, `docs/skaffa_runtime_adapter_contract.md`
+- **Runtime adapter implementation** → `docs/skaffa_runtime_adapter_contract.md`, `docs/skaffa_runtime_adapter_integration_guide.md`
+- **Harness model (managed Vite previews)** → `docs/skaffa_harness_model.md`, `docs/skaffa_preview_session_protocol.md`, `docs/skaffa_project_configuration_skaffa_config.md`
+- **Project configuration** → `docs/skaffa_project_configuration_skaffa_config.md`
+- **Extension API / modules** → `docs/skaffa_extension_api.md`, `docs/skaffa_extension_authoring_guide.md`
+- **Cross-process IPC debugging** → `docs/skaffa_ipc_boundaries_and_sequences.md`, `docs/skaffa_development_guide.md`
+- **MCP server/tooling** → `docs/skaffa_mcp_server_contract.md`
+- **Dev environment / pitfalls** → `docs/skaffa_development_guide.md` (optional: `docs/lessons_learned.md`)
 
 **Architecture contract docs (v0):**
-- v0 scope + first journey: [Scaffa v0 Scope + First User Journey](./scaffa_v0_scope_and_user_journey.md)
-- Runtime adapters: [Scaffa Runtime Adapter Contract](./scaffa_runtime_adapter_contract.md)
-- Component registries: [Scaffa Component Registry Schema](./scaffa_component_registry_schema.md)
-- Inspector semantics: [Scaffa Inspector UX Rules & Semantics](./scaffa_inspector_ux_semantics.md)
-- Preview sessions: [Scaffa Preview Session Protocol](./scaffa_preview_session_protocol.md)
-- Override model + persistence: [Scaffa Override Model + Persistence](./scaffa_override_model.md)
-- Save-to-disk protocol: [Scaffa Save-to-Disk Protocol](./scaffa_save_to_disk_protocol.md)
-- Workspace edit protocol: [Scaffa Workspace Edit Protocol](./scaffa_workspace_edit_protocol.md)
-- Project graph + patch protocol: [Scaffa Project Graph Schema + Patch Protocol](./scaffa_project_graph_schema.md)
-- IPC boundaries + sequence diagrams: [IPC Boundaries + Key Sequence Diagrams](./scaffa_ipc_boundaries_and_sequences.md)
-- MCP server: [Scaffa MCP Server Contract](./scaffa_mcp_server_contract.md)
-- (Deferred) Iteration Deck sketch: [Iteration Deck Integration Sketch](./scaffa_iteration_deck_integration.md)
+- v0 scope + first journey: [Skaffa v0 Scope + First User Journey](./skaffa_v0_scope_and_user_journey.md)
+- Runtime adapters: [Skaffa Runtime Adapter Contract](./skaffa_runtime_adapter_contract.md)
+- Component registries: [Skaffa Component Registry Schema](./skaffa_component_registry_schema.md)
+- Inspector semantics: [Skaffa Inspector UX Rules & Semantics](./skaffa_inspector_ux_semantics.md)
+- Preview sessions: [Skaffa Preview Session Protocol](./skaffa_preview_session_protocol.md)
+- Override model + persistence: [Skaffa Override Model + Persistence](./skaffa_override_model.md)
+- Save-to-disk protocol: [Skaffa Save-to-Disk Protocol](./skaffa_save_to_disk_protocol.md)
+- Workspace edit protocol: [Skaffa Workspace Edit Protocol](./skaffa_workspace_edit_protocol.md)
+- Project graph + patch protocol: [Skaffa Project Graph Schema + Patch Protocol](./skaffa_project_graph_schema.md)
+- IPC boundaries + sequence diagrams: [IPC Boundaries + Key Sequence Diagrams](./skaffa_ipc_boundaries_and_sequences.md)
+- MCP server: [Skaffa MCP Server Contract](./skaffa_mcp_server_contract.md)
+- (Deferred) Iteration Deck sketch: [Iteration Deck Integration Sketch](./skaffa_iteration_deck_integration.md)
 
 **Design language (v0):**
-- Visual language: [Scaffa Visual Language](./design/visual-language.md)
-- Theme color semantics: [Scaffa Semantic Color Utilities](./design/colors.md)
+- Visual language: [Skaffa Visual Language](./design/visual-language.md)
+- Theme color semantics: [Skaffa Semantic Color Utilities](./design/colors.md)
 
 **Implementation guides (v0):**
-- Extension authoring: [Scaffa Extension Authoring Guide](./scaffa_extension_authoring_guide.md)
-- Engineering conventions: [Scaffa Engineering Conventions](./scaffa_engineering_conventions.md)
-- Runtime adapter integration: [Scaffa Runtime Adapter Integration Guide](./scaffa_runtime_adapter_integration_guide.md)
-- Harness model: [Scaffa Harness Model](./scaffa_harness_model.md)
-- Development setup + pitfalls: [Scaffa Development Guide](./scaffa_development_guide.md)
+- Extension authoring: [Skaffa Extension Authoring Guide](./skaffa_extension_authoring_guide.md)
+- Engineering conventions: [Skaffa Engineering Conventions](./skaffa_engineering_conventions.md)
+- Runtime adapter integration: [Skaffa Runtime Adapter Integration Guide](./skaffa_runtime_adapter_integration_guide.md)
+- Harness model: [Skaffa Harness Model](./skaffa_harness_model.md)
+- Development setup + pitfalls: [Skaffa Development Guide](./skaffa_development_guide.md)
 
 ## 1. Product Definition
 
 > **CLI note:** Use `pnpm` for all applicable commands (install, dev server, builds).
 
-Scaffa is an **Integrated Design Environment (IDE) for web-based software**.
+Skaffa is an **Integrated Design Environment (IDE) for web-based software**.
 
 It enables designers to work directly with real, production web code through:
 - Visual structure inspired by game engines (notably Godot)
@@ -67,12 +68,12 @@ It enables designers to work directly with real, production web code through:
 - Explicit, engineer-authored configuration and guardrails
 - AI-assisted workflows that are constrained, inspectable, and reversible
 
-Scaffa is **not** a code generator that replaces engineering. It is an editor that:
+Skaffa is **not** a code generator that replaces engineering. It is an editor that:
 - abstracts incidental complexity
 - preserves control over output code
 - always provides an escape hatch to source
 
-Scaffa’s UI cannot (and should not) cover every aspect of code. Like game engines, it can surface a large, composable subset of structure and configuration, but complex logic will continue to live in code files.
+Skaffa’s UI cannot (and should not) cover every aspect of code. Like game engines, it can surface a large, composable subset of structure and configuration, but complex logic will continue to live in code files.
 
 ---
 
@@ -88,7 +89,7 @@ Phase 1 focuses on **editing component instances**, not component types.
 
 ### 2.2 Explicit Editability
 
-Scaffa does not infer editability by magic.
+Skaffa does not infer editability by magic.
 
 - Engineers provide a **configuration layer** that declares:
   - which components are editable
@@ -99,17 +100,17 @@ Editable vs non-editable is a first-class concept surfaced in the Inspector UI.
 
 ### 2.3 Modular + Extensible by Design
 
-Scaffa core ships with **minimal user-facing features**.
+Skaffa core ships with **minimal user-facing features**.
 
 Most functionality is delivered via **extensions**. An extension bundle may include:
 - a **module** (extension-host code: registries, graph producers, launchers)
 - optional **packages** (runtime libraries used by app/source code)
 
-Extensions are expected to be authored both by Scaffa and by companies.
+Extensions are expected to be authored both by Skaffa and by companies.
 
 ### 2.4 Extension Host Architecture (Case 2)
 
-Scaffa supports **imperative, powerful modules** from day one using an **extension host**.
+Skaffa supports **imperative, powerful modules** from day one using an **extension host**.
 
 Key properties:
 - All module code runs in a dedicated extension host process
@@ -124,9 +125,9 @@ This enables:
 
 ## 3. Process Model
 
-Scaffa is a **multi-process Electron application**.
+Skaffa is a **multi-process Electron application**.
 
-See also: [IPC Boundaries + Key Sequence Diagrams](./scaffa_ipc_boundaries_and_sequences.md)
+See also: [IPC Boundaries + Key Sequence Diagrams](./skaffa_ipc_boundaries_and_sequences.md)
 
 ### 3.1 Main Process (Host)
 
@@ -168,7 +169,7 @@ Modules may be imperative, but are boxed.
 
 ### 3.5 Workspace Sidecar Process (Optional, Planned)
 
-Scaffa may optionally run one or more **sidecar processes** for operations that are:
+Skaffa may optionally run one or more **sidecar processes** for operations that are:
 - file-heavy (large workspaces, lots of reads)
 - compute-heavy (parsing / indexing / analysis)
 - latency-sensitive (incremental updates)
@@ -177,7 +178,7 @@ In v0, the most likely first sidecar is a **Workspace Sidecar** (implemented in 
 
 Responsibilities:
 - Maintain a workspace file index and caches (content hashes, parsed artifacts)
-- Serve high-volume reads/searches/analysis to Scaffa services
+- Serve high-volume reads/searches/analysis to Skaffa services
 - Perform incremental recomputation on file change events
 
 Constraints:
@@ -185,7 +186,7 @@ Constraints:
 - Sidecar does not write to workspace; all workspace writes remain owned by main via transactional edits.
 - Sidecar is not directly reachable from renderer; access is mediated by main-owned capabilities.
 
-See also: [Scaffa Sidecar Process](./scaffa_sidecar_process.md)
+See also: [Skaffa Sidecar Process](./skaffa_sidecar_process.md)
 
 ### 3.6 Source Code Organization
 
@@ -223,7 +224,7 @@ src/
     └── preview-session.ts  # Preview session types
 ```
 
-See `docs/scaffa_development_guide.md` for build output structure and development workflows.
+See `docs/skaffa_development_guide.md` for build output structure and development workflows.
 
 ---
 
@@ -231,9 +232,9 @@ See `docs/scaffa_development_guide.md` for build output structure and developmen
 
 ### 4.1 Project Graph
 
-Scaffa maintains a **framework-agnostic Project Graph** as canonical truth.
+Skaffa maintains a **framework-agnostic Project Graph** as canonical truth.
 
-See also: [Scaffa Project Graph Schema + Patch Protocol](./scaffa_project_graph_schema.md)
+See also: [Skaffa Project Graph Schema + Patch Protocol](./skaffa_project_graph_schema.md)
 
 Includes:
 - Routes
@@ -250,15 +251,15 @@ Preview is modeled as sessions:
 - `component` – harnessed component instance
 - (future) `variant` – Iteration Deck
 
-See also: [Scaffa Preview Session Protocol](./scaffa_preview_session_protocol.md)
+See also: [Skaffa Preview Session Protocol](./skaffa_preview_session_protocol.md)
 
 This abstraction is required from day one.
 
-In v0, preview targets are treated as **independent runtimes** (typically a framework dev server). Scaffa can either:
+In v0, preview targets are treated as **independent runtimes** (typically a framework dev server). Skaffa can either:
 - **attach** by URL (`{ type: "app", url }`), or
 - **manage** a dev server via a preview launcher module (`{ type: "app", launcherId }`, recommended for Vite Harness Model).
 
-Scaffa core does not bundle frameworks; toolchain-specific launchers own server startup and injection behavior.
+Skaffa core does not bundle frameworks; toolchain-specific launchers own server startup and injection behavior.
 
 ### 4.3 Inspector
 
@@ -271,9 +272,9 @@ Inspector behavior:
   - opaque props with source links
 
 See also:
-- [Scaffa Inspector UX Rules & Semantics](./scaffa_inspector_ux_semantics.md)
-- [Scaffa Component Registry Schema](./scaffa_component_registry_schema.md)
-- [Scaffa Override Model + Persistence](./scaffa_override_model.md)
+- [Skaffa Inspector UX Rules & Semantics](./skaffa_inspector_ux_semantics.md)
+- [Skaffa Component Registry Schema](./skaffa_component_registry_schema.md)
+- [Skaffa Override Model + Persistence](./skaffa_override_model.md)
 
 Edits begin as **draft overrides** applied to preview sessions for immediate feedback, and can be **saved to disk** as working-tree code edits.
 
@@ -285,7 +286,7 @@ Edits begin as **draft overrides** applied to preview sessions for immediate fee
 
 Extension modules may contribute registries describing component libraries.
 
-See also: [Scaffa Component Registry Schema](./scaffa_component_registry_schema.md)
+See also: [Skaffa Component Registry Schema](./skaffa_component_registry_schema.md)
 
 Example:
 - Shadcn extension module maps Shadcn components to:
@@ -295,7 +296,7 @@ Example:
 
 ### 5.2 Project Manifest
 
-Each Scaffa project defines a manifest (e.g. `scaffa.config.js`) that:
+Each Skaffa project defines a manifest (e.g. `skaffa.config.js`) that:
 - enables extension modules (often from `extensions/<name>/module/`)
 - customizes or overrides registry entries
 - defines providers/decorators
@@ -307,7 +308,7 @@ Framework-specific runtime adapters handle:
 - click-to-select (v0 Editor View)
 - applying prop overrides
 
-See also: [Scaffa Runtime Adapter Contract](./scaffa_runtime_adapter_contract.md)
+See also: [Skaffa Runtime Adapter Contract](./skaffa_runtime_adapter_contract.md)
 
 Adapters are separate from registries.
 
@@ -331,7 +332,7 @@ All AI code changes:
 
 ## 7. Renderer UI Stack (Canonical)
 
-> This section is merged from the existing *Scaffa Frontend Stack (Renderer)* document.
+> This section is merged from the existing *Skaffa Frontend Stack (Renderer)* document.
 
 ### Core Framework
 - React
@@ -343,12 +344,12 @@ All AI code changes:
 - @vitejs/plugin-react
 
 ### Styling & UI Primitives
-- Tailwind CSS (Scaffa UI only)
+- Tailwind CSS (Skaffa UI only)
 - PostCSS
 - Autoprefixer
 - shadcn/ui (BaseUI variant)
 
-The renderer UI should default to shadcn/ui components for new primitives and composable UI pieces. Use the shadcn CLI from `src/renderer` and remap palette utility classes to Scaffa theme tokens in `src/renderer/styles.css` so renderer styling stays consistent.
+The renderer UI should default to shadcn/ui components for new primitives and composable UI pieces. Use the shadcn CLI from `src/renderer` and remap palette utility classes to Skaffa theme tokens in `src/renderer/styles.css` so renderer styling stays consistent.
 
 ### State & Workbench Architecture
 - Zustand
@@ -391,7 +392,7 @@ State domains:
 
 - Prefer code that is clear and understandable over clever code.
 - Prefer accessible markup with semantic HTML.
-- Follow: [Scaffa Engineering Conventions](./scaffa_engineering_conventions.md)
+- Follow: [Skaffa Engineering Conventions](./skaffa_engineering_conventions.md)
 
 ---
 
@@ -402,7 +403,7 @@ State domains:
 - Type-level component authoring UI
 - Full runtime tree introspection
 
-See also: [Iteration Deck Integration Sketch](./scaffa_iteration_deck_integration.md)
+See also: [Iteration Deck Integration Sketch](./skaffa_iteration_deck_integration.md)
 
 These are architectural considerations, not v0 deliverables.
 
@@ -410,4 +411,4 @@ These are architectural considerations, not v0 deliverables.
 
 ## 10. Guiding Principle
 
-**Scaffa edits what it can prove is safe to edit, displays what it cannot, and always provides an escape hatch to code.**
+**Skaffa edits what it can prove is safe to edit, displays what it cannot, and always provides an escape hatch to code.**

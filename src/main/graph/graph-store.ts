@@ -2,7 +2,7 @@
 // Project Graph Store (v0)
 // ─────────────────────────────────────────────────────────────────────────────
 // Authoritative project graph store in main process.
-// See: docs/scaffa_project_graph_schema.md
+// See: docs/skaffa_project_graph_schema.md
 
 import type {
   GraphNode,
@@ -15,7 +15,7 @@ import type {
   ComponentTypeId,
   PreviewSessionId,
   InstanceId,
-} from '../../shared/index.js';
+} from "../../shared/index.js";
 
 // ─────────────────────────────────────────────────────────────────────────────
 // Graph Store Types
@@ -41,7 +41,7 @@ export class ProjectGraphStore {
    */
   getSnapshot(): GraphSnapshot {
     return {
-      schemaVersion: 'v0',
+      schemaVersion: "v0",
       revision: this.revision,
       nodes: Array.from(this.nodes.values()),
       edges: Array.from(this.edges).map((e) => JSON.parse(e)),
@@ -58,7 +58,7 @@ export class ProjectGraphStore {
     const globalRevision = this.revision + 1;
 
     console.log(
-      `[GraphStore] Applying patch (producer revision: ${patch.revision}, assigned global: ${globalRevision}, ${patch.ops.length} ops)`
+      `[GraphStore] Applying patch (producer revision: ${patch.revision}, assigned global: ${globalRevision}, ${patch.ops.length} ops)`,
     );
 
     // Apply all operations in the patch
@@ -86,23 +86,33 @@ export class ProjectGraphStore {
    */
   applySnapshot(
     producerId: string,
-    snapshot: GraphSnapshot
+    snapshot: GraphSnapshot,
   ): { globalRevision: GraphRevision; patch: GraphPatch } {
     console.log(
-      `[GraphStore] Applying snapshot from producer: ${producerId} (producer revision: ${snapshot.revision}, ${snapshot.nodes.length} nodes, ${snapshot.edges.length} edges)`
+      `[GraphStore] Applying snapshot from producer: ${producerId} (producer revision: ${snapshot.revision}, ${snapshot.nodes.length} nodes, ${snapshot.edges.length} edges)`,
     );
 
     // Get existing nodes/edges owned by this producer
-    const existingNodeKeys = this.producerNodes.get(producerId) ?? new Set<NodeKey>();
-    const existingEdgeKeys = this.producerEdges.get(producerId) ?? new Set<string>();
+    const existingNodeKeys =
+      this.producerNodes.get(producerId) ?? new Set<NodeKey>();
+    const existingEdgeKeys =
+      this.producerEdges.get(producerId) ?? new Set<string>();
 
     // Compute new node/edge keys from snapshot
-    const newNodeKeys = new Set(snapshot.nodes.map((node) => this.makeNodeKey(node)));
-    const newEdgeKeys = new Set(snapshot.edges.map((edge) => this.makeEdgeKey(edge)));
+    const newNodeKeys = new Set(
+      snapshot.nodes.map((node) => this.makeNodeKey(node)),
+    );
+    const newEdgeKeys = new Set(
+      snapshot.edges.map((edge) => this.makeEdgeKey(edge)),
+    );
 
     // Compute nodes/edges to remove (in existing but not in new)
-    const nodesToRemove = Array.from(existingNodeKeys).filter((key) => !newNodeKeys.has(key));
-    const edgesToRemove = Array.from(existingEdgeKeys).filter((key) => !newEdgeKeys.has(key));
+    const nodesToRemove = Array.from(existingNodeKeys).filter(
+      (key) => !newNodeKeys.has(key),
+    );
+    const edgesToRemove = Array.from(existingEdgeKeys).filter(
+      (key) => !newEdgeKeys.has(key),
+    );
 
     // Build patch operations
     const ops: GraphOp[] = [
@@ -112,15 +122,15 @@ export class ProjectGraphStore {
         if (!node) {
           throw new Error(`[GraphStore] Cannot remove node ${key}: not found`);
         }
-        return { op: 'removeNode' as const, node: this.makeNodeRef(node) };
+        return { op: "removeNode" as const, node: this.makeNodeRef(node) };
       }),
       ...edgesToRemove.map((key) => {
         const edge = JSON.parse(key) as GraphEdge;
-        return { op: 'removeEdge' as const, edge };
+        return { op: "removeEdge" as const, edge };
       }),
       // Upsert operations for all nodes/edges in snapshot
-      ...snapshot.nodes.map((node) => ({ op: 'upsertNode' as const, node })),
-      ...snapshot.edges.map((edge) => ({ op: 'upsertEdge' as const, edge })),
+      ...snapshot.nodes.map((node) => ({ op: "upsertNode" as const, node })),
+      ...snapshot.edges.map((edge) => ({ op: "upsertEdge" as const, edge })),
     ];
 
     // Apply the patch (assigns global revision)
@@ -136,7 +146,7 @@ export class ProjectGraphStore {
     this.producerEdges.set(producerId, newEdgeKeys);
 
     console.log(
-      `[GraphStore] Snapshot applied: ${nodesToRemove.length} nodes removed, ${snapshot.nodes.length} nodes upserted, ${edgesToRemove.length} edges removed, ${snapshot.edges.length} edges upserted`
+      `[GraphStore] Snapshot applied: ${nodesToRemove.length} nodes removed, ${snapshot.nodes.length} nodes upserted, ${edgesToRemove.length} edges removed, ${snapshot.edges.length} edges upserted`,
     );
 
     // Return both the global revision and the patch with global revision
@@ -153,9 +163,13 @@ export class ProjectGraphStore {
    */
   getNode(
     nodeRef:
-      | { kind: 'route'; id: RouteId }
-      | { kind: 'componentType'; id: ComponentTypeId }
-      | { kind: 'instance'; sessionId: PreviewSessionId; instanceId: InstanceId }
+      | { kind: "route"; id: RouteId }
+      | { kind: "componentType"; id: ComponentTypeId }
+      | {
+          kind: "instance";
+          sessionId: PreviewSessionId;
+          instanceId: InstanceId;
+        },
   ): GraphNode | null {
     const key = this.makeNodeKey(nodeRef);
     return this.nodes.get(key) ?? null;
@@ -181,19 +195,19 @@ export class ProjectGraphStore {
    */
   private applyOp(op: GraphOp): void {
     switch (op.op) {
-      case 'upsertNode':
+      case "upsertNode":
         this.upsertNode(op.node);
         break;
 
-      case 'removeNode':
+      case "removeNode":
         this.removeNode(op.node);
         break;
 
-      case 'upsertEdge':
+      case "upsertEdge":
         this.upsertEdge(op.edge);
         break;
 
-      case 'removeEdge':
+      case "removeEdge":
         this.removeEdge(op.edge);
         break;
     }
@@ -213,9 +227,13 @@ export class ProjectGraphStore {
    */
   private removeNode(
     nodeRef:
-      | { kind: 'route'; id: RouteId }
-      | { kind: 'componentType'; id: ComponentTypeId }
-      | { kind: 'instance'; sessionId: PreviewSessionId; instanceId: InstanceId }
+      | { kind: "route"; id: RouteId }
+      | { kind: "componentType"; id: ComponentTypeId }
+      | {
+          kind: "instance";
+          sessionId: PreviewSessionId;
+          instanceId: InstanceId;
+        },
   ): void {
     const key = this.makeNodeKey(nodeRef);
     const existed = this.nodes.delete(key);
@@ -249,16 +267,20 @@ export class ProjectGraphStore {
    */
   private makeNodeKey(
     node:
-      | { kind: 'route'; id: RouteId }
-      | { kind: 'componentType'; id: ComponentTypeId }
-      | { kind: 'instance'; sessionId: PreviewSessionId; instanceId: InstanceId }
+      | { kind: "route"; id: RouteId }
+      | { kind: "componentType"; id: ComponentTypeId }
+      | {
+          kind: "instance";
+          sessionId: PreviewSessionId;
+          instanceId: InstanceId;
+        },
   ): NodeKey {
     switch (node.kind) {
-      case 'route':
+      case "route":
         return `route:${node.id}`;
-      case 'componentType':
+      case "componentType":
         return `componentType:${node.id}`;
-      case 'instance':
+      case "instance":
         return `instance:${node.sessionId}:${node.instanceId}`;
     }
   }
@@ -267,18 +289,26 @@ export class ProjectGraphStore {
    * Convert a GraphNode to a node reference for remove operations.
    */
   private makeNodeRef(
-    node: GraphNode
+    node: GraphNode,
   ):
-    | { kind: 'route'; id: RouteId }
-    | { kind: 'componentType'; id: ComponentTypeId }
-    | { kind: 'instance'; sessionId: PreviewSessionId; instanceId: InstanceId } {
+    | { kind: "route"; id: RouteId }
+    | { kind: "componentType"; id: ComponentTypeId }
+    | {
+        kind: "instance";
+        sessionId: PreviewSessionId;
+        instanceId: InstanceId;
+      } {
     switch (node.kind) {
-      case 'route':
-        return { kind: 'route', id: node.id };
-      case 'componentType':
-        return { kind: 'componentType', id: node.id };
-      case 'instance':
-        return { kind: 'instance', sessionId: node.sessionId, instanceId: node.instanceId };
+      case "route":
+        return { kind: "route", id: node.id };
+      case "componentType":
+        return { kind: "componentType", id: node.id };
+      case "instance":
+        return {
+          kind: "instance",
+          sessionId: node.sessionId,
+          instanceId: node.instanceId,
+        };
     }
   }
 

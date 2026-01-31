@@ -6,7 +6,7 @@ import { JsonValueSchema } from './common.js';
 // Component Registry Schema (v0)
 // ─────────────────────────────────────────────────────────────────────────────
 // Defines the canonical schema for component metadata.
-// See: docs/scaffa_component_registry_schema.md
+// See: docs/skaffa_component_registry_schema.md
 
 export type ComponentTypeId = z.infer<typeof ComponentTypeIdSchema>;
 export type JsonValue = z.infer<typeof JsonValueSchema>;
@@ -107,7 +107,7 @@ export type PropDefinition = z.infer<typeof PropDefinitionSchema>;
 // Component Implementation Hints (Harness Model)
 // ─────────────────────────────────────────────────────────────────────────────
 // Optional hints used by preview launchers to decide what code to instrument.
-// See: docs/scaffa_component_registry_schema.md (5.1/5.2)
+// See: docs/skaffa_component_registry_schema.md (5.1/5.2)
 
 export const FileImplementationHintSchema = z.object({
   kind: z.literal('file'),
@@ -158,7 +158,7 @@ export const ComponentRegistryEntrySchema = z.object({
   /**
    * Optional instrumentation hints used by managed preview launchers.
    * These hints are NOT identifiers; they can change without changing typeId.
-   * See: docs/scaffa_component_registry_schema.md (5.1/5.2)
+   * See: docs/skaffa_component_registry_schema.md (5.1/5.2)
    */
   implementation: z.union([
     ComponentImplementationHintSchema,

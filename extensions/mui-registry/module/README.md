@@ -1,6 +1,6 @@
 # MUI Registry Module
 
-A Scaffa registry module that provides component metadata for [Material UI](https://mui.com/material-ui/) (`@mui/material`) components.
+A Skaffa registry module that provides component metadata for [Material UI](https://mui.com/material-ui/) (`@mui/material`) components.
 
 ## Components
 
@@ -17,10 +17,10 @@ This module registers the following MUI components:
 
 ## Usage
 
-Add the module to your `scaffa.config.js`:
+Add the module to your `skaffa.config.js`:
 
 ```js
-// scaffa.config.js
+// skaffa.config.js
 export default {
   modules: [
     // ... other modules
@@ -42,10 +42,10 @@ For example:
 To add more MUI components or customize existing entries, you can:
 
 1. **Contribute additional components** in a downstream module
-2. **Override props** via project configuration in `scaffa.config.js`:
+2. **Override props** via project configuration in `skaffa.config.js`:
 
 ```js
-// scaffa.config.js
+// skaffa.config.js
 export default {
   modules: ['./modules/mui-registry/index.js'],
   registry: {
@@ -76,5 +76,5 @@ export default {
 
 ## Related Documentation
 
-- [Scaffa Component Registry Schema](../../docs/scaffa_component_registry_schema.md)
-- [Scaffa Extension Authoring Guide](../../docs/scaffa_extension_authoring_guide.md)
+- [Skaffa Component Registry Schema](../../docs/skaffa_component_registry_schema.md)
+- [Skaffa Extension Authoring Guide](../../docs/skaffa_extension_authoring_guide.md)

@@ -10,7 +10,7 @@ import { OverrideOpSchema, type OverrideOp } from './override.js';
 // ─────────────────────────────────────────────────────────────────────────────
 // Runtime Adapter Protocol (v0)
 // ─────────────────────────────────────────────────────────────────────────────
-// See: docs/scaffa_runtime_adapter_contract.md
+// See: docs/skaffa_runtime_adapter_contract.md
 
 /**
  * Adapter identifier (e.g., "react", "nextjs-react").

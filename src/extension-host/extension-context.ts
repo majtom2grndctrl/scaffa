@@ -1,18 +1,18 @@
 // ─────────────────────────────────────────────────────────────────────────────
 // Extension Context API (v0)
 // ─────────────────────────────────────────────────────────────────────────────
-// The sole entry point for extension modules to interact with Scaffa.
+// The sole entry point for extension modules to interact with Skaffa.
 
-import type { ComponentRegistry } from '../shared/index.js';
-import type { GraphPatch, GraphSnapshot } from '../shared/project-graph.js';
+import type { ComponentRegistry } from "../shared/index.js";
+import type { GraphPatch, GraphSnapshot } from "../shared/project-graph.js";
 import type {
   PreviewLauncherDescriptor,
   PreviewLauncherOptions,
   PreviewLaunchResult,
   PreviewLogEntry,
-} from '../shared/preview-session.js';
-import type { DraftOverride, SavePlan } from '../shared/save.js';
-import type { InspectorSectionContribution } from '../shared/inspector-sections.js';
+} from "../shared/preview-session.js";
+import type { DraftOverride, SavePlan } from "../shared/save.js";
+import type { InspectorSectionContribution } from "../shared/inspector-sections.js";
 
 // ─────────────────────────────────────────────────────────────────────────────
 // Disposable Pattern
@@ -125,7 +125,7 @@ export interface GraphAPI {
 
 /**
  * Context provided to the launcher when starting a session.
- * Contains project-level configuration from scaffa.config.js.
+ * Contains project-level configuration from skaffa.config.js.
  */
 export interface PreviewLauncherContext {
   /**
@@ -146,7 +146,7 @@ export interface PreviewLauncherContext {
   /**
    * Composed component registry snapshot.
    * The launcher uses this to build instrumentation matchers from ComponentImplementationHint.
-   * See: docs/scaffa_component_registry_schema.md (5.1/5.2), docs/scaffa_harness_model.md (5.4-5.6)
+   * See: docs/skaffa_component_registry_schema.md (5.1/5.2), docs/skaffa_harness_model.md (5.4-5.6)
    */
   readonly registrySnapshot?: ComponentRegistry;
 }
@@ -169,7 +169,7 @@ export interface PreviewLauncher {
    */
   start(
     options: PreviewLauncherOptions,
-    context: PreviewLauncherContext
+    context: PreviewLauncherContext,
   ): Promise<PreviewLaunchResult>;
 
   /**

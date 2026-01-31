@@ -1,6 +1,6 @@
-# Scaffa Demo Workspace (v0)
+# Skaffa Demo Workspace (v0)
 
-> **Purpose:** Validates the complete v0 end-to-end journey for Scaffa's Integrated Design Environment
+> **Purpose:** Validates the complete v0 end-to-end journey for Skaffa's Integrated Design Environment
 
 ## What This Demonstrates
 
@@ -10,7 +10,7 @@ This demo workspace showcases all core v0 capabilities:
 2. **Runtime Adapter** - React adapter with click-to-select and override application
 3. **Preview Sessions** - Running React app in preview with live updates
 4. **Inspector Editing** - Edit component props with live preview updates
-5. **Override Persistence** - Non-destructive overrides saved to `.scaffa/overrides.v0.json`
+5. **Override Persistence** - Non-destructive overrides saved to `.skaffa/overrides.v0.json`
 6. **Project Graph** - Routes and component types from graph producer
 7. **Multi-route App** - Navigation and routed pages with a realistic UI surface
 
@@ -19,7 +19,7 @@ This demo workspace showcases all core v0 capabilities:
 ```
 demo/
 ├── package.json               # Workspace-only dev dependencies (extension modules)
-├── scaffa.config.js           # Workspace configuration
+├── skaffa.config.js           # Workspace configuration
 ├── vendor/                    # Packed extension modules + runtime packages (generated)
 ├── extensions/
 │   └── demo-module/           # Component registry provider
@@ -27,7 +27,7 @@ demo/
 │       └── package.json
 ├── app/                       # Sample React application
 │   ├── src/
-│   │   ├── main.tsx          # Production entry (no Scaffa deps)
+│   │   ├── main.tsx          # Production entry (no Skaffa deps)
 │   │   ├── App.tsx           # Preview entry (router + UI)
 │   │   ├── routes.tsx         # React Router routes
 │   │   ├── data/
@@ -44,7 +44,7 @@ demo/
 │   ├── package.json
 │   ├── vite.config.ts
 │   └── index.html
-└── .scaffa/                   # Workspace data
+└── .skaffa/                   # Workspace data
     └── overrides.v0.json      # Persisted overrides (created on first edit)
 ```
 
@@ -52,7 +52,7 @@ demo/
 
 ### 1. Prepare Workspace Extensions
 
-Build and pack the local extension modules, `@scaffa/config`, and layout
+Build and pack the local extension modules, `@skaffa/config`, and layout
 primitives, then install them into the demo workspace:
 
 ```bash
@@ -68,9 +68,9 @@ pnpm -C demo/app install
 If you ran `pnpm demo:refresh-extensions`, this is already done; re-run if
 dependencies changed.
 
-### 3. Start Scaffa
+### 3. Start Skaffa
 
-From the root of the Scaffa project:
+From the root of the Skaffa project:
 
 ```bash
 pnpm dev
@@ -78,9 +78,9 @@ pnpm dev
 
 ### 4. Open Demo Workspace
 
-- In Scaffa (Launcher), use **Open Workspace**
+- In Skaffa (Launcher), use **Open Workspace**
 - Navigate to and select the `demo/` directory
-- Scaffa will load `scaffa.config.js` and activate modules
+- Skaffa will load `skaffa.config.js` and activate modules
 
 ### 5. Start App Preview
 
@@ -104,10 +104,10 @@ pnpm dev
 ### 8. Verify Override Persistence
 
 - Make some edits in the Inspector
-- Close and reopen Scaffa
+- Close and reopen Skaffa
 - Reopen the demo workspace
 - Start app preview again
-- **Overrides are preserved** from `demo/.scaffa/overrides.v0.json`
+- **Overrides are preserved** from `demo/.skaffa/overrides.v0.json`
 
 ## Components
 
@@ -131,17 +131,17 @@ Layout primitives used throughout the app:
 
 ## Runtime Dependency Exception
 
-The demo app intentionally depends on `@scaffa/layout-primitives-react` at runtime.
-This is the one approved exception to the "no @scaffa/* runtime dependencies" rule.
+The demo app intentionally depends on `@skaffa/layout-primitives-react` at runtime.
+This is the one approved exception to the "no @skaffa/* runtime dependencies" rule.
 In-repo, we install it from `demo/vendor` (local pack) to keep the workspace portable.
 If you move the demo app outside this repo, replace the local tarball with a published
-version of `@scaffa/layout-primitives-react`.
+version of `@skaffa/layout-primitives-react`.
 Component source references in the demo graph producer are workspace-relative
 (`app/` and `node_modules/`) to keep the demo portable.
 
 ## Success Criteria
 
-- ✅ Scaffa starts and opens demo workspace
+- ✅ Skaffa starts and opens demo workspace
 - ✅ Demo module registers component registry
 - ✅ Graph producer emits routes and component types
 - ✅ App preview starts and shows React app
@@ -149,7 +149,7 @@ Component source references in the demo graph producer are workspace-relative
 - ✅ Inspector shows editable props with controls
 - ✅ Editing props updates preview immediately
 - ✅ Reset clears overrides and returns to baseline
-- ✅ Overrides persist to `demo/.scaffa/overrides.v0.json`
+- ✅ Overrides persist to `demo/.skaffa/overrides.v0.json`
 - ✅ Reopening workspace restores overrides
 
 ## Next Steps
@@ -165,8 +165,8 @@ After validating the v0 journey:
 ## Architecture References
 
 See `/docs` for detailed contracts:
-- [Runtime Adapter Contract](../docs/scaffa_runtime_adapter_contract.md)
-- [Component Registry Schema](../docs/scaffa_component_registry_schema.md)
-- [Inspector UX Semantics](../docs/scaffa_inspector_ux_semantics.md)
-- [Override Model](../docs/scaffa_override_model.md)
-- [Preview Session Protocol](../docs/scaffa_preview_session_protocol.md)
+- [Runtime Adapter Contract](../docs/skaffa_runtime_adapter_contract.md)
+- [Component Registry Schema](../docs/skaffa_component_registry_schema.md)
+- [Inspector UX Semantics](../docs/skaffa_inspector_ux_semantics.md)
+- [Override Model](../docs/skaffa_override_model.md)
+- [Preview Session Protocol](../docs/skaffa_preview_session_protocol.md)

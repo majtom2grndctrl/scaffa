@@ -9,7 +9,11 @@ function activate(context) {
   const gapOptions = [
     { value: "unset", label: "Unset", description: "Remove gap override" },
     ...spacingOptions,
-    { value: "space-between", label: "Space Between", description: "Space items evenly with gaps between" }
+    {
+      value: "space-between",
+      label: "Space Between",
+      description: "Space items evenly with gaps between"
+    }
   ];
   const spacingAxisOptions = [
     { value: "unset", label: "Unset", description: "Remove spacing override" },
@@ -218,11 +222,31 @@ function activate(context) {
               control: {
                 kind: "select",
                 options: [
-                  { value: "unset", label: "Unset", description: "Remove alignment override" },
-                  { value: "start", label: "Start", description: "Align to start of cross axis" },
-                  { value: "center", label: "Center", description: "Center on cross axis" },
-                  { value: "end", label: "End", description: "Align to end of cross axis" },
-                  { value: "stretch", label: "Stretch", description: "Stretch to fill cross axis" }
+                  {
+                    value: "unset",
+                    label: "Unset",
+                    description: "Remove alignment override"
+                  },
+                  {
+                    value: "start",
+                    label: "Start",
+                    description: "Align to start of cross axis"
+                  },
+                  {
+                    value: "center",
+                    label: "Center",
+                    description: "Center on cross axis"
+                  },
+                  {
+                    value: "end",
+                    label: "End",
+                    description: "Align to end of cross axis"
+                  },
+                  {
+                    value: "stretch",
+                    label: "Stretch",
+                    description: "Stretch to fill cross axis"
+                  }
                 ]
               }
             }
@@ -230,7 +254,7 @@ function activate(context) {
         },
         implementation: {
           kind: "package",
-          specifier: "@scaffa/layout-primitives-react",
+          specifier: "@skaffa/layout-primitives-react",
           exportName: "Box"
         }
       },
@@ -289,11 +313,31 @@ function activate(context) {
               control: {
                 kind: "select",
                 options: [
-                  { value: "unset", label: "Unset", description: "Remove alignment override" },
-                  { value: "start", label: "Start", description: "Align items to start" },
-                  { value: "center", label: "Center", description: "Center items" },
-                  { value: "end", label: "End", description: "Align items to end" },
-                  { value: "stretch", label: "Stretch", description: "Stretch items to fill" }
+                  {
+                    value: "unset",
+                    label: "Unset",
+                    description: "Remove alignment override"
+                  },
+                  {
+                    value: "start",
+                    label: "Start",
+                    description: "Align items to start"
+                  },
+                  {
+                    value: "center",
+                    label: "Center",
+                    description: "Center items"
+                  },
+                  {
+                    value: "end",
+                    label: "End",
+                    description: "Align items to end"
+                  },
+                  {
+                    value: "stretch",
+                    label: "Stretch",
+                    description: "Stretch items to fill"
+                  }
                 ]
               }
             }
@@ -309,13 +353,41 @@ function activate(context) {
               control: {
                 kind: "select",
                 options: [
-                  { value: "unset", label: "Unset", description: "Remove justification override" },
-                  { value: "start", label: "Start", description: "Pack items to start" },
-                  { value: "center", label: "Center", description: "Center items" },
-                  { value: "end", label: "End", description: "Pack items to end" },
-                  { value: "between", label: "Space Between", description: "Space items evenly with gaps between" },
-                  { value: "around", label: "Space Around", description: "Space items with equal space around each" },
-                  { value: "evenly", label: "Space Evenly", description: "Space items with equal gaps" }
+                  {
+                    value: "unset",
+                    label: "Unset",
+                    description: "Remove justification override"
+                  },
+                  {
+                    value: "start",
+                    label: "Start",
+                    description: "Pack items to start"
+                  },
+                  {
+                    value: "center",
+                    label: "Center",
+                    description: "Center items"
+                  },
+                  {
+                    value: "end",
+                    label: "End",
+                    description: "Pack items to end"
+                  },
+                  {
+                    value: "between",
+                    label: "Space Between",
+                    description: "Space items evenly with gaps between"
+                  },
+                  {
+                    value: "around",
+                    label: "Space Around",
+                    description: "Space items with equal space around each"
+                  },
+                  {
+                    value: "evenly",
+                    label: "Space Evenly",
+                    description: "Space items with equal gaps"
+                  }
                 ]
               }
             }
@@ -331,10 +403,26 @@ function activate(context) {
               control: {
                 kind: "select",
                 options: [
-                  { value: "unset", label: "Unset", description: "Remove wrap override" },
-                  { value: "nowrap", label: "No Wrap", description: "Keep items on single line" },
-                  { value: "wrap", label: "Wrap", description: "Wrap items to new lines" },
-                  { value: "wrap-reverse", label: "Wrap Reverse", description: "Wrap items in reverse order" }
+                  {
+                    value: "unset",
+                    label: "Unset",
+                    description: "Remove wrap override"
+                  },
+                  {
+                    value: "nowrap",
+                    label: "No Wrap",
+                    description: "Keep items on single line"
+                  },
+                  {
+                    value: "wrap",
+                    label: "Wrap",
+                    description: "Wrap items to new lines"
+                  },
+                  {
+                    value: "wrap-reverse",
+                    label: "Wrap Reverse",
+                    description: "Wrap items in reverse order"
+                  }
                 ]
               }
             }
@@ -350,9 +438,21 @@ function activate(context) {
               control: {
                 kind: "select",
                 options: [
-                  { value: "unset", label: "Unset", description: "Remove direction override" },
-                  { value: "normal", label: "Normal", description: "Left to right" },
-                  { value: "reverse", label: "Reverse", description: "Right to left" }
+                  {
+                    value: "unset",
+                    label: "Unset",
+                    description: "Remove direction override"
+                  },
+                  {
+                    value: "normal",
+                    label: "Normal",
+                    description: "Left to right"
+                  },
+                  {
+                    value: "reverse",
+                    label: "Reverse",
+                    description: "Right to left"
+                  }
                 ]
               }
             }
@@ -516,7 +616,7 @@ function activate(context) {
         },
         implementation: {
           kind: "package",
-          specifier: "@scaffa/layout-primitives-react",
+          specifier: "@skaffa/layout-primitives-react",
           exportName: "Row"
         }
       },
@@ -575,11 +675,31 @@ function activate(context) {
               control: {
                 kind: "select",
                 options: [
-                  { value: "unset", label: "Unset", description: "Remove alignment override" },
-                  { value: "start", label: "Start", description: "Align items to start" },
-                  { value: "center", label: "Center", description: "Center items" },
-                  { value: "end", label: "End", description: "Align items to end" },
-                  { value: "stretch", label: "Stretch", description: "Stretch items to fill" }
+                  {
+                    value: "unset",
+                    label: "Unset",
+                    description: "Remove alignment override"
+                  },
+                  {
+                    value: "start",
+                    label: "Start",
+                    description: "Align items to start"
+                  },
+                  {
+                    value: "center",
+                    label: "Center",
+                    description: "Center items"
+                  },
+                  {
+                    value: "end",
+                    label: "End",
+                    description: "Align items to end"
+                  },
+                  {
+                    value: "stretch",
+                    label: "Stretch",
+                    description: "Stretch items to fill"
+                  }
                 ]
               }
             }
@@ -595,13 +715,41 @@ function activate(context) {
               control: {
                 kind: "select",
                 options: [
-                  { value: "unset", label: "Unset", description: "Remove justification override" },
-                  { value: "start", label: "Start", description: "Pack items to start" },
-                  { value: "center", label: "Center", description: "Center items" },
-                  { value: "end", label: "End", description: "Pack items to end" },
-                  { value: "between", label: "Space Between", description: "Space items evenly with gaps between" },
-                  { value: "around", label: "Space Around", description: "Space items with equal space around each" },
-                  { value: "evenly", label: "Space Evenly", description: "Space items with equal gaps" }
+                  {
+                    value: "unset",
+                    label: "Unset",
+                    description: "Remove justification override"
+                  },
+                  {
+                    value: "start",
+                    label: "Start",
+                    description: "Pack items to start"
+                  },
+                  {
+                    value: "center",
+                    label: "Center",
+                    description: "Center items"
+                  },
+                  {
+                    value: "end",
+                    label: "End",
+                    description: "Pack items to end"
+                  },
+                  {
+                    value: "between",
+                    label: "Space Between",
+                    description: "Space items evenly with gaps between"
+                  },
+                  {
+                    value: "around",
+                    label: "Space Around",
+                    description: "Space items with equal space around each"
+                  },
+                  {
+                    value: "evenly",
+                    label: "Space Evenly",
+                    description: "Space items with equal gaps"
+                  }
                 ]
               }
             }
@@ -617,10 +765,26 @@ function activate(context) {
               control: {
                 kind: "select",
                 options: [
-                  { value: "unset", label: "Unset", description: "Remove wrap override" },
-                  { value: "nowrap", label: "No Wrap", description: "Keep items on single line" },
-                  { value: "wrap", label: "Wrap", description: "Wrap items to new lines" },
-                  { value: "wrap-reverse", label: "Wrap Reverse", description: "Wrap items in reverse order" }
+                  {
+                    value: "unset",
+                    label: "Unset",
+                    description: "Remove wrap override"
+                  },
+                  {
+                    value: "nowrap",
+                    label: "No Wrap",
+                    description: "Keep items on single line"
+                  },
+                  {
+                    value: "wrap",
+                    label: "Wrap",
+                    description: "Wrap items to new lines"
+                  },
+                  {
+                    value: "wrap-reverse",
+                    label: "Wrap Reverse",
+                    description: "Wrap items in reverse order"
+                  }
                 ]
               }
             }
@@ -636,9 +800,21 @@ function activate(context) {
               control: {
                 kind: "select",
                 options: [
-                  { value: "unset", label: "Unset", description: "Remove direction override" },
-                  { value: "normal", label: "Normal", description: "Top to bottom" },
-                  { value: "reverse", label: "Reverse", description: "Bottom to top" }
+                  {
+                    value: "unset",
+                    label: "Unset",
+                    description: "Remove direction override"
+                  },
+                  {
+                    value: "normal",
+                    label: "Normal",
+                    description: "Top to bottom"
+                  },
+                  {
+                    value: "reverse",
+                    label: "Reverse",
+                    description: "Bottom to top"
+                  }
                 ]
               }
             }
@@ -802,14 +978,16 @@ function activate(context) {
         },
         implementation: {
           kind: "package",
-          specifier: "@scaffa/layout-primitives-react",
+          specifier: "@skaffa/layout-primitives-react",
           exportName: "Stack"
         }
       }
     }
   };
   context.registry.contributeRegistry(registry);
-  console.log("[LayoutModule] Contributed component registry for layout.box, layout.row, and layout.stack");
+  console.log(
+    "[LayoutModule] Contributed component registry for layout.box, layout.row, and layout.stack"
+  );
   context.ui.registerInspectorSection({
     id: "layout.layout",
     title: "Layout",

@@ -1,25 +1,25 @@
-# Scaffa Extension API – v0 Sketch
+# Skaffa Extension API – v0 Sketch
 
 > **Status:** Draft / v0 shape
 > **Audience:** Extension and module authors (first‑party and internal)
-> **Goal:** Define the minimal, stable API surface between Scaffa core and extension modules.
+> **Goal:** Define the minimal, stable API surface between Skaffa core and extension modules.
 
 This document intentionally omits implementation details. It defines *contracts*, not mechanisms.
 
 Related:
 - [Architecture Plan](./index.md)
-- [Scaffa Extension Authoring Guide](./scaffa_extension_authoring_guide.md)
-- [Scaffa Project Graph Schema + Patch Protocol](./scaffa_project_graph_schema.md)
-- [Scaffa Component Registry Schema](./scaffa_component_registry_schema.md)
-- [Scaffa Workspace Edit Protocol](./scaffa_workspace_edit_protocol.md)
+- [Skaffa Extension Authoring Guide](./skaffa_extension_authoring_guide.md)
+- [Skaffa Project Graph Schema + Patch Protocol](./skaffa_project_graph_schema.md)
+- [Skaffa Component Registry Schema](./skaffa_component_registry_schema.md)
+- [Skaffa Workspace Edit Protocol](./skaffa_workspace_edit_protocol.md)
 
 ---
 
 ## 1. Core Principles
 
 - All extension code runs in the **Extension Host** process.
-- Extensions must not import Scaffa *implementation internals*; they interact through the Extension API surface and shared protocol types.
-- Extensions interact with Scaffa only through the **Extension API**.
+- Extensions must not import Skaffa *implementation internals*; they interact through the Extension API surface and shared protocol types.
+- Extensions interact with Skaffa only through the **Extension API**.
 - The API is **capability‑based**, **typed**, and **versioned**.
 - v0 assumes extensions are *trusted*, but shaped so sandboxing/permissions can be added later.
 - All workspace IO is mediated by main-owned capabilities (implementation may use a sidecar process; extensions never access the filesystem directly).
@@ -84,15 +84,15 @@ interface WorkspaceAPI {
 
 All mutations are transactional and diffable.
 
-See also: [Scaffa Workspace Edit Protocol](./scaffa_workspace_edit_protocol.md)
+See also: [Skaffa Workspace Edit Protocol](./skaffa_workspace_edit_protocol.md)
 
 Implementation notes:
 - Extensions MUST use `WorkspaceAPI` for workspace reads/writes; they must not import `fs` or access the workspace directly.
-- Main owns the implementation of `WorkspaceAPI` and MAY delegate high-volume reads/search/analysis to a workspace sidecar (planned). See: [Scaffa Sidecar Process](./scaffa_sidecar_process.md)
+- Main owns the implementation of `WorkspaceAPI` and MAY delegate high-volume reads/search/analysis to a workspace sidecar (planned). See: [Skaffa Sidecar Process](./skaffa_sidecar_process.md)
 
 ### 4.1 Workspace Analysis API (Planned)
 
-For operations that are likely to touch many files (search, indexing, parsing), Scaffa may expose an additional analysis capability that is sidecar-backed and mediated by main.
+For operations that are likely to touch many files (search, indexing, parsing), Skaffa may expose an additional analysis capability that is sidecar-backed and mediated by main.
 
 This is intentionally deferred until we have concrete needs and can keep the surface small.
 

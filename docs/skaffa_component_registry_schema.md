@@ -1,7 +1,7 @@
-# Scaffa Component Registry Schema (v0)
+# Skaffa Component Registry Schema (v0)
 
 > **Status:** Draft / v0 shape  
-> **Audience:** Module authors and Scaffa core contributors  
+> **Audience:** Module authors and Skaffa core contributors  
 > **Goal:** Define the canonical schema for component metadata that powers the Inspector (editability, controls, defaults, grouping) and enables registry composition across modules and projects.
 
 ## Agent TL;DR
@@ -9,12 +9,12 @@
 - Load when: adding/changing **Inspector-editable props** or the **canonical control schema** contributed by modules.
 - Primary artifacts: `ComponentTypeId`, `ControlDefinition` union, prop editability states, grouping/ordering semantics.
 - Key invariant: `ComponentTypeId` must match across **registry ↔ graph ↔ runtime adapter ↔ overrides**.
-- Also load: `docs/scaffa_inspector_ux_semantics.md`, `docs/scaffa_override_model.md`, `docs/scaffa_project_configuration_scaffa_config.md`.
+- Also load: `docs/skaffa_inspector_ux_semantics.md`, `docs/skaffa_override_model.md`, `docs/skaffa_project_configuration_skaffa_config.md`.
 
 Related:
 - [Architecture Plan](./index.md)
-- [Scaffa Project Configuration (`scaffa.config.js`)](./scaffa_project_configuration_scaffa_config.md)
-- [Scaffa Inspector UX Rules & Semantics](./scaffa_inspector_ux_semantics.md)
+- [Skaffa Project Configuration (`skaffa.config.js`)](./skaffa_project_configuration_skaffa_config.md)
+- [Skaffa Inspector UX Rules & Semantics](./skaffa_inspector_ux_semantics.md)
 
 ---
 
@@ -30,7 +30,7 @@ A **Component Registry** is type-level metadata for a component library. It answ
 Registries are:
 - **Contributed by modules** (extension host)
 - **Composed** into a single effective registry for a workspace
-- **Overridden** by project configuration (`scaffa.config.js`)
+- **Overridden** by project configuration (`skaffa.config.js`)
 
 ---
 
@@ -105,7 +105,7 @@ export type PropExposure =
 
       // UI-only default used for form initialization and empty-state affordances.
       // This does NOT rewrite code, and "Reset" clears the user override layer (revealing the baseline).
-      // See precedence rules in `docs/scaffa_override_model.md`.
+      // See precedence rules in `docs/skaffa_override_model.md`.
       uiDefaultValue?: JsonValue;
 
       // Common constraints for validation / affordances.
@@ -188,7 +188,7 @@ This keeps overrides explicit and predictable.
 
 ### 4.2 Project Overrides Layer
 
-Project configuration (`scaffa.config.js`) applies **after** module composition.
+Project configuration (`skaffa.config.js`) applies **after** module composition.
 
 Overrides can:
 - disable a component type entirely (hide it in UI, forbid overrides)

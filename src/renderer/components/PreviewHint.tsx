@@ -8,9 +8,9 @@ export interface PreviewHintProps {
 }
 
 /**
- * PreviewHint - Scaffa-owned discoverability hint for inspect controls.
+ * PreviewHint - Skaffa-owned discoverability hint for inspect controls.
  *
- * This component is rendered by Scaffa UI (not injected into the guest app DOM),
+ * This component is rendered by Skaffa UI (not injected into the guest app DOM),
  * ensuring it cannot conflict with app styling or layout.
  *
  * Design:

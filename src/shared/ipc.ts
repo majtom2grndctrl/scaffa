@@ -1,28 +1,28 @@
-import { z } from 'zod';
+import { z } from "zod";
 import {
   PreviewSessionTargetSchema,
   PreviewSessionIdSchema,
   InstanceIdSchema,
   ComponentTypeIdSchema,
   PreviewLauncherDescriptorSchema,
-} from './preview-session.js';
-import { OverrideOpSchema, PropPathSchema } from './override.js';
+} from "./preview-session.js";
+import { OverrideOpSchema, PropPathSchema } from "./override.js";
 import {
   GraphQuerySchema,
   GraphPatchSchema,
   GraphSnapshotSchema,
-} from './project-graph.js';
-import { JsonValueSchema } from './common.js';
-import { SaveResultSchema } from './save.js';
+} from "./project-graph.js";
+import { JsonValueSchema } from "./common.js";
+import { SaveResultSchema } from "./save.js";
 import {
   InspectorSectionContributionSchema,
   InspectorSectionContextSchema,
-} from './inspector-sections.js';
+} from "./inspector-sections.js";
 
 // ─────────────────────────────────────────────────────────────────────────────
 // IPC Request/Response Schemas (v0)
 // ─────────────────────────────────────────────────────────────────────────────
-// These define the payloads for window.scaffa.* APIs exposed via preload.
+// These define the payloads for window.skaffa.* APIs exposed via preload.
 
 // ─────────────────────────────────────────────────────────────────────────────
 // Preview APIs
@@ -66,7 +66,9 @@ export const SetPreviewViewportRequestSchema = z.object({
   }),
 });
 
-export type SetPreviewViewportRequest = z.infer<typeof SetPreviewViewportRequestSchema>;
+export type SetPreviewViewportRequest = z.infer<
+  typeof SetPreviewViewportRequestSchema
+>;
 
 // ─────────────────────────────────────────────────────────────────────────────
 // Override APIs
@@ -104,7 +106,9 @@ export const ClearAllOverridesRequestSchema = z.object({
   sessionId: PreviewSessionIdSchema,
 });
 
-export type ClearAllOverridesRequest = z.infer<typeof ClearAllOverridesRequestSchema>;
+export type ClearAllOverridesRequest = z.infer<
+  typeof ClearAllOverridesRequestSchema
+>;
 
 export const SaveOverridesRequestSchema = z.object({});
 
@@ -120,11 +124,15 @@ export type SaveOverridesResponse = z.infer<typeof SaveOverridesResponseSchema>;
 
 export const GetGraphSnapshotRequestSchema = z.object({});
 
-export type GetGraphSnapshotRequest = z.infer<typeof GetGraphSnapshotRequestSchema>;
+export type GetGraphSnapshotRequest = z.infer<
+  typeof GetGraphSnapshotRequestSchema
+>;
 
 export const GetGraphSnapshotResponseSchema = GraphSnapshotSchema;
 
-export type GetGraphSnapshotResponse = z.infer<typeof GetGraphSnapshotResponseSchema>;
+export type GetGraphSnapshotResponse = z.infer<
+  typeof GetGraphSnapshotResponseSchema
+>;
 
 // ─────────────────────────────────────────────────────────────────────────────
 // Structured Error Response
@@ -144,10 +152,14 @@ export type IpcError = z.infer<typeof IpcErrorSchema>;
 
 export const GetInspectorSectionsRequestSchema = z.object({});
 
-export type GetInspectorSectionsRequest = z.infer<typeof GetInspectorSectionsRequestSchema>;
+export type GetInspectorSectionsRequest = z.infer<
+  typeof GetInspectorSectionsRequestSchema
+>;
 
 export const GetInspectorSectionsResponseSchema = z.object({
   sections: z.array(InspectorSectionContributionSchema),
 });
 
-export type GetInspectorSectionsResponse = z.infer<typeof GetInspectorSectionsResponseSchema>;
+export type GetInspectorSectionsResponse = z.infer<
+  typeof GetInspectorSectionsResponseSchema
+>;

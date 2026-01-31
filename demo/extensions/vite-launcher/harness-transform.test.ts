@@ -1,7 +1,7 @@
-import { describe, it, expect } from 'vitest';
+import { describe, it, expect } from "vitest";
 
 function replaceEntryScript(html: string): string {
-  const harnessSrc = '/.scaffa-harness.tsx';
+  const harnessSrc = "/.skaffa-harness.tsx";
   const scriptRegex = /<script\s+type="module"\s+src="([^"]+)"><\/script>/g;
   let replacedSrc: string | null = null;
 
@@ -9,7 +9,7 @@ function replaceEntryScript(html: string): string {
     if (replacedSrc) {
       return match;
     }
-    if (src.includes('/@vite/client')) {
+    if (src.includes("/@vite/client")) {
       return match;
     }
     replacedSrc = src;
@@ -19,8 +19,8 @@ function replaceEntryScript(html: string): string {
   return replacedSrc ? nextHtml : html;
 }
 
-describe('Vite launcher harness transform', () => {
-  it('replaces the app entry script but preserves the Vite client', () => {
+describe("Vite launcher harness transform", () => {
+  it("replaces the app entry script but preserves the Vite client", () => {
     const html = `
       <!DOCTYPE html>
       <html>
@@ -35,12 +35,18 @@ describe('Vite launcher harness transform', () => {
 
     const result = replaceEntryScript(html);
 
-    expect(result).toContain('<script type="module" src="/@vite/client"></script>');
-    expect(result).toContain('<script type="module" src="/.scaffa-harness.tsx"></script>');
-    expect(result).not.toContain('<script type="module" src="/src/main.tsx"></script>');
+    expect(result).toContain(
+      '<script type="module" src="/@vite/client"></script>',
+    );
+    expect(result).toContain(
+      '<script type="module" src="/.skaffa-harness.tsx"></script>',
+    );
+    expect(result).not.toContain(
+      '<script type="module" src="/src/main.tsx"></script>',
+    );
   });
 
-  it('replaces the only module script when no Vite client is present', () => {
+  it("replaces the only module script when no Vite client is present", () => {
     const html = `
       <!DOCTYPE html>
       <html>
@@ -54,7 +60,11 @@ describe('Vite launcher harness transform', () => {
 
     const result = replaceEntryScript(html);
 
-    expect(result).toContain('<script type="module" src="/.scaffa-harness.tsx"></script>');
-    expect(result).not.toContain('<script type="module" src="/src/main.tsx"></script>');
+    expect(result).toContain(
+      '<script type="module" src="/.skaffa-harness.tsx"></script>',
+    );
+    expect(result).not.toContain(
+      '<script type="module" src="/src/main.tsx"></script>',
+    );
   });
 });

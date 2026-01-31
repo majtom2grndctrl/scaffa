@@ -74,7 +74,7 @@ export const AppShell = () => {
       <header className="border-b border-subtle px-6 py-4">
         <div className="flex flex-wrap items-center justify-between gap-4">
           <div>
-            <h1 className="text-lg font-semibold text-fg">Scaffa</h1>
+            <h1 className="text-lg font-semibold text-fg">Skaffa</h1>
             <p className="text-sm text-fg-muted">
               {currentWorkspace
                 ? `Workspace: ${currentWorkspace.name}`

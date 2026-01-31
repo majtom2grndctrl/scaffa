@@ -426,16 +426,16 @@ var ApplyEditsResultSchema = z7.discriminatedUnion("ok", [
   })
 ]);
 var ComponentTypeIdSchema2 = z8.string();
-var ScaffaModuleSchema = z8.object({
+var SkaffaModuleSchema = z8.object({
   id: z8.string(),
   path: z8.string().optional(),
   /**
    * Optional npm package specifier for package-based modules.
    * When provided, the extension host will resolve it using Node's module resolution
-   * anchored at the workspace root (directory containing scaffa.config.js).
+   * anchored at the workspace root (directory containing skaffa.config.js).
    *
    * Examples:
-   * - "@scaffa/module-react-router"
+   * - "@skaffa/module-react-router"
    * - "./relative-package" (workspace local via package.json "name")
    */
   package: z8.string().optional(),
@@ -497,9 +497,9 @@ var PromptTemplateSchema = z8.object({
 var AiConfigSchema = z8.object({
   prompts: z8.array(PromptTemplateSchema).optional()
 });
-var ScaffaConfigSchema = z8.object({
+var SkaffaConfigSchema = z8.object({
   schemaVersion: z8.literal("v0").optional().default("v0"),
-  modules: z8.array(ScaffaModuleSchema).optional().default([]),
+  modules: z8.array(SkaffaModuleSchema).optional().default([]),
   preview: PreviewConfigSchema.optional(),
   components: ComponentsConfigSchema.optional(),
   ai: AiConfigSchema.optional()
@@ -609,7 +609,7 @@ var ComponentRegistryEntrySchema = z9.object({
   /**
    * Optional instrumentation hints used by managed preview launchers.
    * These hints are NOT identifiers; they can change without changing typeId.
-   * See: docs/scaffa_component_registry_schema.md (5.1/5.2)
+   * See: docs/skaffa_component_registry_schema.md (5.1/5.2)
    */
   implementation: z9.union([
     ComponentImplementationHintSchema,
@@ -709,7 +709,7 @@ var InspectorSectionContributionSchema = z11.object({
    *
    * SECURITY NOTE: This path cannot be directly loaded by the renderer due to process
    * isolation. A future implementation must use one of:
-   * - Custom protocol handler (scaffa://extension/<extensionId>/<path>)
+   * - Custom protocol handler (skaffa://extension/<extensionId>/<path>)
    * - HTTP endpoint served from extension-host
    * - Pre-bundled components in renderer build
    *

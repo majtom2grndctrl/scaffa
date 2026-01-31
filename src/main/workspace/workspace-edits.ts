@@ -3,29 +3,33 @@
 // ─────────────────────────────────────────────────────────────────────────────
 // Applies FileEdit batches transactionally within a workspace.
 
-import { createHash, randomBytes } from 'node:crypto';
-import { dirname, isAbsolute, join } from 'node:path';
-import { existsSync } from 'node:fs';
-import { mkdir, readFile, rename, unlink, writeFile } from 'node:fs/promises';
-import type { ApplyEditsResult, FileEdit, TextEdit } from '../../shared/workspace-edits.js';
+import { createHash, randomBytes } from "node:crypto";
+import { dirname, isAbsolute, join } from "node:path";
+import { existsSync } from "node:fs";
+import { mkdir, readFile, rename, unlink, writeFile } from "node:fs/promises";
+import type {
+  ApplyEditsResult,
+  FileEdit,
+  TextEdit,
+} from "../../shared/workspace-edits.js";
 
 type PreparedEdit =
   | {
-      kind: 'text';
+      kind: "text";
       filePath: string;
       absPath: string;
       originalContent: string;
       newContent: string;
     }
   | {
-      kind: 'create';
+      kind: "create";
       filePath: string;
       absPath: string;
       newContent: string;
       overwrite: boolean;
     }
   | {
-      kind: 'delete';
+      kind: "delete";
       filePath: string;
       absPath: string;
       allowMissing: boolean;
@@ -34,7 +38,7 @@ type PreparedEdit =
 
 export async function applyWorkspaceEdits(
   workspaceRoot: string,
-  edits: FileEdit[]
+  edits: FileEdit[],
 ): Promise<ApplyEditsResult> {
   if (edits.length === 0) {
     return { ok: true, applied: [] };
@@ -46,8 +50,8 @@ export async function applyWorkspaceEdits(
     for (const edit of edits) {
       const absPath = resolveWorkspacePath(workspaceRoot, edit.filePath);
 
-      if (edit.kind === 'text') {
-        const originalContent = await readFile(absPath, 'utf-8');
+      if (edit.kind === "text") {
+        const originalContent = await readFile(absPath, "utf-8");
 
         if (edit.expectedSha256) {
           const currentSha = sha256(originalContent);
@@ -55,9 +59,9 @@ export async function applyWorkspaceEdits(
             return {
               ok: false,
               error: {
-                code: 'conflict',
+                code: "conflict",
                 filePath: edit.filePath,
-                message: 'File contents changed since edits were computed.',
+                message: "File contents changed since edits were computed.",
               },
             };
           }
@@ -65,7 +69,7 @@ export async function applyWorkspaceEdits(
 
         const newContent = applyTextEdits(originalContent, edit.edits);
         prepared.push({
-          kind: 'text',
+          kind: "text",
           filePath: edit.filePath,
           absPath,
           originalContent,
@@ -74,21 +78,21 @@ export async function applyWorkspaceEdits(
         continue;
       }
 
-      if (edit.kind === 'create') {
+      if (edit.kind === "create") {
         const exists = existsSync(absPath);
         if (exists && !edit.overwrite) {
           return {
             ok: false,
             error: {
-              code: 'conflict',
+              code: "conflict",
               filePath: edit.filePath,
-              message: 'File already exists.',
+              message: "File already exists.",
             },
           };
         }
 
         prepared.push({
-          kind: 'create',
+          kind: "create",
           filePath: edit.filePath,
           absPath,
           newContent: edit.contents,
@@ -97,21 +101,21 @@ export async function applyWorkspaceEdits(
         continue;
       }
 
-      if (edit.kind === 'delete') {
+      if (edit.kind === "delete") {
         const exists = existsSync(absPath);
         if (!exists && !edit.allowMissing) {
           return {
             ok: false,
             error: {
-              code: 'notFound',
+              code: "notFound",
               filePath: edit.filePath,
-              message: 'File not found.',
+              message: "File not found.",
             },
           };
         }
 
         prepared.push({
-          kind: 'delete',
+          kind: "delete",
           filePath: edit.filePath,
           absPath,
           allowMissing: !!edit.allowMissing,
@@ -123,14 +127,14 @@ export async function applyWorkspaceEdits(
     return toIoError(error, edits[0]?.filePath ?? workspaceRoot);
   }
 
-  const transactionId = randomBytes(6).toString('hex');
+  const transactionId = randomBytes(6).toString("hex");
   const tempFiles = new Map<string, string>();
   const backups = new Map<string, string>();
 
   try {
     // Stage new contents for text/create edits.
     for (const edit of prepared) {
-      if (edit.kind !== 'text' && edit.kind !== 'create') {
+      if (edit.kind !== "text" && edit.kind !== "create") {
         continue;
       }
 
@@ -139,20 +143,26 @@ export async function applyWorkspaceEdits(
         await mkdir(dir, { recursive: true });
       }
 
-      const tempPath = `${edit.absPath}.scaffa-tmp-${transactionId}`;
-      await writeFile(tempPath, edit.newContent, 'utf-8');
+      const tempPath = `${edit.absPath}.skaffa-tmp-${transactionId}`;
+      await writeFile(tempPath, edit.newContent, "utf-8");
       tempFiles.set(edit.absPath, tempPath);
     }
 
     // Move originals to backups for text/delete and create(overwrite).
     for (const edit of prepared) {
-      if (edit.kind === 'text' || edit.kind === 'delete' || edit.kind === 'create') {
+      if (
+        edit.kind === "text" ||
+        edit.kind === "delete" ||
+        edit.kind === "create"
+      ) {
         const exists = existsSync(edit.absPath);
         const needsBackup =
-          edit.kind === 'text' || edit.kind === 'delete' || (edit.kind === 'create' && exists);
+          edit.kind === "text" ||
+          edit.kind === "delete" ||
+          (edit.kind === "create" && exists);
 
         if (needsBackup && exists) {
-          const backupPath = `${edit.absPath}.scaffa-bak-${transactionId}`;
+          const backupPath = `${edit.absPath}.skaffa-bak-${transactionId}`;
           await rename(edit.absPath, backupPath);
           backups.set(edit.absPath, backupPath);
         }
@@ -161,7 +171,7 @@ export async function applyWorkspaceEdits(
 
     // Commit staged temp files.
     for (const edit of prepared) {
-      if (edit.kind === 'text' || edit.kind === 'create') {
+      if (edit.kind === "text" || edit.kind === "create") {
         const tempPath = tempFiles.get(edit.absPath);
         if (!tempPath) {
           throw new Error(`Missing temp file for ${edit.filePath}`);
@@ -172,7 +182,7 @@ export async function applyWorkspaceEdits(
 
     // Finalize deletes.
     for (const edit of prepared) {
-      if (edit.kind === 'delete' && edit.existed) {
+      if (edit.kind === "delete" && edit.existed) {
         const backupPath = backups.get(edit.absPath);
         if (backupPath) {
           await unlink(backupPath);
@@ -203,7 +213,7 @@ function resolveWorkspacePath(workspaceRoot: string, filePath: string): string {
 }
 
 function sha256(content: string): string {
-  return createHash('sha256').update(content).digest('hex');
+  return createHash("sha256").update(content).digest("hex");
 }
 
 function applyTextEdits(content: string, edits: TextEdit[]): string {
@@ -212,15 +222,15 @@ function applyTextEdits(content: string, edits: TextEdit[]): string {
   let lastEnd = 0;
   for (const edit of sorted) {
     if (edit.range.start < lastEnd) {
-      throw new Error('Overlapping text edits are not supported.');
+      throw new Error("Overlapping text edits are not supported.");
     }
     if (edit.range.start < 0 || edit.range.end > content.length) {
-      throw new Error('Text edit range is out of bounds.');
+      throw new Error("Text edit range is out of bounds.");
     }
     lastEnd = edit.range.end;
   }
 
-  let output = '';
+  let output = "";
   let cursor = 0;
   for (const edit of sorted) {
     output += content.slice(cursor, edit.range.start);
@@ -235,7 +245,7 @@ function applyTextEdits(content: string, edits: TextEdit[]): string {
 async function rollbackEdits(
   prepared: PreparedEdit[],
   tempFiles: Map<string, string>,
-  backups: Map<string, string>
+  backups: Map<string, string>,
 ): Promise<void> {
   for (const [absPath, tempPath] of tempFiles) {
     if (existsSync(tempPath)) {
@@ -275,21 +285,28 @@ async function safeUnlink(path: string): Promise<void> {
 }
 
 function toIoError(error: unknown, filePath: string): ApplyEditsResult {
-  const message = error instanceof Error ? error.message : 'Unknown IO error';
-  const code = error instanceof Error ? error.message : 'IO_ERROR';
+  const message = error instanceof Error ? error.message : "Unknown IO error";
+  const code = error instanceof Error ? error.message : "IO_ERROR";
 
   const isPermission =
-    typeof code === 'string' &&
-    (code.includes('EACCES') || code.includes('EPERM') || code.includes('permission'));
+    typeof code === "string" &&
+    (code.includes("EACCES") ||
+      code.includes("EPERM") ||
+      code.includes("permission"));
 
   const isInvalidEdit =
-    typeof message === 'string' &&
-    (message.includes('Overlapping text edits') || message.includes('out of bounds'));
+    typeof message === "string" &&
+    (message.includes("Overlapping text edits") ||
+      message.includes("out of bounds"));
 
   return {
     ok: false,
     error: {
-      code: isInvalidEdit ? 'invalidEdit' : isPermission ? 'permissionDenied' : 'ioError',
+      code: isInvalidEdit
+        ? "invalidEdit"
+        : isPermission
+          ? "permissionDenied"
+          : "ioError",
       filePath,
       message,
     },

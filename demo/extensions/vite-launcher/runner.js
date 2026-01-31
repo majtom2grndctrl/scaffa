@@ -6,13 +6,13 @@
 //
 // KEY FEATURE: Registry-driven instrumentation
 // - Builds an allowlist from ComponentImplementationHint in the registry
-// - Instruments matched files with adapter boundaries (ScaffaInstanceBoundary)
+// - Instruments matched files with adapter boundaries (SkaffaInstanceBoundary)
 // - Passes componentTypeId to the wrapper; adapter owns instanceId
 // - Handles optimizeDeps.exclude for package hints
 //
-// See: docs/scaffa_harness_model.md (5.4-5.6)
-//      docs/scaffa_component_registry_schema.md (5.1/5.2)
-//      docs/scaffa_runtime_adapter_integration_guide.md (2.2.1/2.2.2)
+// See: docs/skaffa_harness_model.md (5.4-5.6)
+//      docs/skaffa_component_registry_schema.md (5.1/5.2)
+//      docs/skaffa_runtime_adapter_integration_guide.md (2.2.1/2.2.2)
 import { createRequire } from "node:module";
 import { pathToFileURL, fileURLToPath } from "node:url";
 import path from "node:path";
@@ -68,7 +68,9 @@ function buildInstrumentationMatchers(registry, workspaceRoot) {
           kind: "file",
         });
 
-        console.log(`[ViteRunner] Matcher: ${typeId} -> ${resolvedPath}#${exportName}`);
+        console.log(
+          `[ViteRunner] Matcher: ${typeId} -> ${resolvedPath}#${exportName}`,
+        );
       } else if (hint.kind === "package") {
         // For package hints, we need to:
         // 1. Add to optimizeDeps.exclude so transform runs on the dependency
@@ -87,12 +89,16 @@ function buildInstrumentationMatchers(registry, workspaceRoot) {
           kind: "package",
         });
 
-        console.log(`[ViteRunner] Matcher (pkg): ${typeId} -> ${specifier}#${exportName}`);
+        console.log(
+          `[ViteRunner] Matcher (pkg): ${typeId} -> ${specifier}#${exportName}`,
+        );
       }
     }
   }
 
-  console.log(`[ViteRunner] Built ${matchers.length} instrumentation matcher(s), ${packageExcludes.size} package exclude(s)`);
+  console.log(
+    `[ViteRunner] Built ${matchers.length} instrumentation matcher(s), ${packageExcludes.size} package exclude(s)`,
+  );
   return { matchers, packageExcludes: Array.from(packageExcludes) };
 }
 
@@ -153,7 +159,7 @@ function findMatcher(moduleId, matchers) {
  */
 function createInstrumentationPlugin(matchers) {
   return {
-    name: "scaffa:instrumentation",
+    name: "skaffa:instrumentation",
     async transform(code, id) {
       // Skip node_modules (handled by optimizeDeps for needed packages)
       // Also skip virtual modules
@@ -166,12 +172,19 @@ function createInstrumentationPlugin(matchers) {
         return null;
       }
 
-      console.log(`[ViteRunner] Instrumenting: ${id} -> ${matcher.typeId}#${matcher.exportName}`);
+      console.log(
+        `[ViteRunner] Instrumenting: ${id} -> ${matcher.typeId}#${matcher.exportName}`,
+      );
 
       // Generate wrapper code
-      // The wrapper provides componentTypeId to the adapter's ScaffaInstanceBoundary
+      // The wrapper provides componentTypeId to the adapter's SkaffaInstanceBoundary
       // Adapter owns instanceId generation
-      const wrappedCode = wrapExportWithBoundary(code, matcher.typeId, matcher.exportName, id);
+      const wrappedCode = wrapExportWithBoundary(
+        code,
+        matcher.typeId,
+        matcher.exportName,
+        id,
+      );
 
       return {
         code: wrappedCode,
@@ -182,9 +195,9 @@ function createInstrumentationPlugin(matchers) {
 }
 
 /**
- * Wrap a component export with ScaffaInstanceBoundary.
+ * Wrap a component export with SkaffaInstanceBoundary.
  * This injects the componentTypeId into the runtime.
- * 
+ *
  * @param {string} code - Original module code
  * @param {string} typeId - Component type ID from registry
  * @param {string} exportName - Export name to wrap
@@ -203,18 +216,20 @@ function wrapExportWithBoundary(code, typeId, exportName, moduleId) {
 
   if (isDefaultExport) {
     // Check for "export default function" or "export default class"
-    const defaultFuncMatch = code.match(/export\s+default\s+(function|class)\s+(\w+)?/);
+    const defaultFuncMatch = code.match(
+      /export\s+default\s+(function|class)\s+(\w+)?/,
+    );
     if (defaultFuncMatch) {
       const keyword = defaultFuncMatch[1];
-      const name = defaultFuncMatch[2] || "_ScaffaWrappedComponent";
+      const name = defaultFuncMatch[2] || "_SkaffaWrappedComponent";
 
       // Replace export default with wrapped version
       const wrappedExport = `
-import { ScaffaInstanceBoundary as _ScaffaInstanceBoundary } from '@scaffa/react-runtime-adapter';
+import { SkaffaInstanceBoundary as _SkaffaInstanceBoundary } from '@skaffa/react-runtime-adapter';
 
 ${code.replace(/export\s+default\s+(function|class)/, `const ${name} = $1`)}
 
-export default _ScaffaInstanceBoundary(${name}, ${JSON.stringify(typeId)});
+export default _SkaffaInstanceBoundary(${name}, ${JSON.stringify(typeId)});
 `;
       return wrappedExport;
     }
@@ -226,57 +241,63 @@ export default _ScaffaInstanceBoundary(${name}, ${JSON.stringify(typeId)});
 
       // Wrap the existing default export
       const wrappedExport = `
-import { ScaffaInstanceBoundary as _ScaffaInstanceBoundary } from '@scaffa/react-runtime-adapter';
+import { SkaffaInstanceBoundary as _SkaffaInstanceBoundary } from '@skaffa/react-runtime-adapter';
 
 ${code.replace(/export\s+default\s+\w+\s*;?/, "")}
 
 const _OriginalComponent = ${identifier};
-export default _ScaffaInstanceBoundary(_OriginalComponent, ${JSON.stringify(typeId)});
+export default _SkaffaInstanceBoundary(_OriginalComponent, ${JSON.stringify(typeId)});
 `;
       return wrappedExport;
     }
   } else {
     // Named export wrapping
     // Check for "export function Name" or "export class Name"
-    const namedFuncPattern = new RegExp(`export\\s+(function|class)\\s+${exportName}\\b`);
+    const namedFuncPattern = new RegExp(
+      `export\\s+(function|class)\\s+${exportName}\\b`,
+    );
     const namedFuncMatch = code.match(namedFuncPattern);
 
     if (namedFuncMatch) {
       const keyword = namedFuncMatch[1];
       const originalName = `_Original${exportName}`;
-      const wrappedName = `_ScaffaWrapped${exportName}`;
+      const wrappedName = `_SkaffaWrapped${exportName}`;
 
       // Preserve hoisting for function exports by keeping the exported binding as a function.
       // This avoids TDZ errors if an imported binding is accessed early in a cycle.
       const wrappedExport = `
-import { ScaffaInstanceBoundary as _ScaffaInstanceBoundary } from '@scaffa/react-runtime-adapter';
-import { createElement as _ScaffaCreateElement } from 'react';
+import { SkaffaInstanceBoundary as _SkaffaInstanceBoundary } from '@skaffa/react-runtime-adapter';
+import { createElement as _SkaffaCreateElement } from 'react';
 
 ${code.replace(namedFuncPattern, `${keyword} ${originalName}`)}
 
-const ${wrappedName} = _ScaffaInstanceBoundary(${originalName}, ${JSON.stringify(typeId)});
+const ${wrappedName} = _SkaffaInstanceBoundary(${originalName}, ${JSON.stringify(typeId)});
 export function ${exportName}(props) {
-  return _ScaffaCreateElement(${wrappedName}, props);
+  return _SkaffaCreateElement(${wrappedName}, props);
 }
 `;
       return wrappedExport;
     }
 
     // Check for "export const/let/var Name ="
-    const namedVarPattern = new RegExp(`export\\s+(const|let|var)\\s+${exportName}\\b`);
+    const namedVarPattern = new RegExp(
+      `export\\s+(const|let|var)\\s+${exportName}\\b`,
+    );
     if (namedVarPattern.test(code)) {
       const originalName = `_Original${exportName}`;
       return `
-import { ScaffaInstanceBoundary as _ScaffaInstanceBoundary } from '@scaffa/react-runtime-adapter';
+import { SkaffaInstanceBoundary as _SkaffaInstanceBoundary } from '@skaffa/react-runtime-adapter';
 
 ${code.replace(namedVarPattern, `const ${originalName}`)}
 
-export const ${exportName} = _ScaffaInstanceBoundary(${originalName}, ${JSON.stringify(typeId)});
+export const ${exportName} = _SkaffaInstanceBoundary(${originalName}, ${JSON.stringify(typeId)});
 `;
     }
 
     // Check for "export { Name }" or "export { something as Name }"
-    const namedExportPattern = new RegExp(`export\\s*\\{[^}]*\\b${exportName}\\b[^}]*\\}`);
+    const namedExportPattern = new RegExp(
+      `export\\s*\\{[^}]*\\b${exportName}\\b[^}]*\\}`,
+    );
     const match = code.match(namedExportPattern);
 
     if (match) {
@@ -285,38 +306,44 @@ export const ${exportName} = _ScaffaInstanceBoundary(${originalName}, ${JSON.str
 
       if (contentMatch) {
         const content = contentMatch[1];
-        const parts = content.split(',').map(p => p.trim()).filter(Boolean);
+        const parts = content
+          .split(",")
+          .map((p) => p.trim())
+          .filter(Boolean);
 
         let localName = null;
-        const newParts = parts.map(part => {
+        const newParts = parts.map((part) => {
           // Case 1: "Button" (shorthand)
           if (part === exportName) {
             localName = exportName;
-            return `_ScaffaWrapped${exportName} as ${exportName}`;
+            return `_SkaffaWrapped${exportName} as ${exportName}`;
           }
           // Case 2: "Local as Button" (aliased)
           const asMatch = part.match(/^(\w+)\s+as\s+(\w+)$/);
           if (asMatch && asMatch[2] === exportName) {
             localName = asMatch[1];
-            return `_ScaffaWrapped${exportName} as ${exportName}`;
+            return `_SkaffaWrapped${exportName} as ${exportName}`;
           }
           return part;
         });
 
         if (localName) {
-          const newExportBlock = `export { ${newParts.join(', ')} }`;
-          const wrappedName = `_ScaffaWrapped${exportName}`;
+          const newExportBlock = `export { ${newParts.join(", ")} }`;
+          const wrappedName = `_SkaffaWrapped${exportName}`;
 
           // Inject wrapper definition before the export block
           // And inject imports at top via standard mechanism (not here, handled by string concat below)
 
           const wrappedExport = `
-import { ScaffaInstanceBoundary as _ScaffaInstanceBoundary } from '@scaffa/react-runtime-adapter';
+import { SkaffaInstanceBoundary as _SkaffaInstanceBoundary } from '@skaffa/react-runtime-adapter';
 
-${code.replace(namedExportPattern, `
-const ${wrappedName} = _ScaffaInstanceBoundary(${localName}, ${JSON.stringify(typeId)});
+${code.replace(
+  namedExportPattern,
+  `
+const ${wrappedName} = _SkaffaInstanceBoundary(${localName}, ${JSON.stringify(typeId)});
 ${newExportBlock}
-`)}
+`,
+)}
 `;
           return wrappedExport;
         }
@@ -325,7 +352,9 @@ ${newExportBlock}
   }
 
   // If we couldn't match a pattern, log a warning and return original
-  console.warn(`[ViteRunner] Warning: Could not find export "${exportName}" in ${moduleId} for typeId=${typeId}; skipping instrumentation`);
+  console.warn(
+    `[ViteRunner] Warning: Could not find export "${exportName}" in ${moduleId} for typeId=${typeId}; skipping instrumentation`,
+  );
   return code;
 }
 
@@ -336,7 +365,7 @@ ${newExportBlock}
 async function main() {
   // SCAFFA_ROOT is the app directory where Vite runs
   const appRoot = process.env.SCAFFA_ROOT || process.cwd();
-  // SCAFFA_WORKSPACE_ROOT is where scaffa.config.js lives - used for resolving implementation hints
+  // SCAFFA_WORKSPACE_ROOT is where skaffa.config.js lives - used for resolving implementation hints
   // Implementation hints in registry are relative to the workspace root, not the app directory
   const workspaceRoot = process.env.SCAFFA_WORKSPACE_ROOT || appRoot;
   const entry = process.env.SCAFFA_ENTRY;
@@ -348,8 +377,17 @@ async function main() {
     process.exit(1);
   }
 
-  console.log("[ViteRunner] Starting with config:", { entry, styles, appRoot, workspaceRoot });
-  console.log("[ViteRunner] Registry has", Object.keys(registry.components || {}).length, "component(s)");
+  console.log("[ViteRunner] Starting with config:", {
+    entry,
+    styles,
+    appRoot,
+    workspaceRoot,
+  });
+  console.log(
+    "[ViteRunner] Registry has",
+    Object.keys(registry.components || {}).length,
+    "component(s)",
+  );
 
   const toRelative = (absPath) => {
     if (absPath.startsWith(appRoot)) {
@@ -360,18 +398,24 @@ async function main() {
 
   const relativeEntry = toRelative(entry);
   const relativeStyles = styles.map(toRelative);
-  console.log("[ViteRunner] Relative paths:", { entry: relativeEntry, styles: relativeStyles });
+  console.log("[ViteRunner] Relative paths:", {
+    entry: relativeEntry,
+    styles: relativeStyles,
+  });
 
   // Build instrumentation matchers from registry
-  // NOTE: Use workspaceRoot here because implementation hints are relative to where scaffa.config.js lives
-  const { matchers, packageExcludes } = buildInstrumentationMatchers(registry, workspaceRoot);
+  // NOTE: Use workspaceRoot here because implementation hints are relative to where skaffa.config.js lives
+  const { matchers, packageExcludes } = buildInstrumentationMatchers(
+    registry,
+    workspaceRoot,
+  );
 
   // Generate harness content
-  const harnessContent = `// AUTO-GENERATED by Scaffa - do not edit
-// This file is the entrypoint for Scaffa's preview mode
+  const harnessContent = `// AUTO-GENERATED by Skaffa - do not edit
+// This file is the entrypoint for Skaffa's preview mode
 import React from 'react';
 import ReactDOM from 'react-dom/client';
-import { ScaffaProvider } from '@scaffa/react-runtime-adapter';
+import { SkaffaProvider } from '@skaffa/react-runtime-adapter';
 
 // User Styles
 ${relativeStyles.map((s) => `import ${JSON.stringify(s)};`).join("\n")}
@@ -385,7 +429,7 @@ if (!root) throw new Error('Root element not found');
 
 ReactDOM.createRoot(root).render(
   <React.StrictMode>
-    <ScaffaProvider
+    <SkaffaProvider
       config={{
         adapterId: 'react',
         adapterVersion: '0.1.0',
@@ -393,14 +437,14 @@ ReactDOM.createRoot(root).render(
       }}
     >
       {App ? <App /> : <div style={{color: 'red', padding: '20px'}}>Error: No App or default export found in ${JSON.stringify(relativeEntry)}</div>}
-    </ScaffaProvider>
+    </SkaffaProvider>
   </React.StrictMode>
 );
 `;
 
   try {
     // Write harness file to app root (Vite serves files from root more reliably)
-    const harnessPath = path.join(appRoot, ".scaffa-harness.tsx");
+    const harnessPath = path.join(appRoot, ".skaffa-harness.tsx");
     fs.writeFileSync(harnessPath, harnessContent, "utf-8");
     console.log("[ViteRunner] Wrote harness file:", harnessPath);
 
@@ -432,14 +476,15 @@ ReactDOM.createRoot(root).render(
     const projectConfig = await vite.loadConfigFromFile(
       { command: "serve", mode: "development" },
       void 0,
-      appRoot
+      appRoot,
     );
 
     const harnessPlugin = {
-      name: "scaffa:harness",
+      name: "skaffa:harness",
       transformIndexHtml(html) {
-        const harnessSrc = "/.scaffa-harness.tsx";
-        const scriptRegex = /<script\s+type="module"\s+src="([^"]+)"><\/script>/g;
+        const harnessSrc = "/.skaffa-harness.tsx";
+        const scriptRegex =
+          /<script\s+type="module"\s+src="([^"]+)"><\/script>/g;
         let replacedSrc = null;
         const nextHtml = html.replace(scriptRegex, (match, src) => {
           if (replacedSrc) {
@@ -453,13 +498,16 @@ ReactDOM.createRoot(root).render(
         });
 
         if (replacedSrc) {
-          console.log("[ViteRunner] transformIndexHtml replacing:", replacedSrc);
+          console.log(
+            "[ViteRunner] transformIndexHtml replacing:",
+            replacedSrc,
+          );
           return nextHtml;
         }
 
         console.log("[ViteRunner] transformIndexHtml: no entry script found");
         return html;
-      }
+      },
     };
 
     const randomPort = 3100 + Math.floor(Math.random() * 900);
@@ -467,12 +515,12 @@ ReactDOM.createRoot(root).render(
     // Build optimizeDeps config
     // Include standard deps and exclude packages that need instrumentation
     const optimizeDepsConfig = {
-      include: ["react", "react-dom/client", "@scaffa/react-runtime-adapter"],
+      include: ["react", "react-dom/client", "@skaffa/react-runtime-adapter"],
     };
 
     // Add package excludes for instrumentation
     // This ensures transforms run on these dependencies
-    // See: docs/scaffa_component_registry_schema.md (5.1 note on optimizeDeps)
+    // See: docs/skaffa_component_registry_schema.md (5.1 note on optimizeDeps)
     if (packageExcludes.length > 0) {
       optimizeDepsConfig.exclude = packageExcludes;
       console.log("[ViteRunner] optimizeDeps.exclude:", packageExcludes);
@@ -481,7 +529,10 @@ ReactDOM.createRoot(root).render(
     // Resolve adapter path (relative to this runner script)
     // In monorepo: ../../../packages/react-runtime-adapter
     const runnerDir = path.dirname(fileURLToPath(import.meta.url));
-    const adapterPath = path.resolve(runnerDir, "../../../packages/react-runtime-adapter");
+    const adapterPath = path.resolve(
+      runnerDir,
+      "../../../packages/react-runtime-adapter",
+    );
 
     console.log("[ViteRunner] Using adapter at:", adapterPath);
 
@@ -490,54 +541,58 @@ ReactDOM.createRoot(root).render(
       root: appRoot,
       server: {
         port: randomPort,
-        strictPort: false
+        strictPort: false,
       },
       resolve: {
         alias: {
-          "@scaffa/react-runtime-adapter": adapterPath,
+          "@skaffa/react-runtime-adapter": adapterPath,
         },
       },
       optimizeDeps: optimizeDepsConfig,
     };
 
     const baseConfig = projectConfig?.config || {};
-    const rawPlugins = Array.isArray(baseConfig.plugins) ? baseConfig.plugins : [];
+    const rawPlugins = Array.isArray(baseConfig.plugins)
+      ? baseConfig.plugins
+      : [];
     const allProjectPlugins = rawPlugins.flat(2).filter(Boolean);
     const projectPlugins = allProjectPlugins.filter(
-      (p) => p?.name !== "vite:react-refresh" && p?.name !== "vite:react-babel"
+      (p) => p?.name !== "vite:react-refresh" && p?.name !== "vite:react-babel",
     );
     console.log("[ViteRunner] Plugin info:", {
       allPlugins: allProjectPlugins.map((p) => p?.name).filter(Boolean),
-      afterFilter: projectPlugins.map((p) => p?.name).filter(Boolean)
+      afterFilter: projectPlugins.map((p) => p?.name).filter(Boolean),
     });
 
     const jsxPlugin = {
-      name: "scaffa:jsx",
+      name: "skaffa:jsx",
       async transform(code, id) {
         if (!/\.(jsx|tsx)$/.test(id)) return null;
         if (id.includes("node_modules")) return null;
 
         // Debug log for virtual harness
-        if (id.includes("scaffa-harness")) {
-          console.log("[ViteRunner] JSX plugin transforming virtual harness:", id);
+        if (id.includes("skaffa-harness")) {
+          console.log(
+            "[ViteRunner] JSX plugin transforming virtual harness:",
+            id,
+          );
         }
 
         const result = await vite.transformWithEsbuild(code, id, {
           loader: id.endsWith(".tsx") ? "tsx" : "jsx",
           jsx: "automatic",
-          jsxImportSource: "react"
+          jsxImportSource: "react",
         });
         return {
           code: result.code,
-          map: result.map
+          map: result.map,
         };
-      }
+      },
     };
 
     // Create instrumentation plugin if we have matchers
-    const instrumentationPlugin = matchers.length > 0
-      ? createInstrumentationPlugin(matchers)
-      : null;
+    const instrumentationPlugin =
+      matchers.length > 0 ? createInstrumentationPlugin(matchers) : null;
 
     // Build final plugin list
     // Order: project plugins, instrumentation, jsx, harness
@@ -551,7 +606,7 @@ ReactDOM.createRoot(root).render(
     const { plugins: _, ...baseWithoutPlugins } = baseConfig;
     const finalConfig = vite.mergeConfig(baseWithoutPlugins, {
       ...myConfig,
-      plugins: mergedPlugins
+      plugins: mergedPlugins,
     });
 
     console.log("[ViteRunner] Starting Vite server...");
@@ -560,7 +615,7 @@ ReactDOM.createRoot(root).render(
     const address = server.httpServer?.address();
     const port = typeof address === "object" && address ? address.port : 0;
     console.log(`Local: http://localhost:${port}`);
-    await new Promise(() => { });
+    await new Promise(() => {});
   } catch (error) {
     console.error("[ViteRunner] Failed to start:", error);
     process.exit(1);

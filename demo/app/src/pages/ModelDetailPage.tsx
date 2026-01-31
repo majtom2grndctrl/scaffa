@@ -1,5 +1,5 @@
 import { useParams } from "react-router-dom";
-import { Box, Row, Stack } from "@scaffa/layout-primitives-react";
+import { Box, Row, Stack } from "@skaffa/layout-primitives-react";
 import { ArrowDownRight, Shield, Sparkles } from "lucide-react";
 
 import { Badge } from "@/components/ui/badge";
@@ -25,8 +25,10 @@ const statusClass = {
 
 export function ModelDetailPage() {
   const { modelId } = useParams();
-  const model = modelFleet.find((entry) => entry.id === modelId) ?? modelFleet[0];
-  const details = modelDetailNotes[model.id] ?? modelDetailNotes["atlas-vision"];
+  const model =
+    modelFleet.find((entry) => entry.id === modelId) ?? modelFleet[0];
+  const details =
+    modelDetailNotes[model.id] ?? modelDetailNotes["atlas-vision"];
 
   return (
     <Stack gap={6}>
@@ -42,7 +44,7 @@ export function ModelDetailPage() {
             <Badge
               className={cn(
                 "rounded-full text-[0.65rem]",
-                statusClass[model.status]
+                statusClass[model.status],
               )}
             >
               {model.status}
@@ -67,7 +69,8 @@ export function ModelDetailPage() {
                 </DialogDescription>
               </DialogHeader>
               <div className="rounded-lg border border-slate-200 p-3 text-sm text-slate-600">
-                Current version {model.version} · Last retrain {details.lastRetrain}
+                Current version {model.version} · Last retrain{" "}
+                {details.lastRetrain}
               </div>
               <DialogFooter>
                 <Button variant="outline">Cancel</Button>
@@ -89,9 +92,7 @@ export function ModelDetailPage() {
             <div className="text-2xl font-display text-slate-900">
               {model.latencyP95}ms
             </div>
-            <span className="text-xs text-slate-500">
-              +18ms from baseline
-            </span>
+            <span className="text-xs text-slate-500">+18ms from baseline</span>
           </CardContent>
         </Card>
         <Card className="min-w-[220px] flex-1 border-slate-200/70 bg-white/80 shadow-sm">
@@ -104,9 +105,7 @@ export function ModelDetailPage() {
             <div className="text-2xl font-display text-slate-900">
               {model.driftScore.toFixed(2)}
             </div>
-            <span className="text-xs text-slate-500">
-              New segment detected
-            </span>
+            <span className="text-xs text-slate-500">New segment detected</span>
           </CardContent>
         </Card>
         <Card className="min-w-[220px] flex-1 border-slate-200/70 bg-white/80 shadow-sm">
@@ -119,9 +118,7 @@ export function ModelDetailPage() {
             <div className="text-2xl font-display text-slate-900">
               ${model.costPer1k.toFixed(2)}
             </div>
-            <span className="text-xs text-slate-500">
-              Budget steady
-            </span>
+            <span className="text-xs text-slate-500">Budget steady</span>
           </CardContent>
         </Card>
       </Row>
@@ -162,7 +159,9 @@ export function ModelDetailPage() {
                   gap={2}
                   className="rounded-lg border border-slate-200/70 bg-white px-3 py-2 text-sm"
                 >
-                  <span className="font-semibold text-slate-700">{version}</span>
+                  <span className="font-semibold text-slate-700">
+                    {version}
+                  </span>
                   <Badge variant="secondary" className="text-[0.65rem]">
                     {model.stage}
                   </Badge>

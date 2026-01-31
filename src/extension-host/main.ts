@@ -15,7 +15,7 @@ import type {
   PromoteOverridesMessage,
 } from './ipc-protocol.js';
 import { ModuleLoader } from './module-loader.js';
-import type { ScaffaConfig } from '../shared/config.js';
+import type { SkaffaConfig } from '../shared/config.js';
 
 // ─────────────────────────────────────────────────────────────────────────────
 // Extension Host State

@@ -1,4 +1,4 @@
-import { create } from 'zustand';
+import { create } from "zustand";
 import type {
   PreviewSessionId,
   PreviewSessionType,
@@ -6,7 +6,7 @@ import type {
   SessionReadyEvent,
   SessionErrorEvent,
   SessionStoppedEvent,
-} from '../../shared/index.js';
+} from "../../shared/index.js";
 
 // ─────────────────────────────────────────────────────────────────────────────
 // Session State
@@ -15,7 +15,7 @@ import type {
 export interface PreviewSession {
   sessionId: PreviewSessionId;
   type: PreviewSessionType;
-  state: 'creating' | 'ready' | 'error' | 'stopped';
+  state: "creating" | "ready" | "error" | "stopped";
   error?: string;
 }
 
@@ -81,7 +81,7 @@ export const useSessionStore = create<SessionStore>((set, get) => ({
         {
           sessionId,
           type,
-          state: 'creating',
+          state: "creating",
         },
       ],
     }));
@@ -94,7 +94,7 @@ export const useSessionStore = create<SessionStore>((set, get) => ({
   markSessionReady: (event) => {
     set((state) => {
       const existingSession = state.sessions.find(
-        (session) => session.sessionId === event.sessionId
+        (session) => session.sessionId === event.sessionId,
       );
 
       if (existingSession) {
@@ -102,8 +102,8 @@ export const useSessionStore = create<SessionStore>((set, get) => ({
         return {
           sessions: state.sessions.map((session) =>
             session.sessionId === event.sessionId
-              ? { ...session, type: event.type, state: 'ready' }
-              : session
+              ? { ...session, type: event.type, state: "ready" }
+              : session,
           ),
         };
       } else {
@@ -114,7 +114,7 @@ export const useSessionStore = create<SessionStore>((set, get) => ({
             {
               sessionId: event.sessionId,
               type: event.type,
-              state: 'ready',
+              state: "ready",
             },
           ],
         };
@@ -126,15 +126,17 @@ export const useSessionStore = create<SessionStore>((set, get) => ({
     set((state) => ({
       sessions: state.sessions.map((session) =>
         session.sessionId === event.sessionId
-          ? { ...session, state: 'error', error: event.error }
-          : session
+          ? { ...session, state: "error", error: event.error }
+          : session,
       ),
     }));
   },
 
   removeSession: (event) => {
     set((state) => ({
-      sessions: state.sessions.filter((session) => session.sessionId !== event.sessionId),
+      sessions: state.sessions.filter(
+        (session) => session.sessionId !== event.sessionId,
+      ),
     }));
   },
 
@@ -156,26 +158,28 @@ export const useSessionStore = create<SessionStore>((set, get) => ({
  * Call this once at app startup.
  */
 export function initializeSessionListeners() {
-  if (!window.scaffa?.preview) {
-    console.warn('[SessionStore] Scaffa bridge (window.scaffa.preview) not found. Skipping listener initialization.');
+  if (!window.skaffa?.preview) {
+    console.warn(
+      "[SessionStore] Skaffa bridge (window.skaffa.preview) not found. Skipping listener initialization.",
+    );
     return;
   }
 
   // Listen for session ready
-  window.scaffa.preview.onSessionReady((event) => {
-    console.log('[SessionStore] Session ready:', event);
+  window.skaffa.preview.onSessionReady((event) => {
+    console.log("[SessionStore] Session ready:", event);
     useSessionStore.getState().markSessionReady(event);
   });
 
   // Listen for session errors
-  window.scaffa.preview.onSessionError((event) => {
-    console.error('[SessionStore] Session error:', event);
+  window.skaffa.preview.onSessionError((event) => {
+    console.error("[SessionStore] Session error:", event);
     useSessionStore.getState().markSessionError(event);
   });
 
   // Listen for session stopped
-  window.scaffa.preview.onSessionStopped((event) => {
-    console.log('[SessionStore] Session stopped:', event);
+  window.skaffa.preview.onSessionStopped((event) => {
+    console.log("[SessionStore] Session stopped:", event);
     useSessionStore.getState().removeSession(event);
   });
 }

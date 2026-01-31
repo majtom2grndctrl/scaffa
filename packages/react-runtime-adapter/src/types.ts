@@ -1,11 +1,11 @@
 // ─────────────────────────────────────────────────────────────────────────────
-// Scaffa React Runtime Adapter Types (v0)
+// Skaffa React Runtime Adapter Types (v0)
 // ─────────────────────────────────────────────────────────────────────────────
 
 /**
  * Runtime adapter configuration.
  */
-export interface ScaffaAdapterConfig {
+export interface SkaffaAdapterConfig {
   /**
    * Adapter ID (e.g., "react", "nextjs-react").
    */

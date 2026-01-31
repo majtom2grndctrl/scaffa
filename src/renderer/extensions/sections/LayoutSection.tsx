@@ -4,25 +4,25 @@
 // Designer-friendly inspector section for layout primitives (Box, Row, Stack).
 // This is an extension-provided inspector section loaded via the extension pipeline.
 //
-// See: docs/scaffa_inspector_ux_semantics.md
-// See: docs/scaffa_extension_api.md (Section 8: UI Contribution API)
+// See: docs/skaffa_inspector_ux_semantics.md
+// See: docs/skaffa_extension_api.md (Section 8: UI Contribution API)
 
-import { useState } from 'react';
-import type { ExtensionSectionProps } from '../types.js';
-// Import preload types to provide window.scaffa typings
-import type { } from '../../../preload/preload.js';
+import { useState } from "react";
+import type { ExtensionSectionProps } from "../types.js";
+// Import preload types to provide window.skaffa typings
+import type {} from "../../../preload/preload.js";
 
 // ─────────────────────────────────────────────────────────────────────────────
 // Types
 // ─────────────────────────────────────────────────────────────────────────────
 
 // Layout component type IDs
-const LAYOUT_TYPE_IDS = ['layout.box', 'layout.row', 'layout.stack'] as const;
+const LAYOUT_TYPE_IDS = ["layout.box", "layout.row", "layout.stack"] as const;
 type LayoutTypeId = (typeof LAYOUT_TYPE_IDS)[number];
 
 // Spacing scale options (0..16) + unset
 const SPACING_OPTIONS: Array<{ value: string; label: string }> = [
-  { value: 'unset', label: '—' },
+  { value: "unset", label: "—" },
   ...Array.from({ length: 17 }, (_, i) => ({
     value: String(i),
     label: String(i),
@@ -31,19 +31,21 @@ const SPACING_OPTIONS: Array<{ value: string; label: string }> = [
 
 // Gap options for Row/Stack
 const GAP_OPTIONS: Array<{ value: string; label: string }> = [
-  { value: 'unset', label: '—' },
+  { value: "unset", label: "—" },
   ...Array.from({ length: 17 }, (_, i) => ({
     value: String(i),
     label: String(i),
   })),
-  { value: 'space-between', label: 'Space Between' },
+  { value: "space-between", label: "Space Between" },
 ];
 
 // ─────────────────────────────────────────────────────────────────────────────
 // Helper: Check if a component is a layout type
 // ─────────────────────────────────────────────────────────────────────────────
 
-function isLayoutType(componentTypeId: string): componentTypeId is LayoutTypeId {
+function isLayoutType(
+  componentTypeId: string,
+): componentTypeId is LayoutTypeId {
   return LAYOUT_TYPE_IDS.includes(componentTypeId as LayoutTypeId);
 }
 
@@ -69,14 +71,15 @@ const LayoutSection = ({ context }: ExtensionSectionProps) => {
     return null;
   }
 
-  const isRowOrStack = componentTypeId === 'layout.row' || componentTypeId === 'layout.stack';
+  const isRowOrStack =
+    componentTypeId === "layout.row" || componentTypeId === "layout.stack";
 
   // Get the effective value for a prop: override → runtime baseline → undefined
-  // See: docs/scaffa_inspector_ux_semantics.md Section 1.1
+  // See: docs/skaffa_inspector_ux_semantics.md Section 1.1
   const getOverrideValue = (propName: string): string | undefined => {
     // 1. Check for override value
     const override = overrides.find(
-      (o) => o.instanceId === selected.instanceId && o.path === `/${propName}`
+      (o) => o.instanceId === selected.instanceId && o.path === `/${propName}`,
     );
     if (override) {
       return override.value as string | undefined;
@@ -93,22 +96,22 @@ const LayoutSection = ({ context }: ExtensionSectionProps) => {
   // Set override via IPC
   const setOverride = async (propName: string, value: string) => {
     // Handle 'unset' by clearing the override
-    if (value === 'unset') {
+    if (value === "unset") {
       try {
-        await window.scaffa.overrides.clear({
+        await window.skaffa.overrides.clear({
           sessionId: context.sessionId,
           instanceId: selected.instanceId as any,
           path: `/${propName}` as any,
         });
-        console.log('[LayoutSection] Override cleared:', { propName });
+        console.log("[LayoutSection] Override cleared:", { propName });
       } catch (error) {
-        console.error('[LayoutSection] Failed to clear override:', error);
+        console.error("[LayoutSection] Failed to clear override:", error);
       }
       return;
     }
 
     try {
-      await window.scaffa.overrides.set({
+      await window.skaffa.overrides.set({
         sessionId: context.sessionId,
         instanceId: selected.instanceId as any,
         path: `/${propName}` as any,
@@ -116,9 +119,9 @@ const LayoutSection = ({ context }: ExtensionSectionProps) => {
         componentTypeId: selected.componentTypeId,
         instanceLocator: selected.instanceLocator,
       });
-      console.log('[LayoutSection] Override set:', { propName, value });
+      console.log("[LayoutSection] Override set:", { propName, value });
     } catch (error) {
-      console.error('[LayoutSection] Failed to set override:', error);
+      console.error("[LayoutSection] Failed to set override:", error);
     }
   };
 
@@ -130,7 +133,12 @@ const LayoutSection = ({ context }: ExtensionSectionProps) => {
     >
       {/* Section Header */}
       <div className="flex items-center justify-between">
-        <h3 id={`layout-section-heading-${selected.instanceId}`} className="text-xs font-semibold text-fg">Layout</h3>
+        <h3
+          id={`layout-section-heading-${selected.instanceId}`}
+          className="text-xs font-semibold text-fg"
+        >
+          Layout
+        </h3>
         <span className="text-[10px] text-fg-subtle">
           {registryEntry.displayName}
         </span>
@@ -169,7 +177,7 @@ const LayoutSection = ({ context }: ExtensionSectionProps) => {
           aria-controls={`margin-controls-${selected.instanceId}`}
           className="flex items-center gap-1 text-xs text-fg-muted hover:text-fg"
         >
-          <span className="text-[10px]">{showMargin ? '▼' : '▶'}</span>
+          <span className="text-[10px]">{showMargin ? "▼" : "▶"}</span>
           <span>Margin</span>
         </button>
       </div>
@@ -216,17 +224,22 @@ const FlexControls = ({
   getOverrideValue,
   setOverride,
 }: FlexControlsProps) => {
-  const isStack = componentTypeId === 'layout.stack';
+  const isStack = componentTypeId === "layout.stack";
 
   return (
     <div className="space-y-3 border-b border-subtle pb-4">
       {/* Gap */}
       <div className="space-y-1">
-        <label htmlFor={`gap-${instanceId}`} className="text-xs font-medium text-fg">Gap</label>
+        <label
+          htmlFor={`gap-${instanceId}`}
+          className="text-xs font-medium text-fg"
+        >
+          Gap
+        </label>
         <SpacingSelect
           id={`gap-${instanceId}`}
-          value={getOverrideValue('gap')}
-          onChange={(value) => setOverride('gap', value)}
+          value={getOverrideValue("gap")}
+          onChange={(value) => setOverride("gap", value)}
           options={GAP_OPTIONS}
           tokenPrefix="space"
         />
@@ -235,11 +248,16 @@ const FlexControls = ({
       {/* Align & Justify */}
       <div className="grid grid-cols-2 gap-3">
         <div className="space-y-1">
-          <label htmlFor={`align-${instanceId}`} className="text-xs font-medium text-fg">Align</label>
+          <label
+            htmlFor={`align-${instanceId}`}
+            className="text-xs font-medium text-fg"
+          >
+            Align
+          </label>
           <select
             id={`align-${instanceId}`}
-            value={getOverrideValue('align') ?? ''}
-            onChange={(e) => setOverride('align', e.target.value)}
+            value={getOverrideValue("align") ?? ""}
+            onChange={(e) => setOverride("align", e.target.value)}
             className="w-full rounded border border-default bg-input px-2 py-1.5 text-xs text-fg focus:border-accent focus:outline-none focus:ring-1 focus:ring-accent"
           >
             <option value="">—</option>
@@ -251,11 +269,16 @@ const FlexControls = ({
         </div>
 
         <div className="space-y-1">
-          <label htmlFor={`justify-${instanceId}`} className="text-xs font-medium text-fg">Justify</label>
+          <label
+            htmlFor={`justify-${instanceId}`}
+            className="text-xs font-medium text-fg"
+          >
+            Justify
+          </label>
           <select
             id={`justify-${instanceId}`}
-            value={getOverrideValue('justify') ?? ''}
-            onChange={(e) => setOverride('justify', e.target.value)}
+            value={getOverrideValue("justify") ?? ""}
+            onChange={(e) => setOverride("justify", e.target.value)}
             className="w-full rounded border border-default bg-input px-2 py-1.5 text-xs text-fg focus:border-accent focus:outline-none focus:ring-1 focus:ring-accent"
           >
             <option value="">—</option>
@@ -272,11 +295,16 @@ const FlexControls = ({
       {/* Wrap & Direction */}
       <div className="grid grid-cols-2 gap-3">
         <div className="space-y-1">
-          <label htmlFor={`wrap-${instanceId}`} className="text-xs font-medium text-fg">Wrap</label>
+          <label
+            htmlFor={`wrap-${instanceId}`}
+            className="text-xs font-medium text-fg"
+          >
+            Wrap
+          </label>
           <select
             id={`wrap-${instanceId}`}
-            value={getOverrideValue('wrap') ?? ''}
-            onChange={(e) => setOverride('wrap', e.target.value)}
+            value={getOverrideValue("wrap") ?? ""}
+            onChange={(e) => setOverride("wrap", e.target.value)}
             className="w-full rounded border border-default bg-input px-2 py-1.5 text-xs text-fg focus:border-accent focus:outline-none focus:ring-1 focus:ring-accent"
           >
             <option value="">—</option>
@@ -287,16 +315,25 @@ const FlexControls = ({
         </div>
 
         <div className="space-y-1">
-          <label htmlFor={`direction-${instanceId}`} className="text-xs font-medium text-fg">Direction</label>
+          <label
+            htmlFor={`direction-${instanceId}`}
+            className="text-xs font-medium text-fg"
+          >
+            Direction
+          </label>
           <select
             id={`direction-${instanceId}`}
-            value={getOverrideValue('direction') ?? ''}
-            onChange={(e) => setOverride('direction', e.target.value)}
+            value={getOverrideValue("direction") ?? ""}
+            onChange={(e) => setOverride("direction", e.target.value)}
             className="w-full rounded border border-default bg-input px-2 py-1.5 text-xs text-fg focus:border-accent focus:outline-none focus:ring-1 focus:ring-accent"
           >
             <option value="">—</option>
-            <option value="normal">{isStack ? 'Top to Bottom' : 'Left to Right'}</option>
-            <option value="reverse">{isStack ? 'Bottom to Top' : 'Right to Left'}</option>
+            <option value="normal">
+              {isStack ? "Top to Bottom" : "Left to Right"}
+            </option>
+            <option value="reverse">
+              {isStack ? "Bottom to Top" : "Right to Left"}
+            </option>
           </select>
         </div>
       </div>
@@ -337,10 +374,17 @@ const SpacingControlGroup = ({
 }: SpacingControlGroupProps) => {
   return (
     <section aria-labelledby={`${idPrefix}-heading`} className="space-y-2">
-      <h4 id={`${idPrefix}-heading`} className="sr-only">{title} Controls</h4>
+      <h4 id={`${idPrefix}-heading`} className="sr-only">
+        {title} Controls
+      </h4>
       {/* All sides */}
       <div className="flex items-center gap-2">
-        <label htmlFor={`${idPrefix}-all`} className="w-12 text-xs text-fg-muted">All</label>
+        <label
+          htmlFor={`${idPrefix}-all`}
+          className="w-12 text-xs text-fg-muted"
+        >
+          All
+        </label>
         <SpacingSelect
           id={`${idPrefix}-all`}
           value={getOverrideValue(allProp)}
@@ -352,7 +396,9 @@ const SpacingControlGroup = ({
 
       {/* Axis shortcuts */}
       <div className="flex items-center gap-2">
-        <span className="w-12 text-xs text-fg-muted" aria-hidden="true">X / Y</span>
+        <span className="w-12 text-xs text-fg-muted" aria-hidden="true">
+          X / Y
+        </span>
         <div className="flex flex-1 gap-2">
           <SpacingSelect
             id={`${idPrefix}-x`}
@@ -450,24 +496,31 @@ const SpacingSelect = ({
   onChange,
   options,
   ariaLabel,
-  tokenPrefix = 'space',
+  tokenPrefix = "space",
   compact = false,
 }: SpacingSelectProps) => {
   // Display token name in the select when value is a number
-  const displayValue = value ?? '';
-  const isNumeric = displayValue !== '' && displayValue !== 'unset' && !isNaN(Number(displayValue));
-  const tokenName = isNumeric && Number(displayValue) > 0 ? `${tokenPrefix}-${displayValue}` : null;
+  const displayValue = value ?? "";
+  const isNumeric =
+    displayValue !== "" &&
+    displayValue !== "unset" &&
+    !isNaN(Number(displayValue));
+  const tokenName =
+    isNumeric && Number(displayValue) > 0
+      ? `${tokenPrefix}-${displayValue}`
+      : null;
 
   return (
-    <div className={compact ? 'w-14' : 'flex-1'}>
+    <div className={compact ? "w-14" : "flex-1"}>
       <select
         id={id}
         value={displayValue}
         onChange={(e) => onChange(e.target.value)}
         title={tokenName ?? undefined}
         aria-label={ariaLabel}
-        className={`w-full rounded border border-default bg-input text-xs text-fg focus:border-accent focus:outline-none focus:ring-1 focus:ring-accent ${compact ? 'px-1 py-1 text-center' : 'px-2 py-1.5'
-          }`}
+        className={`w-full rounded border border-default bg-input text-xs text-fg focus:border-accent focus:outline-none focus:ring-1 focus:ring-accent ${
+          compact ? "px-1 py-1 text-center" : "px-2 py-1.5"
+        }`}
       >
         {options.map((opt) => (
           <option key={opt.value} value={opt.value}>

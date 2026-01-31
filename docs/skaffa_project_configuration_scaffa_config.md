@@ -1,7 +1,7 @@
-# Scaffa Project Configuration (scaffa.config.js)
+# Skaffa Project Configuration (skaffa.config.js)
 
 > **Status:** Draft / v0 shape
-> **Audience:** Application engineers configuring Scaffa for a project
+> **Audience:** Application engineers configuring Skaffa for a project
 > **Goal:** Define how a project opts into modules, registries, and editor behavior.
 
 ---
@@ -9,7 +9,7 @@
 ## 1. Purpose
 
 The project configuration file defines:
-- which Scaffa modules are enabled
+- which Skaffa modules are enabled
 - how component registries are composed
 - which providers/decorators apply to previews
 - project‑specific overrides and constraints
@@ -21,10 +21,10 @@ This file is **code**, not JSON, to allow reuse and composition.
 ## 2. File Location
 
 ```text
-/scaffa.config.js
+/skaffa.config.js
 ```
 
-Scaffa loads `scaffa.config.js` at runtime; this is the only supported config file in v0.
+Skaffa loads `skaffa.config.js` at runtime; this is the only supported config file in v0.
 
 ---
 
@@ -32,12 +32,12 @@ Scaffa loads `scaffa.config.js` at runtime; this is the only supported config fi
 
 ```js
 // Preferred (portable): import from a published or packed package
-import { defineScaffaConfig } from '@scaffa/config'
+import { defineSkaffaConfig } from '@skaffa/config'
 
 // In-repo development shortcut:
-// import { defineScaffaConfig } from '../src/shared/config.js'
+// import { defineSkaffaConfig } from '../src/shared/config.js'
 
-export default defineScaffaConfig({
+export default defineSkaffaConfig({
   modules: [
     {
       id: 'layout-extension',
@@ -73,7 +73,7 @@ export default defineScaffaConfig({
 Modules are the primary extension mechanism.
 
 ```ts
-modules: ScaffaModule[]
+modules: SkaffaModule[]
 ```
 
 Modules may contribute:
@@ -89,14 +89,14 @@ Order matters: later modules may override earlier ones.
 In v0, modules are loaded from file paths.
 
 Rule:
-- A module `path` is resolved **relative to the directory containing `scaffa.config.js`**.
-- Module entrypoints must be **runtime-loadable JavaScript** (e.g. `index.js`). If you author modules in TypeScript, compile/bundle them before Scaffa loads the workspace.
+- A module `path` is resolved **relative to the directory containing `skaffa.config.js`**.
+- Module entrypoints must be **runtime-loadable JavaScript** (e.g. `index.js`). If you author modules in TypeScript, compile/bundle them before Skaffa loads the workspace.
 
 Example:
-- `demo/scaffa.config.js` with `path: './extensions/layout/module/index.js'` resolves to `demo/extensions/layout/module/index.js`.
+- `demo/skaffa.config.js` with `path: './extensions/layout/module/index.js'` resolves to `demo/extensions/layout/module/index.js`.
 
 Extension bundles commonly live under `extensions/<name>/` and may include:
-- `module/` (extension-host entrypoint referenced by `scaffa.config.js`)
+- `module/` (extension-host entrypoint referenced by `skaffa.config.js`)
 - `packages/` (optional runtime libraries imported by app/source code)
 
 Also supported in v0:
@@ -104,19 +104,19 @@ Also supported in v0:
   - `path: '@/extensions/demo-module/index.js'` resolves to `<workspaceRoot>/extensions/demo-module/index.js`
   - `path: 'workspace:/extensions/demo-module/index.js'` resolves to `<workspaceRoot>/extensions/demo-module/index.js`
 - **Package-based modules**:
-  - `package: '@scaffa/some-module'` is resolved using Node.js module resolution anchored at `<workspaceRoot>`.
-  - If `package` is omitted, Scaffa will also attempt to resolve `id` as a package specifier.
+  - `package: '@skaffa/some-module'` is resolved using Node.js module resolution anchored at `<workspaceRoot>`.
+  - If `package` is omitted, Skaffa will also attempt to resolve `id` as a package specifier.
 
 ### 4.2 Package-Based Imports: Workspace Prerequisites (v0)
 
-`scaffa.config.js` executes in Node, so **package-based imports require the package
-to be installed in the workspace** (the directory containing `scaffa.config.js`).
+`skaffa.config.js` executes in Node, so **package-based imports require the package
+to be installed in the workspace** (the directory containing `skaffa.config.js`).
 
 Examples:
 
 ```bash
 # In a real project (registry install)
-pnpm add -D @scaffa/config
+pnpm add -D @skaffa/config
 
 # In the demo workspace (local tarballs)
 pnpm demo:refresh-extensions
@@ -125,7 +125,7 @@ pnpm demo:refresh-extensions
 Notes:
 - This does **not** require a `pnpm-workspace.yaml`; standard Node module resolution applies.
 - For module `package` entries, ensure those extension packages are installed in the same
-  workspace root as `scaffa.config.js`.
+  workspace root as `skaffa.config.js`.
 
 ---
 
@@ -206,7 +206,7 @@ These constraints are enforced by core services.
 
 ## 9. Validation and Error Surfacing (v0)
 
-`scaffa.config.js` is validated with a schema (Zod). In v0:
+`skaffa.config.js` is validated with a schema (Zod). In v0:
 - Config validation errors are surfaced in the **ConfigHealthBanner** (visible below the header)
 - Module activation failures are displayed in the banner with actionable error messages
 - Detailed diagnostics are also logged to the developer console for debugging

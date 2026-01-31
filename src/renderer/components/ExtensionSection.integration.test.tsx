@@ -17,7 +17,7 @@ import type {
  *
  * Section component throws → Error boundary catches → Fallback displays → Inspector survives
  *
- * This is critical Scaffa-specific resilience behavior: extension failures should be
+ * This is critical Skaffa-specific resilience behavior: extension failures should be
  * isolated and should not crash the entire Inspector panel.
  */
 

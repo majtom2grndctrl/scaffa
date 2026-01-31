@@ -2,10 +2,10 @@
 import { z } from 'zod';
 
 // ─────────────────────────────────────────────────────────────────────────────
-// Scaffa Config Schema (v0)
+// Skaffa Config Schema (v0)
 // ─────────────────────────────────────────────────────────────────────────────
-// Defines the shape of scaffa.config.js project configuration.
-// See: docs/scaffa_project_configuration_scaffa_config.md
+// Defines the shape of skaffa.config.js project configuration.
+// See: docs/skaffa_project_configuration_skaffa_config.md
 
 // Local schema to avoid runtime dependency on other shared modules.
 const ComponentTypeIdSchema = z.string();
@@ -14,16 +14,16 @@ const ComponentTypeIdSchema = z.string();
  * Module instance contributed to the project.
  * v0: Simple path-based loading. Future: factory functions + npm packages.
  */
-export const ScaffaModuleSchema = z.object({
+export const SkaffaModuleSchema = z.object({
   id: z.string(),
   path: z.string().optional(),
   /**
    * Optional npm package specifier for package-based modules.
    * When provided, the extension host will resolve it using Node's module resolution
-   * anchored at the workspace root (directory containing scaffa.config.js).
+   * anchored at the workspace root (directory containing skaffa.config.js).
    *
    * Examples:
-   * - "@scaffa/module-react-router"
+   * - "@skaffa/module-react-router"
    * - "./relative-package" (workspace local via package.json "name")
    */
   package: z.string().optional(),
@@ -31,7 +31,7 @@ export const ScaffaModuleSchema = z.object({
   contributions: z.unknown().optional(),
 });
 
-/** @typedef {import('zod').infer<typeof ScaffaModuleSchema>} ScaffaModule */
+/** @typedef {import('zod').infer<typeof SkaffaModuleSchema>} SkaffaModule */
 
 /**
  * Preview decorator function (opaque at config layer).
@@ -145,25 +145,25 @@ export const AiConfigSchema = z.object({
 /** @typedef {import('zod').infer<typeof AiConfigSchema>} AiConfig */
 
 /**
- * Full scaffa.config.js schema.
+ * Full skaffa.config.js schema.
  */
-export const ScaffaConfigSchema = z.object({
+export const SkaffaConfigSchema = z.object({
   schemaVersion: z.literal('v0').optional().default('v0'),
-  modules: z.array(ScaffaModuleSchema).optional().default([]),
+  modules: z.array(SkaffaModuleSchema).optional().default([]),
   preview: PreviewConfigSchema.optional(),
   components: ComponentsConfigSchema.optional(),
   ai: AiConfigSchema.optional(),
 });
 
-/** @typedef {import('zod').infer<typeof ScaffaConfigSchema>} ScaffaConfig */
+/** @typedef {import('zod').infer<typeof SkaffaConfigSchema>} SkaffaConfig */
 
 /**
  * Helper function for user-facing config definition.
- * This will be exported from @scaffa/config package.
+ * This will be exported from @skaffa/config package.
  *
- * @param {ScaffaConfig} config
- * @returns {ScaffaConfig}
+ * @param {SkaffaConfig} config
+ * @returns {SkaffaConfig}
  */
-export function defineScaffaConfig(config) {
-  return ScaffaConfigSchema.parse(config);
+export function defineSkaffaConfig(config) {
+  return SkaffaConfigSchema.parse(config);
 }

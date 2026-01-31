@@ -20,7 +20,7 @@ export const ConfigHealthBanner = () => {
     // Fetch config health on mount
     const fetchConfigHealth = async () => {
       try {
-        const result = await window.scaffa.config.get({});
+        const result = await window.skaffa.config.get({});
         setConfigHealth(result);
       } catch (error) {
         console.error('[ConfigHealthBanner] Failed to fetch config health:', error);
@@ -69,7 +69,7 @@ export const ConfigHealthBanner = () => {
                 {configHealth.loadError.message}
               </p>
               <p className="mt-2 text-xs text-fg-muted">
-                → Fix the error in <code className="font-mono">scaffa.config.js</code> and reload
+                → Fix the error in <code className="font-mono">skaffa.config.js</code> and reload
                 the workspace.
               </p>
             </div>
@@ -108,7 +108,7 @@ export const ConfigHealthBanner = () => {
                     </>
                   )}
                   <p className="mt-2 text-xs text-fg-muted">
-                    → Check the module path in <code className="font-mono">scaffa.config.js</code>{' '}
+                    → Check the module path in <code className="font-mono">skaffa.config.js</code>{' '}
                     and ensure the module exports an <code className="font-mono">activate</code>{' '}
                     function.
                   </p>

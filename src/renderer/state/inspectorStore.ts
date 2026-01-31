@@ -3,13 +3,13 @@
 // ─────────────────────────────────────────────────────────────────────────────
 // Maintains selected instance state, component registry, and overrides for Inspector UI.
 
-import { create } from 'zustand';
+import { create } from "zustand";
 import type {
   InstanceDescriptor,
   ComponentRegistry,
   PersistedOverride,
   InspectorSectionContribution,
-} from '../../shared/index.js';
+} from "../../shared/index.js";
 
 interface InspectorState {
   // Selected instance
@@ -55,47 +55,53 @@ export const useInspectorStore = create<InspectorState>((set, get) => ({
       return;
     }
 
-    console.log('[InspectorStore] Initializing...');
+    console.log("[InspectorStore] Initializing...");
 
     // Fetch registry
     set({ isRegistryLoading: true });
     try {
-      const response = await window.scaffa.registry.get({});
-      console.log('[InspectorStore] Loaded registry:', response.registry);
+      const response = await window.skaffa.registry.get({});
+      console.log("[InspectorStore] Loaded registry:", response.registry);
       set({
         registry: response.registry,
         isRegistryLoading: false,
       });
     } catch (error) {
-      console.error('[InspectorStore] Failed to load registry:', error);
+      console.error("[InspectorStore] Failed to load registry:", error);
       set({ isRegistryLoading: false });
     }
 
     // Fetch inspector sections
     set({ isSectionsLoading: true });
     try {
-      const response = await window.scaffa.inspector.getSections({});
-      console.log('[InspectorStore] Loaded inspector sections:', response.sections);
+      const response = await window.skaffa.inspector.getSections({});
+      console.log(
+        "[InspectorStore] Loaded inspector sections:",
+        response.sections,
+      );
       set({
         inspectorSections: response.sections,
         isSectionsLoading: false,
       });
     } catch (error) {
-      console.error('[InspectorStore] Failed to load inspector sections:', error);
+      console.error(
+        "[InspectorStore] Failed to load inspector sections:",
+        error,
+      );
       set({ isSectionsLoading: false });
     }
 
     set({ isInitialized: true });
 
     // Subscribe to selection changes
-    window.scaffa.selection.onSelectionChanged((event) => {
-      console.log('[InspectorStore] Selection changed:', event);
+    window.skaffa.selection.onSelectionChanged((event) => {
+      console.log("[InspectorStore] Selection changed:", event);
       set({ selectedInstance: event.selected });
     });
 
     // Subscribe to override changes
-    window.scaffa.overrides.onOverridesChanged((event) => {
-      console.log('[InspectorStore] Overrides changed:', event);
+    window.skaffa.overrides.onOverridesChanged((event) => {
+      console.log("[InspectorStore] Overrides changed:", event);
       set({ overrides: event.overrides });
     });
   },
@@ -112,20 +118,26 @@ export const useInspectorStore = create<InspectorState>((set, get) => ({
     });
 
     try {
-      const response = await window.scaffa.registry.get({});
-      console.log('[InspectorStore] Refreshed registry:', response.registry);
+      const response = await window.skaffa.registry.get({});
+      console.log("[InspectorStore] Refreshed registry:", response.registry);
       set({ registry: response.registry, isRegistryLoading: false });
     } catch (error) {
-      console.error('[InspectorStore] Failed to refresh registry:', error);
+      console.error("[InspectorStore] Failed to refresh registry:", error);
       set({ isRegistryLoading: false });
     }
 
     try {
-      const response = await window.scaffa.inspector.getSections({});
-      console.log('[InspectorStore] Refreshed inspector sections:', response.sections);
+      const response = await window.skaffa.inspector.getSections({});
+      console.log(
+        "[InspectorStore] Refreshed inspector sections:",
+        response.sections,
+      );
       set({ inspectorSections: response.sections, isSectionsLoading: false });
     } catch (error) {
-      console.error('[InspectorStore] Failed to refresh inspector sections:', error);
+      console.error(
+        "[InspectorStore] Failed to refresh inspector sections:",
+        error,
+      );
       set({ isSectionsLoading: false });
     }
   },

@@ -1,7 +1,7 @@
 {
-  "name": "@scaffa/demo-graph-producer",
+  "name": "@skaffa/demo-graph-producer",
   "version": "0.1.0",
   "private": true,
   "type": "module",
-  "description": "Demo graph producer module for Scaffa v0 walkthrough"
+  "description": "Demo graph producer module for Skaffa v0 walkthrough"
 }

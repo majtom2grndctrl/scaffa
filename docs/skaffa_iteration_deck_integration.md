@@ -1,14 +1,14 @@
 # Iteration Deck Integration Sketch (Conceptual)
 
 > **Status:** Concept / deferred (not v0)  
-> **Audience:** Scaffa core contributors and product/design stakeholders  
+> **Audience:** Skaffa core contributors and product/design stakeholders  
 > **Goal:** Provide a compatibility sketch so v0 contracts (sessions, overrides, registries, graph) don’t block variants/snapshots/comparisons later.
 
 Related:
 - [Architecture Plan](./index.md)
-- [Scaffa Preview Session Protocol](./scaffa_preview_session_protocol.md)
-- [Scaffa Override Model + Persistence](./scaffa_override_model.md)
-- [Scaffa Project Graph Schema + Patch Protocol](./scaffa_project_graph_schema.md)
+- [Skaffa Preview Session Protocol](./skaffa_preview_session_protocol.md)
+- [Skaffa Override Model + Persistence](./skaffa_override_model.md)
+- [Skaffa Project Graph Schema + Patch Protocol](./skaffa_project_graph_schema.md)
 
 ---
 

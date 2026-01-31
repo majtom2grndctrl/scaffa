@@ -1,4 +1,4 @@
-import { Box, Row, Stack } from "@scaffa/layout-primitives-react";
+import { Box, Row, Stack } from "@skaffa/layout-primitives-react";
 import { ArrowUpRight, ShieldCheck } from "lucide-react";
 
 import { Badge } from "@/components/ui/badge";
@@ -64,7 +64,7 @@ export function OverviewPage() {
               <span
                 className={cn(
                   "inline-flex rounded-full px-2 py-1 text-xs font-semibold",
-                  toneClasses[metric.tone]
+                  toneClasses[metric.tone],
                 )}
               >
                 {metric.delta}
@@ -102,8 +102,8 @@ export function OverviewPage() {
                       signal.status === "critical"
                         ? "bg-rose-100 text-rose-700"
                         : signal.status === "warning"
-                        ? "bg-amber-100 text-amber-700"
-                        : "bg-slate-100 text-slate-600"
+                          ? "bg-amber-100 text-amber-700"
+                          : "bg-slate-100 text-slate-600",
                     )}
                   >
                     {signal.status}
@@ -178,7 +178,7 @@ export function OverviewPage() {
                     <Badge
                       className={cn(
                         "rounded-full text-[0.65rem]",
-                        statusClasses[model.status]
+                        statusClasses[model.status],
                       )}
                     >
                       {model.status}
@@ -258,8 +258,8 @@ export function OverviewPage() {
                       incident.severity === "high"
                         ? "bg-rose-100 text-rose-700"
                         : incident.severity === "medium"
-                        ? "bg-amber-100 text-amber-700"
-                        : "bg-slate-100 text-slate-600"
+                          ? "bg-amber-100 text-amber-700"
+                          : "bg-slate-100 text-slate-600",
                     )}
                   >
                     {incident.severity}

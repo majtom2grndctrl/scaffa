@@ -5,7 +5,7 @@
  *
  *   Extension Host (registry-contribution) → Main Process (registryManager) → IPC Handler
  *
- * This is a critical Scaffa workflow:
+ * This is a critical Skaffa workflow:
  * - Extension modules contribute registries during activation
  * - Main process receives and composes the effective registry
  * - Renderer fetches the registry via IPC
@@ -15,7 +15,7 @@
  */
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import type { ComponentRegistry } from '../../shared/index.js';
-import type { ScaffaConfig } from '../../shared/config.js';
+import type { SkaffaConfig } from '../../shared/config.js';
 import type { RegistryContributionMessage } from '../../extension-host/ipc-protocol.js';
 
 // Mock electron to avoid Electron-specific APIs
@@ -27,7 +27,7 @@ vi.mock('electron', () => ({
 
 describe('Registry Flow - Main Process Integration', () => {
   // Test fixtures - use type assertion to handle branded ComponentTypeId
-  const mockConfig: ScaffaConfig = {
+  const mockConfig: SkaffaConfig = {
     schemaVersion: 'v0',
     preview: {
       entry: './src/App.tsx',
@@ -100,7 +100,7 @@ describe('Registry Flow - Main Process Integration', () => {
   describe('Step 1: Registry Manager Initial State', () => {
     /**
      * Before any module contributions, the registry should be empty.
-     * This is the state when Scaffa first starts or when no modules load.
+     * This is the state when Skaffa first starts or when no modules load.
      */
     it('should return empty registry before any contributions', () => {
       const registry = registryManager.getEffectiveRegistry();
@@ -175,14 +175,14 @@ describe('Registry Flow - Main Process Integration', () => {
     it('should apply config overrides to module registry entries', () => {
       const mockModuleRegistry = createMockRegistry();
 
-      const configWithOverrides: ScaffaConfig = {
+      const configWithOverrides: SkaffaConfig = {
         ...mockConfig,
         components: {
           overrides: {
             'demo.button': {
               displayName: 'Custom Button', // Override displayName
             },
-          } as ScaffaConfig['components'],
+          } as SkaffaConfig['components'],
         },
       };
 
@@ -218,14 +218,14 @@ describe('Registry Flow - Main Process Integration', () => {
       expect(initialButton?.displayName).toBe('Demo Button');
 
       // Config changes
-      const newConfig: ScaffaConfig = {
+      const newConfig: SkaffaConfig = {
         ...mockConfig,
         components: {
           overrides: {
             'demo.button': {
               displayName: 'Updated Button',
             },
-          } as ScaffaConfig['components'],
+          } as SkaffaConfig['components'],
         },
       };
 

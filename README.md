@@ -1,15 +1,15 @@
-## 1. What Scaffa Is
+## 1. What Skaffa Is
 
-Scaffa is an **Integrated Design Environment (IDE) for web-based software**.
+Skaffa is an **Integrated Design Environment (IDE) for web-based software**.
 
 It helps designers and engineers shape *real, production UI* by making structure **visible, editable, and safe to explore**, without hiding or replacing the underlying code.
 
-Scaffa is not:
+Skaffa is not:
 - a visual website builder
 - a code generator that replaces engineers
 - a design tool that outputs throwaway artifacts
 
-Scaffa is:
+Skaffa is:
 - an editor that operates directly on production systems
 - a structured environment for "vibe coding" with guardrails
 - a bridge between design intent and implementation reality
@@ -44,13 +44,13 @@ Changes are previewed, reversible, and always traceable to source locations.
 
 ## 5. Modularity and AI
 
-Scaffa is a small core plus modules. Modules can add component libraries, edit affordances, preview context, and workflows. AI is optional, constrained, and always produces reviewable output.
+Skaffa is a small core plus modules. Modules can add component libraries, edit affordances, preview context, and workflows. AI is optional, constrained, and always produces reviewable output.
 
 ---
 
-## 6. What Scaffa Avoids
+## 6. What Skaffa Avoids
 
-Scaffa does not attempt to:
+Skaffa does not attempt to:
 - replace programming languages
 - eliminate architectural decisions
 - guess intent without context
@@ -62,7 +62,7 @@ Constraint is a feature, not a limitation.
 
 ## 7. Testing
 
-See `docs/testing_guide.md` for Scaffa’s testing philosophy, what to prioritize, and how tests should document system behavior for AI agents.
+See `docs/testing_guide.md` for Skaffa’s testing philosophy, what to prioritize, and how tests should document system behavior for AI agents.
 
 ### Running Tests
 
@@ -80,4 +80,4 @@ pnpm prepush
 
 ## 8. Guiding Statement
 
-**Scaffa is an environment for shaping real software through visible structure, explicit boundaries, and confident iteration—without severing the link to code.**
+**Skaffa is an environment for shaping real software through visible structure, explicit boundaries, and confident iteration—without severing the link to code.**

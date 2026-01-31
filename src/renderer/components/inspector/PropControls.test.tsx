@@ -6,7 +6,7 @@ import { render, screen, fireEvent } from '@testing-library/react';
 import { ControlRenderer, JsonControl } from './PropControls';
 import type { ControlDefinition } from '../../../shared/index.js';
 
-describe('PropControls - Scaffa-specific behavior', () => {
+describe('PropControls - Skaffa-specific behavior', () => {
   describe('JsonControl - validation logic', () => {
     it('should parse valid JSON and call onChange', () => {
       const onChange = vi.fn();

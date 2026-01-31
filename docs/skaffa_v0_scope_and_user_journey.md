@@ -1,16 +1,16 @@
-# Scaffa v0 Scope + First User Journey
+# Skaffa v0 Scope + First User Journey
 
 > **Status:** Draft / v0 planning  
-> **Audience:** Scaffa core contributors and product stakeholders  
+> **Audience:** Skaffa core contributors and product stakeholders  
 > **Goal:** Define what is in scope for v0, what is out of scope, and describe the first end-to-end user journey that exercises preview, selection, Inspector editing, and overrides.
 
 Related:
 - [Architecture Plan](./index.md)
-- [Scaffa Preview Session Protocol](./scaffa_preview_session_protocol.md)
-- [Scaffa Runtime Adapter Contract](./scaffa_runtime_adapter_contract.md)
-- [Scaffa Component Registry Schema](./scaffa_component_registry_schema.md)
-- [Scaffa Override Model + Persistence](./scaffa_override_model.md)
-- [Scaffa Save-to-Disk Protocol](./scaffa_save_to_disk_protocol.md)
+- [Skaffa Preview Session Protocol](./skaffa_preview_session_protocol.md)
+- [Skaffa Runtime Adapter Contract](./skaffa_runtime_adapter_contract.md)
+- [Skaffa Component Registry Schema](./skaffa_component_registry_schema.md)
+- [Skaffa Override Model + Persistence](./skaffa_override_model.md)
+- [Skaffa Save-to-Disk Protocol](./skaffa_save_to_disk_protocol.md)
 
 ---
 
@@ -18,7 +18,7 @@ Related:
 
 v0 is successful when a designer (within explicit guardrails) can:
 
-1. Launch Scaffa and open a workspace from the Launcher
+1. Launch Skaffa and open a workspace from the Launcher
 2. Start an **Editor View** session (embedded runtime in the Workbench)
 3. Select a UI instance via click-to-select in Editor View
 4. Use the Inspector to edit approved props (draft overrides)
@@ -39,8 +39,8 @@ v0 is successful when a designer (within explicit guardrails) can:
 
 ### 2.2 Workspace + Configuration
 
-- Load `scaffa.config.js` and module list
-- Apply project-level registry overrides (see `docs/scaffa_project_configuration_scaffa_config.md`)
+- Load `skaffa.config.js` and module list
+- Apply project-level registry overrides (see `docs/skaffa_project_configuration_skaffa_config.md`)
 
 ### 2.3 Extension Host (Trusted)
 
@@ -51,7 +51,7 @@ v0 is successful when a designer (within explicit guardrails) can:
 
 ### 2.4 Preview Sessions (App-first)
 
-- Start/stop an `app` preview session (see `docs/scaffa_preview_session_protocol.md`)
+- Start/stop an `app` preview session (see `docs/skaffa_preview_session_protocol.md`)
 - Basic session lifecycle state in UI
 - Support reload/reconnect semantics
 
@@ -69,14 +69,14 @@ v0 is successful when a designer (within explicit guardrails) can:
 
 ### 2.7 Override Model + Persistence
 
-- Canonical override addressing and precedence (see `docs/scaffa_override_model.md`)
+- Canonical override addressing and precedence (see `docs/skaffa_override_model.md`)
 - Transactional set/reset/clear operations
 - Persist draft overrides locally so they survive reloads/restarts (optional but recommended)
 
 ### 2.8 Save to Disk (v0)
 
 - Convert draft overrides into concrete workspace file edits (working tree)
-- Apply edits transactionally (see Workspace API in `docs/scaffa_extension_api.md`)
+- Apply edits transactionally (see Workspace API in `docs/skaffa_extension_api.md`)
 - Clear draft overrides that were successfully saved, so “baseline” becomes the new code
 
 ---
@@ -99,9 +99,9 @@ In addition to `docs/index.md` “Deferred” items, v0 explicitly excludes:
 
 ### Step 1: Launcher → Open Workspace
 
-- Scaffa opens to the Launcher view.
+- Skaffa opens to the Launcher view.
 - User selects an existing workspace (project folder) via Open Workspace (or chooses a recent workspace).
-- Scaffa loads `scaffa.config.js`.
+- Skaffa loads `skaffa.config.js`.
 - Extension host starts and registers enabled modules.
 - Effective component registry is composed (module registries + project overrides).
 
@@ -113,7 +113,7 @@ In addition to `docs/index.md` “Deferred” items, v0 explicitly excludes:
   - enter a dev-server URL (attached mode, escape hatch)
 - Main process creates and loads the preview runtime.
 - Runtime adapter handshakes and announces readiness.
-- Scaffa replays any persisted overrides relevant to this session target.
+- Skaffa replays any persisted overrides relevant to this session target.
 
 ### Step 3: Click-to-Select
 
@@ -132,7 +132,7 @@ In addition to `docs/index.md` “Deferred” items, v0 explicitly excludes:
 ### Step 5: Save to Disk
 
 - User clicks “Save” (or invokes the Save command).
-- Scaffa converts draft overrides into workspace edits (file patches) and writes them to disk.
+- Skaffa converts draft overrides into workspace edits (file patches) and writes them to disk.
 - The running app reflects the changes via HMR or reload.
 - Draft overrides that were saved are cleared (the new code becomes the baseline).
 
@@ -151,13 +151,13 @@ Use this checklist to validate the v0 “first user journey” end-to-end. This 
 
 ### Pre-flight
 
-- [ ] Start Scaffa (`pnpm dev` from repo root).
-- [ ] From the Launcher, open a workspace configured for Scaffa (use `demo/` for the reference walkthrough).
+- [ ] Start Skaffa (`pnpm dev` from repo root).
+- [ ] From the Launcher, open a workspace configured for Skaffa (use `demo/` for the reference walkthrough).
 
 ### Preview session
 
 - [ ] Start an `app` preview session via a launcher (managed mode) for **Editor View**: the center workspace shows the running demo app.
-- [ ] (Fallback) If you start a dev server manually, you can attach by URL (attached mode), but Harness Model guarantees (virtual harness + instrumentation) are not provided unless the server is started with Scaffa’s injected tooling.
+- [ ] (Fallback) If you start a dev server manually, you can attach by URL (attached mode), but Harness Model guarantees (virtual harness + instrumentation) are not provided unless the server is started with Skaffa’s injected tooling.
 - [ ] Confirm the runtime adapter handshake completes (preview is “ready”).
 
 ### Selection (Editor View)
@@ -182,7 +182,7 @@ v0 interaction contract:
 ### Save to Disk
 
 - [ ] Edit an editable prop (draft override): preview updates immediately and Inspector indicates the prop is overridden.
-- [ ] Click Save: Scaffa writes working-tree edits and the running app reflects the change.
+- [ ] Click Save: Skaffa writes working-tree edits and the running app reflects the change.
 - [ ] Clear draft overrides: verify the saved change remains (it is now code baseline).
 
 ---

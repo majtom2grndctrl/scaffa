@@ -19,9 +19,9 @@ Implement a Beads ticket with documentation grounding, correctness checks, and f
 ## Procedure
 1. Retrieve ticket details: run `bd show <ticket-id>` and read the full description, acceptance criteria, dependencies, and context.
 2. Claim the ticket: run `bd update <ticket-id> --status=in_progress`.
-3. Ground on relevant documentation before touching code: identify and read relevant `docs/` (start with `docs/index.md`; add `docs/scaffa_extension_authoring_guide.md`, `docs/scaffa_extension_api.md`, `docs/scaffa_ipc_boundaries_and_sequences.md`, or component docs as needed); note anything outdated or unclear.
+3. Ground on relevant documentation before touching code: identify and read relevant `docs/` (start with `docs/index.md`; add `docs/skaffa_extension_authoring_guide.md`, `docs/skaffa_extension_api.md`, `docs/skaffa_ipc_boundaries_and_sequences.md`, or component docs as needed); note anything outdated or unclear.
 4. Create a todo list if the ticket has multiple subtasks (example below).
-5. Plan tests for lifecycle visibility: default to adding at least one Scaffa-specific test that captures the user sequence (event → IPC → state → UI). If tests are deferred, state why and file a follow-up ticket.
+5. Plan tests for lifecycle visibility: default to adding at least one Skaffa-specific test that captures the user sequence (event → IPC → state → UI). If tests are deferred, state why and file a follow-up ticket.
 6. Implement the solution: follow documented patterns, update the todo list, run builds/tests as needed, and keep scope tight to the ticket.
 7. Verify the implementation: run `pnpm run build`, run tests if applicable, and confirm acceptance criteria.
 8. Check for documentation issues: re-review the docs you read and identify misleading, contradictory, or now-outdated content or missing docs for new patterns.
@@ -41,13 +41,13 @@ Implement a Beads ticket with documentation grounding, correctness checks, and f
 ### Example: implement a ticket
 Input:
 ```
-/implement-ticket scaffa-7iq.11
+/implement-ticket skaffa-7iq.11
 ```
 Output (abridged):
 ```
-bd show scaffa-7iq.11
-bd update scaffa-7iq.11 --status=in_progress
-# Read docs/index.md and docs/scaffa_extension_api.md
+bd show skaffa-7iq.11
+bd update skaffa-7iq.11 --status=in_progress
+# Read docs/index.md and docs/skaffa_extension_api.md
 TodoWrite({
   todos: [
     { content: "Update GraphProducer.initialize() typing", status: "pending", activeForm: "Working on typing" },
@@ -60,11 +60,11 @@ git status
 git add src/extension-host/extension-context.ts
 git commit -m "feat(extensions): type GraphProducer.initialize() as Promise<GraphSnapshot>
 
-Resolves scaffa-7iq.11
+Resolves skaffa-7iq.11
 
 Co-Authored-By: Claude Sonnet 4.5 <noreply@anthropic.com>"
 bd sync
 git push
 git status
-bd close scaffa-7iq.11
+bd close skaffa-7iq.11
 ```

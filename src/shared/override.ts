@@ -1,23 +1,23 @@
-import { z } from 'zod';
+import { z } from "zod";
 import {
   PreviewSessionIdSchema,
   InstanceIdSchema,
   ComponentTypeIdSchema,
   type PreviewSessionId,
   type InstanceId,
-} from './preview-session.js';
-import { JsonValueSchema, type JsonValue } from './common.js';
+} from "./preview-session.js";
+import { JsonValueSchema, type JsonValue } from "./common.js";
 
 // ─────────────────────────────────────────────────────────────────────────────
 // Override Model (v0)
 // ─────────────────────────────────────────────────────────────────────────────
-// See: docs/scaffa_override_model.md
+// See: docs/skaffa_override_model.md
 
 /**
  * JSON Pointer path (RFC 6901).
  * Example: "/variant" or "/children/0/text"
  */
-export const PropPathSchema = z.string().brand('PropPath');
+export const PropPathSchema = z.string().brand("PropPath");
 export type PropPath = z.infer<typeof PropPathSchema>;
 
 /**
@@ -34,9 +34,9 @@ export type InstanceRef = z.infer<typeof InstanceRefSchema>;
 // Override Operations
 // ─────────────────────────────────────────────────────────────────────────────
 
-export const OverrideOpSchema = z.discriminatedUnion('op', [
+export const OverrideOpSchema = z.discriminatedUnion("op", [
   z.object({
-    op: z.literal('set'),
+    op: z.literal("set"),
     instanceId: InstanceIdSchema,
     path: PropPathSchema,
     value: JsonValueSchema,
@@ -44,16 +44,16 @@ export const OverrideOpSchema = z.discriminatedUnion('op', [
     instanceLocator: JsonValueSchema.optional(),
   }),
   z.object({
-    op: z.literal('clear'),
+    op: z.literal("clear"),
     instanceId: InstanceIdSchema,
     path: PropPathSchema,
   }),
   z.object({
-    op: z.literal('clearInstance'),
+    op: z.literal("clearInstance"),
     instanceId: InstanceIdSchema,
   }),
   z.object({
-    op: z.literal('clearAll'),
+    op: z.literal("clearAll"),
   }),
 ]);
 
@@ -81,7 +81,7 @@ export const PersistedOverrideSchema = z.object({
 export type PersistedOverride = z.infer<typeof PersistedOverrideSchema>;
 
 export const PersistedOverridesFileSchema = z.object({
-  schemaVersion: z.literal('v0'),
+  schemaVersion: z.literal("v0"),
   updatedAt: z.string().datetime(),
   app: z
     .object({
@@ -95,7 +95,9 @@ export const PersistedOverridesFileSchema = z.object({
     .optional(),
 });
 
-export type PersistedOverridesFile = z.infer<typeof PersistedOverridesFileSchema>;
+export type PersistedOverridesFile = z.infer<
+  typeof PersistedOverridesFileSchema
+>;
 
 // ─────────────────────────────────────────────────────────────────────────────
 // Override State Events

@@ -1,12 +1,12 @@
 // ─────────────────────────────────────────────────────────────────────────────
-// Scaffa Extension SDK (v0)
+// Skaffa Extension SDK (v0)
 // ─────────────────────────────────────────────────────────────────────────────
 // Stable import surface for extension authors.
 //
 // Usage:
 //   import type { ExtensionContext, ComponentRegistry } from '../../extension-sdk.js';
 //
-// This entrypoint re-exports all extension-facing types from Scaffa core.
+// This entrypoint re-exports all extension-facing types from Skaffa core.
 // Extension modules should import from this file instead of deep paths into src/.
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -93,8 +93,8 @@ export type {
 
 // Config
 export type {
-  ScaffaConfig,
-  ScaffaModule,
+  SkaffaConfig,
+  SkaffaModule,
   WorkspacePath,
 } from './src/shared/config.js';
 

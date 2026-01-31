@@ -10,7 +10,6 @@ daemon.lock
 daemon.log
 daemon.pid
 bd.sock
-bd.sock.startlock
 sync-state.json
 last-touched
 
@@ -33,7 +32,8 @@ beads.left.meta.json
 beads.right.jsonl
 beads.right.meta.json
 
-# Sync state (local-only)
+# Sync state (local-only, per-machine)
+# These files are machine-specific and should not be shared across clones
 .sync.lock
 sync_base.jsonl
 
@@ -42,5 +42,3 @@ sync_base.jsonl
 # contributors to accidentally commit upstream issue databases.
 # The JSONL files (issues.jsonl, interactions.jsonl) and config files
 # are tracked by git by default since no pattern above ignores them.
-# IMPORTANT: Keep `.beads/issues.jsonl` out of code commits on `main` or feature branches;
-# use `bd sync` (on the configured sync branch) to persist it instead.

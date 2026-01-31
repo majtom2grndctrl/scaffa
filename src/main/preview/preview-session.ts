@@ -3,37 +3,40 @@
 // ─────────────────────────────────────────────────────────────────────────────
 // Manages a single preview session's WebContents, state, and runtime communication.
 
-import { BrowserView, BrowserWindow, WebContents, shell } from 'electron';
+import { BrowserView, BrowserWindow, WebContents, shell } from "electron";
 import type {
   PreviewSessionId,
   PreviewSessionTarget,
   PreviewSessionState,
   InstanceDescriptor,
-} from '../../shared/index.js';
+} from "../../shared/index.js";
 import type {
   RuntimeEvent,
   HostCommand,
   AdapterId,
   RuntimeCapabilities,
-} from '../../shared/index.js';
-import type { OverrideOp } from '../../shared/index.js';
+} from "../../shared/index.js";
+import type { OverrideOp } from "../../shared/index.js";
 
 // ─────────────────────────────────────────────────────────────────────────────
 // Preview Session
 // ─────────────────────────────────────────────────────────────────────────────
 
 export interface PreviewSessionEventHandlers {
-  onStateChange: (sessionId: PreviewSessionId, state: PreviewSessionState) => void;
+  onStateChange: (
+    sessionId: PreviewSessionId,
+    state: PreviewSessionState,
+  ) => void;
   onError: (sessionId: PreviewSessionId, error: Error) => void;
   onRuntimeReady: (
     sessionId: PreviewSessionId,
     adapterId: AdapterId,
     adapterVersion: string,
-    capabilities: RuntimeCapabilities
+    capabilities: RuntimeCapabilities,
   ) => void;
   onSelectionChanged: (
     sessionId: PreviewSessionId,
-    selected: InstanceDescriptor | null
+    selected: InstanceDescriptor | null,
   ) => void;
 }
 
@@ -41,14 +44,14 @@ export class PreviewSession {
   readonly sessionId: PreviewSessionId;
   readonly target: PreviewSessionTarget;
   private view: BrowserView | null = null;
-  private state: PreviewSessionState = 'creating';
+  private state: PreviewSessionState = "creating";
   private handlers: PreviewSessionEventHandlers;
   private runtimeReady = false;
 
   constructor(
     sessionId: PreviewSessionId,
     target: PreviewSessionTarget,
-    handlers: PreviewSessionEventHandlers
+    handlers: PreviewSessionEventHandlers,
   ) {
     this.sessionId = sessionId;
     this.target = target;
@@ -79,18 +82,27 @@ export class PreviewSession {
   /**
    * Attach the preview BrowserView to a BrowserWindow and set its bounds.
    */
-  attachToWindow(window: BrowserWindow, bounds: { x: number; y: number; width: number; height: number }): void {
+  attachToWindow(
+    window: BrowserWindow,
+    bounds: { x: number; y: number; width: number; height: number },
+  ): void {
     if (!this.view) {
-      console.warn(`[PreviewSession] Cannot attach: no BrowserView for session ${this.sessionId}`);
+      console.warn(
+        `[PreviewSession] Cannot attach: no BrowserView for session ${this.sessionId}`,
+      );
       return;
     }
 
     // Add the BrowserView to the window if not already added
     const existingViews = window.getBrowserViews();
     if (!existingViews.includes(this.view)) {
-      console.log(`[PreviewSession] Adding BrowserView to window (${existingViews.length} views currently attached)`);
+      console.log(
+        `[PreviewSession] Adding BrowserView to window (${existingViews.length} views currently attached)`,
+      );
       window.addBrowserView(this.view);
-      console.log(`[PreviewSession] BrowserView added (now ${window.getBrowserViews().length} views attached)`);
+      console.log(
+        `[PreviewSession] BrowserView added (now ${window.getBrowserViews().length} views attached)`,
+      );
     } else {
       console.log(`[PreviewSession] BrowserView already attached to window`);
     }
@@ -99,15 +111,25 @@ export class PreviewSession {
     this.view.setBounds(bounds);
     console.log(`[PreviewSession] Set BrowserView bounds:`, bounds);
 
-    console.log(`[PreviewSession] Attached session ${this.sessionId} to window with bounds:`, bounds);
+    console.log(
+      `[PreviewSession] Attached session ${this.sessionId} to window with bounds:`,
+      bounds,
+    );
   }
 
   /**
    * Update the bounds of the preview BrowserView.
    */
-  setBounds(bounds: { x: number; y: number; width: number; height: number }): void {
+  setBounds(bounds: {
+    x: number;
+    y: number;
+    width: number;
+    height: number;
+  }): void {
     if (!this.view) {
-      console.warn(`[PreviewSession] Cannot set bounds: no BrowserView for session ${this.sessionId}`);
+      console.warn(
+        `[PreviewSession] Cannot set bounds: no BrowserView for session ${this.sessionId}`,
+      );
       return;
     }
 
@@ -124,7 +146,9 @@ export class PreviewSession {
 
     if (window.getBrowserViews().includes(this.view)) {
       window.removeBrowserView(this.view);
-      console.log(`[PreviewSession] Detached session ${this.sessionId} from window`);
+      console.log(
+        `[PreviewSession] Detached session ${this.sessionId} from window`,
+      );
     }
   }
 
@@ -133,16 +157,16 @@ export class PreviewSession {
    */
   async start(): Promise<void> {
     try {
-      this.setState('creating');
+      this.setState("creating");
 
       // Create BrowserView for preview
       // Note: v0 uses BrowserView; future versions may support BrowserWindow or WebView
-      const { join } = await import('node:path');
-      const { fileURLToPath } = await import('node:url');
-      const __dirname = fileURLToPath(new URL('.', import.meta.url));
+      const { join } = await import("node:path");
+      const { fileURLToPath } = await import("node:url");
+      const __dirname = fileURLToPath(new URL(".", import.meta.url));
       const runtimeTransportPreload = join(
         __dirname,
-        '../runtime-transport-preload/runtime-transport-preload.js'
+        "../runtime-transport-preload/runtime-transport-preload.js",
       );
 
       this.view = new BrowserView({
@@ -155,7 +179,7 @@ export class PreviewSession {
       });
 
       // Set background color so BrowserView is visible even when loading
-      this.view.setBackgroundColor('#1e1e1e');
+      this.view.setBackgroundColor("#1e1e1e");
 
       // Disable auto-resize - we'll manage bounds manually
       this.view.setAutoResize({
@@ -169,7 +193,7 @@ export class PreviewSession {
       this.setupWebContentsHandlers();
 
       // Load target URL
-      this.setState('loading');
+      this.setState("loading");
       const url = this.getTargetUrl();
       console.log(`[PreviewSession] Loading URL: ${url}`);
       await this.view.webContents.loadURL(url);
@@ -184,12 +208,12 @@ export class PreviewSession {
    * Stop the session and clean up.
    */
   async stop(window?: BrowserWindow): Promise<void> {
-    if (this.state === 'stopped' || this.state === 'disposed') {
+    if (this.state === "stopped" || this.state === "disposed") {
       return;
     }
 
     console.log(`[PreviewSession] Stopping session ${this.sessionId}`);
-    this.setState('stopped');
+    this.setState("stopped");
 
     // Clean up WebContents
     if (this.view) {
@@ -208,7 +232,7 @@ export class PreviewSession {
       this.view = null;
     }
 
-    this.setState('disposed');
+    this.setState("disposed");
   }
 
   /**
@@ -218,14 +242,14 @@ export class PreviewSession {
     const webContents = this.getWebContents();
     if (!webContents || webContents.isDestroyed()) {
       console.warn(
-        `[PreviewSession] Cannot send to runtime: WebContents destroyed for session ${this.sessionId}`
+        `[PreviewSession] Cannot send to runtime: WebContents destroyed for session ${this.sessionId}`,
       );
       return;
     }
 
     // Send command via IPC to the runtime adapter
     // The preload's ipcRenderer.on('host:command') will receive this
-    webContents.send('host:command', command);
+    webContents.send("host:command", command);
   }
 
   /**
@@ -234,13 +258,13 @@ export class PreviewSession {
   applyOverrides(ops: OverrideOp[]): void {
     if (!this.runtimeReady) {
       console.warn(
-        `[PreviewSession] Cannot apply overrides: runtime not ready for session ${this.sessionId}`
+        `[PreviewSession] Cannot apply overrides: runtime not ready for session ${this.sessionId}`,
       );
       return;
     }
 
     this.sendToRuntime({
-      type: 'host.applyOverrides',
+      type: "host.applyOverrides",
       sessionId: this.sessionId,
       ops,
     });
@@ -256,29 +280,34 @@ export class PreviewSession {
 
     // Listen for runtime adapter messages
     // The runtime adapter will use ipcRenderer to send events to the main process
-    webContents.ipc.on('runtime:event', (_event, runtimeEvent: RuntimeEvent) => {
-      this.handleRuntimeEvent(runtimeEvent);
-    });
+    webContents.ipc.on(
+      "runtime:event",
+      (_event, runtimeEvent: RuntimeEvent) => {
+        this.handleRuntimeEvent(runtimeEvent);
+      },
+    );
 
     // Handle page load completion
-    webContents.on('did-finish-load', () => {
+    webContents.on("did-finish-load", () => {
       console.log(`[PreviewSession] Page loaded for session ${this.sessionId}`);
       // Wait for runtime.ready event before transitioning to 'ready' state
     });
 
     // Handle navigation
-    webContents.on('did-navigate', (event, url) => {
+    webContents.on("did-navigate", (event, url) => {
       console.log(`[PreviewSession] Navigated to ${url}`);
       // Reset runtime ready state on navigation
       this.runtimeReady = false;
     });
 
     // Handle errors
-    webContents.on('did-fail-load', (_event, errorCode, errorDescription) => {
-      this.handleError(new Error(`Failed to load: ${errorDescription} (${errorCode})`));
+    webContents.on("did-fail-load", (_event, errorCode, errorDescription) => {
+      this.handleError(
+        new Error(`Failed to load: ${errorDescription} (${errorCode})`),
+      );
     });
 
-    webContents.on('render-process-gone', (_event, details) => {
+    webContents.on("render-process-gone", (_event, details) => {
       this.handleError(new Error(`Render process gone: ${details.reason}`));
     });
 
@@ -286,43 +315,61 @@ export class PreviewSession {
     // Navigation Policy (v0)
     // ─────────────────────────────────────────────────────────────────────────
     // Prevent preview content from spawning new Electron windows or navigating
-    // to external origins. See: scaffa-0rp, docs/scaffa_preview_session_protocol.md
+    // to external origins. See: skaffa-0rp, docs/skaffa_preview_session_protocol.md
 
     // Block window.open() and <a target="_blank"> from creating new Electron windows
     webContents.setWindowOpenHandler((details) => {
       const { url } = details;
-      console.log(`[PreviewSession] [Navigation Policy] window.open blocked: ${url}`);
+      console.log(
+        `[PreviewSession] [Navigation Policy] window.open blocked: ${url}`,
+      );
 
       // v0 policy: never create new Electron windows from preview content
       // Future: In Preview Mode, open external URLs in system browser
       if (this.isExternalUrl(url)) {
-        console.log(`[PreviewSession] [Navigation Policy] Opening external URL in system browser: ${url}`);
+        console.log(
+          `[PreviewSession] [Navigation Policy] Opening external URL in system browser: ${url}`,
+        );
         shell.openExternal(url).catch((error) => {
-          console.error(`[PreviewSession] [Navigation Policy] Failed to open external URL:`, error);
+          console.error(
+            `[PreviewSession] [Navigation Policy] Failed to open external URL:`,
+            error,
+          );
         });
       } else {
-        console.log(`[PreviewSession] [Navigation Policy] Same-origin window.open blocked (not navigating): ${url}`);
+        console.log(
+          `[PreviewSession] [Navigation Policy] Same-origin window.open blocked (not navigating): ${url}`,
+        );
       }
 
       // Always deny window creation
-      return { action: 'deny' as const };
+      return { action: "deny" as const };
     });
 
     // Block top-frame navigation to external origins
-    webContents.on('will-navigate', (event, url) => {
+    webContents.on("will-navigate", (event, url) => {
       // Allow same-origin navigation
       if (!this.isExternalUrl(url)) {
-        console.log(`[PreviewSession] [Navigation Policy] Allowing same-origin navigation: ${url}`);
+        console.log(
+          `[PreviewSession] [Navigation Policy] Allowing same-origin navigation: ${url}`,
+        );
         return;
       }
 
       // Block external navigation and open in system browser
-      console.log(`[PreviewSession] [Navigation Policy] Blocking external navigation: ${url}`);
+      console.log(
+        `[PreviewSession] [Navigation Policy] Blocking external navigation: ${url}`,
+      );
       event.preventDefault();
 
-      console.log(`[PreviewSession] [Navigation Policy] Opening external URL in system browser: ${url}`);
+      console.log(
+        `[PreviewSession] [Navigation Policy] Opening external URL in system browser: ${url}`,
+      );
       shell.openExternal(url).catch((error) => {
-        console.error(`[PreviewSession] [Navigation Policy] Failed to open external URL:`, error);
+        console.error(
+          `[PreviewSession] [Navigation Policy] Failed to open external URL:`,
+          error,
+        );
       });
     });
   }
@@ -332,20 +379,23 @@ export class PreviewSession {
    */
   private handleRuntimeEvent(event: RuntimeEvent): void {
     switch (event.type) {
-      case 'runtime.ready':
+      case "runtime.ready":
         this.handleRuntimeReady(
           event.adapterId,
           event.adapterVersion,
-          event.capabilities
+          event.capabilities,
         );
         break;
 
-      case 'runtime.selectionChanged':
+      case "runtime.selectionChanged":
         this.handleSelectionChanged(event.selected);
         break;
 
       default:
-        console.warn('[PreviewSession] Unknown runtime event:', (event as any).type);
+        console.warn(
+          "[PreviewSession] Unknown runtime event:",
+          (event as any).type,
+        );
     }
   }
 
@@ -355,20 +405,20 @@ export class PreviewSession {
   private handleRuntimeReady(
     adapterId: AdapterId,
     adapterVersion: string,
-    capabilities: RuntimeCapabilities
+    capabilities: RuntimeCapabilities,
   ): void {
     console.log(
-      `[PreviewSession] Runtime ready: ${adapterId}@${adapterVersion} for session ${this.sessionId}`
+      `[PreviewSession] Runtime ready: ${adapterId}@${adapterVersion} for session ${this.sessionId}`,
     );
     this.runtimeReady = true;
-    this.setState('ready');
+    this.setState("ready");
 
     // Notify session manager
     this.handlers.onRuntimeReady(
       this.sessionId,
       adapterId,
       adapterVersion,
-      capabilities
+      capabilities,
     );
   }
 
@@ -376,7 +426,9 @@ export class PreviewSession {
    * Handle selection changed event.
    */
   private handleSelectionChanged(selected: InstanceDescriptor | null): void {
-    console.log(`[PreviewSession] Selection changed for session ${this.sessionId}`);
+    console.log(
+      `[PreviewSession] Selection changed for session ${this.sessionId}`,
+    );
     this.handlers.onSelectionChanged(this.sessionId, selected);
   }
 
@@ -385,16 +437,16 @@ export class PreviewSession {
    */
   private getTargetUrl(): string {
     switch (this.target.type) {
-      case 'app':
+      case "app":
         return this.target.url;
-      case 'component':
+      case "component":
         // v0: Component sessions use harnessUrl if provided, otherwise error
         if (!this.target.harnessUrl) {
-          throw new Error('Component session requires harnessUrl');
+          throw new Error("Component session requires harnessUrl");
         }
         return this.target.harnessUrl;
-      case 'variant':
-        throw new Error('Variant sessions not supported in v0');
+      case "variant":
+        throw new Error("Variant sessions not supported in v0");
     }
   }
 
@@ -427,8 +479,11 @@ export class PreviewSession {
    * Handle error and transition to error state.
    */
   private handleError(error: Error): void {
-    console.error(`[PreviewSession] Error in session ${this.sessionId}:`, error);
-    this.setState('error');
+    console.error(
+      `[PreviewSession] Error in session ${this.sessionId}:`,
+      error,
+    );
+    this.setState("error");
     this.handlers.onError(this.sessionId, error);
   }
 }

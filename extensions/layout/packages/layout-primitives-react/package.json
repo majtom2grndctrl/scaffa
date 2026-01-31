@@ -1,5 +1,5 @@
 {
-  "name": "@scaffa/layout-primitives-react",
+  "name": "@skaffa/layout-primitives-react",
   "version": "0.1.0",
   "type": "module",
   "description": "React layout component library mirroring Figma auto-layout primitives",
@@ -17,6 +17,7 @@
   ],
   "scripts": {
     "build": "tsc && cp src/styles/*.css dist/ && cp src/components/*.css dist/components/",
+    "prepack": "pnpm build",
     "dev": "tsc --watch",
     "test": "vitest run",
     "test:watch": "vitest"

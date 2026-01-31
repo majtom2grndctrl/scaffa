@@ -1,4 +1,4 @@
-import { Box, Row, Stack } from "@scaffa/layout-primitives-react";
+import { Box, Row, Stack } from "@skaffa/layout-primitives-react";
 import { AlertTriangle, Siren } from "lucide-react";
 
 import { Badge } from "@/components/ui/badge";
@@ -98,7 +98,7 @@ export function IncidentsPage() {
                   <Badge
                     className={cn(
                       "rounded-full text-[0.65rem] uppercase tracking-widest",
-                      severityStyles[incident.severity]
+                      severityStyles[incident.severity],
                     )}
                   >
                     {incident.severity}

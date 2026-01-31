@@ -1,13 +1,13 @@
-# Scaffa Development Guide
+# Skaffa Development Guide
 
 > **Status:** Living document
-> **Audience:** Scaffa core contributors
+> **Audience:** Skaffa core contributors
 > **Goal:** Document development setup, common issues, and lessons learned during implementation.
 
 Related:
 - [Architecture Plan](./index.md)
-- [IPC Boundaries & Sequences](./scaffa_ipc_boundaries_and_sequences.md)
-- [Scaffa Engineering Conventions](./scaffa_engineering_conventions.md)
+- [IPC Boundaries & Sequences](./skaffa_ipc_boundaries_and_sequences.md)
+- [Skaffa Engineering Conventions](./skaffa_engineering_conventions.md)
 
 ---
 
@@ -31,7 +31,7 @@ pnpm build:renderer
 
 ### Skipping Auto-Restore
 
-By default, Scaffa restores the last opened project on startup. For development or testing the launcher view, you can skip this behavior:
+By default, Skaffa restores the last opened project on startup. For development or testing the launcher view, you can skip this behavior:
 
 ```bash
 # Skip restoring the last project (show launcher)
@@ -47,7 +47,7 @@ cd src/renderer
 pnpm dlx shadcn@latest add <component...>
 ```
 
-After adding components, replace any shadcn palette utility classes (e.g. `bg-background`, `text-foreground`, `ring-ring`) with Scaffa theme tokens from `src/renderer/styles.css` (e.g. `bg-surface-*`, `text-fg*`, `border-default`, `ring-focus`).
+After adding components, replace any shadcn palette utility classes (e.g. `bg-background`, `text-foreground`, `ring-ring`) with Skaffa theme tokens from `src/renderer/styles.css` (e.g. `bg-surface-*`, `text-fg*`, `border-default`, `ring-focus`).
 
 For UI consistency, follow:
 - `docs/design/visual-language.md`
@@ -55,7 +55,7 @@ For UI consistency, follow:
 
 ### Running the Demo Workspace
 
-**Architectural note:** `demo/` is treated as a real workspace that could live outside the Scaffa repo. `demo/app` uses `--ignore-workspace` and its own `pnpm-lock.yaml` to simulate standalone project behavior. Its dependencies (including Scaffa extension modules and `@scaffa/config`) are installed from local tarballs in `demo/vendor/` to keep the workspace portable.
+**Architectural note:** `demo/` is treated as a real workspace that could live outside the Skaffa repo. `demo/app` uses `--ignore-workspace` and its own `pnpm-lock.yaml` to simulate standalone project behavior. Its dependencies (including Skaffa extension modules and `@skaffa/config`) are installed from local tarballs in `demo/vendor/` to keep the workspace portable.
 
 Before running the demo (or after extension changes), pack and install the local dependencies:
 
@@ -63,9 +63,9 @@ Before running the demo (or after extension changes), pack and install the local
 pnpm demo:refresh-extensions
 ```
 
-This packs local extension modules plus `@scaffa/config` and `@scaffa/layout-primitives-react` into `demo/vendor/`, then installs both `demo/` and `demo/app/`.
+This packs local extension modules plus `@skaffa/config` and `@skaffa/layout-primitives-react` into `demo/vendor/`, then installs both `demo/` and `demo/app/`.
 
-The v0 demo workflow uses two independent processes: the demo app dev server (preview target) and Scaffa (the editor).
+The v0 demo workflow uses two independent processes: the demo app dev server (preview target) and Skaffa (the editor).
 
 #### Option 1: Single Command (Recommended for Local Development)
 
@@ -73,7 +73,7 @@ The v0 demo workflow uses two independent processes: the demo app dev server (pr
 # Pack + install demo workspace dependencies (once per change)
 pnpm demo:refresh-extensions
 
-# Start both Scaffa and demo app together
+# Start both Skaffa and demo app together
 pnpm dev:demo
 ```
 
@@ -89,10 +89,10 @@ cd demo/app
 pnpm dev
 ```
 
-This prints a URL like `http://localhost:5173`. Scaffa attaches to this URL for `app` preview sessions.
-If a Vite preview launcher is enabled, Scaffa can also start/manage the dev server in managed mode; attached-by-URL remains an escape hatch.
+This prints a URL like `http://localhost:5173`. Skaffa attaches to this URL for `app` preview sessions.
+If a Vite preview launcher is enabled, Skaffa can also start/manage the dev server in managed mode; attached-by-URL remains an escape hatch.
 
-2) **Scaffa** (the editor)
+2) **Skaffa** (the editor)
 
 ```bash
 pnpm dev
@@ -100,14 +100,14 @@ pnpm dev
 
 #### Notes
 
-Scaffa **core** does not auto-start framework dev servers. Instead, dev-server startup is owned by toolchain-specific **preview launcher extensions**.
+Skaffa **core** does not auto-start framework dev servers. Instead, dev-server startup is owned by toolchain-specific **preview launcher extensions**.
 
 - If a project is a Vite project and enables a Vite launcher extension, starting an `app` preview session should start the Vite dev server (and surface its URL in session logs).
 - The `dev:demo` convenience script simply launches both processes in parallel for faster iteration.
 
-### Config Package (@scaffa/config)
+### Config Package (@skaffa/config)
 
-`scaffa.config.js` is validated by shared Zod schemas in `src/shared/config.js`.
+`skaffa.config.js` is validated by shared Zod schemas in `src/shared/config.js`.
 We generate a no-maintenance type shim with:
 
 ```bash
@@ -116,7 +116,7 @@ pnpm build:shared-types
 
 The `packages/config` package copies `src/shared/config.js` and the generated
 `src/shared/config.d.ts` into `packages/config/dist/` so the demo workspace can
-import `defineScaffaConfig` via `@scaffa/config` without repo-relative paths.
+import `defineSkaffaConfig` via `@skaffa/config` without repo-relative paths.
 
 ### Hot Reload Behavior
 
@@ -131,7 +131,7 @@ import `defineScaffaConfig` via `@scaffa/config` without repo-relative paths.
 
 ### Extension Module Build Process
 
-Scaffa bundles workspace-local extension modules in place:
+Skaffa bundles workspace-local extension modules in place:
 
 - Entry discovery: `extensions/*/module/index.{ts,js}`
 - SDK build: `extension-sdk.ts` is bundled to `extension-sdk.js`
@@ -169,7 +169,7 @@ dist/
 
 ### Sidecar Processes (Planned)
 
-Scaffa may add a Rust “workspace sidecar” process for file-heavy and compute-heavy operations.
+Skaffa may add a Rust “workspace sidecar” process for file-heavy and compute-heavy operations.
 
 Planned dev conventions:
 - Sidecar is spawned/supervised by main (never directly by renderer).
@@ -179,7 +179,7 @@ Planned packaging conventions:
 - The sidecar binary is bundled as an app resource and launched from `process.resourcesPath`.
 - Packager selection/integration is a separate task (Forge vs electron-builder). Until that is decided, bundling remains planned.
 
-See: `docs/scaffa_sidecar_process.md`
+See: `docs/skaffa_sidecar_process.md`
 
 ### Critical Build Constraints
 
@@ -201,7 +201,7 @@ build({
 **Symptoms if wrong:**
 - Console error: "SyntaxError: Cannot use import statement outside a module"
 - Preload script fails to load
-- `window.scaffa` API is undefined in renderer
+- `window.skaffa` API is undefined in renderer
 
 #### 2. Extension Host Path Resolution
 
@@ -285,7 +285,7 @@ Search logs by prefix to filter specific subsystems.
 
 In v0, `console.log()` from extension modules typically appears in the **Electron DevTools console** (main window), not in the terminal where you launched `pnpm dev`.
 
-If `scaffa.config.js` validation fails or a module fails to load, start by checking the same DevTools console output for errors.
+If `skaffa.config.js` validation fails or a module fails to load, start by checking the same DevTools console output for errors.
 
 ### Common Console Patterns
 
@@ -360,7 +360,7 @@ When adding new features, watch for:
 
 ## 6. Testing
 
-Scaffa v0 includes comprehensive test infrastructure:
+Skaffa v0 includes comprehensive test infrastructure:
 
 - **Unit tests**: Vitest with support for both Node and jsdom environments
 - **Component tests**: @testing-library/react for UI components

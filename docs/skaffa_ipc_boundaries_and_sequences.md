@@ -1,29 +1,29 @@
 # IPC Boundaries + Key Sequence Diagrams (v0)
 
 > **Status:** Draft / v0 shape  
-> **Audience:** Scaffa core contributors and adapter authors  
+> **Audience:** Skaffa core contributors and adapter authors  
 > **Goal:** Capture critical cross-process flows as concrete sequence diagrams aligned with the multi-process architecture.
 
 ## Agent TL;DR
 
 - Load when: debugging or changing **cross-process flows** (renderer↔preload↔main↔extension-host↔preview-runtime).
 - Primary value: canonical process boundary definitions + mermaid diagrams for session start, selection, and override flows.
-- Don’t load when: you only need the data model (`docs/scaffa_override_model.md`) or registry schema (`docs/scaffa_component_registry_schema.md`).
-- Also load: `docs/scaffa_preview_session_protocol.md` for the precise contract terms used in the diagrams.
+- Don’t load when: you only need the data model (`docs/skaffa_override_model.md`) or registry schema (`docs/skaffa_component_registry_schema.md`).
+- Also load: `docs/skaffa_preview_session_protocol.md` for the precise contract terms used in the diagrams.
 
 Related:
 - [Architecture Plan](./index.md)
-- [Scaffa Preview Session Protocol](./scaffa_preview_session_protocol.md)
-- [Scaffa Runtime Adapter Contract](./scaffa_runtime_adapter_contract.md)
-- [Scaffa Project Graph Schema + Patch Protocol](./scaffa_project_graph_schema.md)
-- [Scaffa Override Model + Persistence](./scaffa_override_model.md)
-- [Scaffa MCP Server Contract](./scaffa_mcp_server_contract.md)
+- [Skaffa Preview Session Protocol](./skaffa_preview_session_protocol.md)
+- [Skaffa Runtime Adapter Contract](./skaffa_runtime_adapter_contract.md)
+- [Skaffa Project Graph Schema + Patch Protocol](./skaffa_project_graph_schema.md)
+- [Skaffa Override Model + Persistence](./skaffa_override_model.md)
+- [Skaffa MCP Server Contract](./skaffa_mcp_server_contract.md)
 
 ---
 
 ## 1. Process Boundaries (Canonical)
 
-Scaffa is a multi-process Electron app:
+Skaffa is a multi-process Electron app:
 
 - **Renderer (Workbench UI):** React UI, no Node/Electron APIs
 - **Preload (Gateway):** typed capability surface exposed to the renderer
@@ -39,7 +39,7 @@ Scaffa is a multi-process Electron app:
 ```mermaid
 sequenceDiagram
   participant UI as Renderer (Workbench)
-  participant PL as Preload (scaffa.*)
+  participant PL as Preload (skaffa.*)
   participant Main as Main Process (Host)
   participant View as Preview WebContents
   participant RT as Runtime Adapter (in Preview)
@@ -59,18 +59,18 @@ sequenceDiagram
 
 ## 3. Selection Flow (Click-to-Select → Inspector)
 
-See: `docs/scaffa_preview_session_protocol.md` for the v0 Editor View interaction contract (click-to-select).
+See: `docs/skaffa_preview_session_protocol.md` for the v0 Editor View interaction contract (click-to-select).
 
 ```mermaid
 sequenceDiagram
   participant RT as Runtime Adapter (in Preview)
   participant Main as Main Process (Host)
-  participant PL as Preload (scaffa.*)
+  participant PL as Preload (skaffa.*)
   participant UI as Renderer (Inspector)
 
   RT-->>Main: runtime.selectionChanged({sessionId, selected})
   Main-->>PL: IPC selection.changed({sessionId, selected})
-  PL-->>UI: window.scaffa.onSelection(cb)
+  PL-->>UI: window.skaffa.onSelection(cb)
   UI->>UI: render Inspector for selected instance
 ```
 
@@ -84,12 +84,12 @@ When a router integration is present, the preview runtime can emit “active rou
 sequenceDiagram
   participant RT as Preview Runtime (Router Integration)
   participant Main as Main Process (Host)
-  participant PL as Preload (scaffa.*)
+  participant PL as Preload (skaffa.*)
   participant UI as Renderer (Routes Panel)
 
   RT-->>Main: runtime.routerStateChanged({sessionId, pathname, matches})
   Main-->>PL: IPC router.stateChanged({sessionId, pathname, matches})
-  PL-->>UI: window.scaffa.onRouterState(cb)
+  PL-->>UI: window.skaffa.onRouterState(cb)
   UI->>UI: highlight active route id(s)
 ```
 
@@ -100,7 +100,7 @@ sequenceDiagram
 ```mermaid
 sequenceDiagram
   participant UI as Renderer (Inspector)
-  participant PL as Preload (scaffa.*)
+  participant PL as Preload (skaffa.*)
   participant Main as Main Process (Host)
   participant RT as Runtime Adapter (in Preview)
 
@@ -110,7 +110,7 @@ sequenceDiagram
   Main-->>RT: host.applyOverrides({sessionId, ops:[{op:"set", ...}]})
   RT->>RT: apply override + re-render
   Main-->>PL: IPC overrides.changed(state)
-  PL-->>UI: window.scaffa.onOverridesChanged(cb)
+  PL-->>UI: window.skaffa.onOverridesChanged(cb)
   UI->>UI: show "Overridden" state + Reset action
 ```
 
@@ -120,12 +120,12 @@ sequenceDiagram
 
 Saving converts draft overrides into workspace edits (working tree) and clears the saved draft overrides.
 
-See also: [Scaffa Save-to-Disk Protocol](./scaffa_save_to_disk_protocol.md)
+See also: [Skaffa Save-to-Disk Protocol](./skaffa_save_to_disk_protocol.md)
 
 ```mermaid
 sequenceDiagram
   participant UI as Renderer (Workbench)
-  participant PL as Preload (scaffa.*)
+  participant PL as Preload (skaffa.*)
   participant Main as Main Process (Host)
   participant Ext as Extension Host (Framework Save Logic)
   participant RT as Runtime Adapter (in Preview)
@@ -137,12 +137,12 @@ sequenceDiagram
   Main->>Main: apply edits transactionally (working tree)
   Main-->>RT: host.clearOverrides({sessionId, cleared})
   Main-->>PL: IPC workspace.saveCompleted({applied, failed})
-  PL-->>UI: window.scaffa.onSaveCompleted(cb)
+  PL-->>UI: window.skaffa.onSaveCompleted(cb)
 ```
 
 Notes:
 - The framework-specific “promote to code” logic lives in extensions/adapters; core applies edits.
-- If promotion fails for some overrides, Scaffa keeps them as draft overrides and surfaces the failure (no silent dropping).
+- If promotion fails for some overrides, Skaffa keeps them as draft overrides and surfaces the failure (no silent dropping).
 
 ---
 
@@ -152,13 +152,13 @@ Notes:
 sequenceDiagram
   participant Ext as Extension Host (Adapter)
   participant Main as Main Process (Graph Broker)
-  participant PL as Preload (scaffa.*)
+  participant PL as Preload (skaffa.*)
   participant UI as Renderer (Workbench)
 
   Ext-->>Main: graph.patch({revision, ops})
   Main->>Main: apply patch to canonical graph
   Main-->>PL: IPC graph.patch({revision, ops})
-  PL-->>UI: window.scaffa.onGraphPatch(cb)
+  PL-->>UI: window.skaffa.onGraphPatch(cb)
   UI->>UI: update Project Graph Snapshot views
 ```
 

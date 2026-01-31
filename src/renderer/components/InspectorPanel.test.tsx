@@ -12,8 +12,8 @@ vi.mock('../state/inspectorStore', () => ({
   useInspectorStore: vi.fn(),
 }));
 
-// Mock window.scaffa API
-const scaffaApi = {
+// Mock window.skaffa API
+const skaffaApi = {
   overrides: {
     set: vi.fn(),
     clear: vi.fn(),
@@ -22,11 +22,11 @@ const scaffaApi = {
 
 describe('InspectorPanel', () => {
   beforeAll(() => {
-    (globalThis.window as any).scaffa = scaffaApi;
+    (globalThis.window as any).skaffa = skaffaApi;
   });
 
   afterAll(() => {
-    delete (globalThis.window as any).scaffa;
+    delete (globalThis.window as any).skaffa;
   });
 
   beforeEach(() => {

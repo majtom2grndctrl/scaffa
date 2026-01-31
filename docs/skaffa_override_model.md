@@ -1,7 +1,7 @@
-# Scaffa Override Model + Persistence (v0)
+# Skaffa Override Model + Persistence (v0)
 
 > **Status:** Draft / v0 shape  
-> **Audience:** Scaffa core contributors, adapter authors, and extension authors  
+> **Audience:** Skaffa core contributors, adapter authors, and extension authors  
 > **Goal:** Define the canonical non-destructive override data model, precedence rules, lifecycle operations, and v0 persistence/serialization strategy.
 
 ## Agent TL;DR
@@ -9,13 +9,13 @@
 - Load when: implementing **set/clear/reset overrides**, persistence, or precedence rules.
 - Primary artifacts: `InstanceRef` (`sessionId + instanceId`), `PropPath` (JSON Pointer), JSON-only `JsonValue`.
 - Key invariant: overrides are **non-destructive**, **inspectable**, and **reversible**; orphaned overrides are surfaced, not silently dropped.
-- Also load: `docs/scaffa_inspector_ux_semantics.md` (UX meaning), `docs/scaffa_runtime_adapter_contract.md` (apply/clear), `docs/scaffa_preview_session_protocol.md` (routing).
+- Also load: `docs/skaffa_inspector_ux_semantics.md` (UX meaning), `docs/skaffa_runtime_adapter_contract.md` (apply/clear), `docs/skaffa_preview_session_protocol.md` (routing).
 
 Related:
 - [Architecture Plan](./index.md)
-- [Scaffa Preview Session Protocol](./scaffa_preview_session_protocol.md)
-- [Scaffa Inspector UX Rules & Semantics](./scaffa_inspector_ux_semantics.md)
-- [Scaffa Runtime Adapter Contract](./scaffa_runtime_adapter_contract.md)
+- [Skaffa Preview Session Protocol](./skaffa_preview_session_protocol.md)
+- [Skaffa Inspector UX Rules & Semantics](./skaffa_inspector_ux_semantics.md)
+- [Skaffa Runtime Adapter Contract](./skaffa_runtime_adapter_contract.md)
 
 ---
 
@@ -29,7 +29,7 @@ An **override** is a draft, instance-scoped change applied to a preview runtime:
 
 Overrides power the v0 Inspector editing experience.
 
-In v0, Scaffa also supports **Save to Disk**: converting draft overrides into concrete workspace edits (working tree), and then clearing the draft overrides that were saved.
+In v0, Skaffa also supports **Save to Disk**: converting draft overrides into concrete workspace edits (working tree), and then clearing the draft overrides that were saved.
 
 ---
 
@@ -104,7 +104,7 @@ Required behaviors:
 
 ## 5. Precedence Rules (Defaults vs Config vs Overrides)
 
-Scaffa may have multiple sources of values:
+Skaffa may have multiple sources of values:
 
 1. **Code baseline** (what the app/component produces at runtime)
 2. **Config layer** (project-level constraints/defaults that apply to preview context)
@@ -125,7 +125,7 @@ Precedence (highest wins):
 
 “Save” converts draft overrides into source-level edits and writes them to the workspace (working tree).
 
-See also: [Scaffa Save-to-Disk Protocol](./scaffa_save_to_disk_protocol.md)
+See also: [Skaffa Save-to-Disk Protocol](./skaffa_save_to_disk_protocol.md)
 
 Principles:
 - Save is explicit (not on every keystroke).
@@ -134,7 +134,7 @@ Principles:
 
 Implementation note:
 - The framework-specific “promote to code” logic lives in adapters/modules.
-- Scaffa core applies edits transactionally via a workspace edit API (see `WorkspaceAPI.applyEdits` in `docs/scaffa_extension_api.md`).
+- Skaffa core applies edits transactionally via a workspace edit API (see `WorkspaceAPI.applyEdits` in `docs/skaffa_extension_api.md`).
 
 ---
 
@@ -159,12 +159,12 @@ v0 persists overrides to a local, diffable file.
 Recommended location:
 
 ```text
-/.scaffa/overrides.v0.json
+/.skaffa/overrides.v0.json
 ```
 
 v0 behavior expectations:
-- Scaffa should create `/.scaffa/` on first write if it does not exist.
-- Whether `/.scaffa/overrides.v0.json` is committed to git is a **project policy** decision; if it should not be shared, add `/.scaffa/` to `.gitignore`.
+- Skaffa should create `/.skaffa/` on first write if it does not exist.
+- Whether `/.skaffa/overrides.v0.json` is committed to git is a **project policy** decision; if it should not be shared, add `/.skaffa/` to `.gitignore`.
 
 Recommended format (conceptual):
 
@@ -199,7 +199,7 @@ Serialization requirements:
 - deterministic ordering (stable diffs)
 - written transactionally (write temp + rename)
 
-Whether this file is committed to git is a **project policy** decision (documented in `scaffa.config.js` conventions).
+Whether this file is committed to git is a **project policy** decision (documented in `skaffa.config.js` conventions).
 
 ---
 

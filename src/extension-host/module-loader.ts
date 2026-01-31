@@ -1,12 +1,12 @@
 // ─────────────────────────────────────────────────────────────────────────────
 // Module Loader (v0)
 // ─────────────────────────────────────────────────────────────────────────────
-// Loads and activates extension modules from scaffa.config.js.
+// Loads and activates extension modules from skaffa.config.js.
 
 import { pathToFileURL } from 'node:url';
 import path from 'node:path';
 import { createRequire } from 'node:module';
-import type { ScaffaConfig, ScaffaModule } from '../shared/config.js';
+import type { SkaffaConfig, SkaffaModule } from '../shared/config.js';
 import type { ComponentRegistry, ComponentTypeId } from '../shared/index.js';
 import type { GraphPatch } from '../shared/project-graph.js';
 import type {
@@ -42,7 +42,7 @@ interface LoadedModule {
 
 export class ModuleLoader {
   private workspacePath: string | null;
-  private config: ScaffaConfig;
+  private config: SkaffaConfig;
   private loadedModules: Map<string, LoadedModule> = new Map();
   private registryContributions: ComponentRegistry[] = [];
   private graphProducers: Map<string, GraphProducer> = new Map();
@@ -50,7 +50,7 @@ export class ModuleLoader {
   private savePromoters: Map<string, SavePromoter> = new Map();
   private inspectorSections: InspectorSectionContribution[] = [];
 
-  constructor(workspacePath: string | null, config: ScaffaConfig) {
+  constructor(workspacePath: string | null, config: SkaffaConfig) {
     this.workspacePath = workspacePath;
     this.config = config;
   }
@@ -104,7 +104,7 @@ export class ModuleLoader {
   /**
    * Load and activate a single module.
    */
-  private async loadModule(moduleConfig: ScaffaModule): Promise<void> {
+  private async loadModule(moduleConfig: SkaffaModule): Promise<void> {
     const moduleId = moduleConfig.id;
 
     if (this.loadedModules.has(moduleId)) {
@@ -145,8 +145,8 @@ export class ModuleLoader {
   /**
    * Resolve module path from config.
    */
-  private resolveModulePath(moduleConfig: ScaffaModule): string | null {
-    // v0: Path resolution anchored at the workspace root (directory containing scaffa.config.*).
+  private resolveModulePath(moduleConfig: SkaffaModule): string | null {
+    // v0: Path resolution anchored at the workspace root (directory containing skaffa.config.*).
     // Supports:
     // - file paths via `module.path` (relative to workspace root; absolute ok)
     // - npm packages via `module.package` (Node resolution anchored at workspace root)
@@ -490,7 +490,7 @@ export class ModuleLoader {
   /**
    * Compose all registry contributions into a single snapshot.
    * Uses v0 composition rules: later modules overwrite earlier ones for same typeId.
-   * See: docs/scaffa_component_registry_schema.md (4.1)
+   * See: docs/skaffa_component_registry_schema.md (4.1)
    */
   private composeRegistrySnapshot(): ComponentRegistry {
     const composed: ComponentRegistry = {
@@ -577,7 +577,7 @@ export class ModuleLoader {
   /**
    * Reload modules with new config.
    */
-  async reload(newConfig: ScaffaConfig): Promise<void> {
+  async reload(newConfig: SkaffaConfig): Promise<void> {
     // Deactivate all current modules
     await this.deactivateAll();
 

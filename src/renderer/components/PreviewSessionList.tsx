@@ -1,9 +1,9 @@
-import { useRef, useState, useEffect } from 'react';
-import { useVirtualizer } from '@tanstack/virtual';
-import { useSessionStore } from '../state/sessionStore';
-import { StartPreviewDialog } from './StartPreviewDialog';
-import { PreviewHint } from './PreviewHint';
-import type { PreviewSessionTarget } from '../../shared/index.js';
+import { useRef, useState, useEffect } from "react";
+import { useVirtualizer } from "@tanstack/virtual";
+import { useSessionStore } from "../state/sessionStore";
+import { StartPreviewDialog } from "./StartPreviewDialog";
+import { PreviewHint } from "./PreviewHint";
+import type { PreviewSessionTarget } from "../../shared/index.js";
 
 export const PreviewSessionList = () => {
   const parentRef = useRef<HTMLDivElement>(null);
@@ -16,7 +16,7 @@ export const PreviewSessionList = () => {
   // For app sessions (Editor View), normal clicks inspect - no hint needed
   useEffect(() => {
     const hasReadyPreviewSession = sessions.some(
-      (s) => s.state === 'ready' && s.type !== 'app'
+      (s) => s.state === "ready" && s.type !== "app",
     );
     if (hasReadyPreviewSession && !showHint) {
       setShowHint(true);
@@ -31,37 +31,37 @@ export const PreviewSessionList = () => {
 
   const handleStartSession = async (target: PreviewSessionTarget) => {
     try {
-      const response = await window.scaffa.preview.startSession({ target });
+      const response = await window.skaffa.preview.startSession({ target });
       addSession(response.sessionId, target.type);
-      console.log('[PreviewSessionList] Started session:', response.sessionId);
+      console.log("[PreviewSessionList] Started session:", response.sessionId);
     } catch (error) {
-      console.error('[PreviewSessionList] Failed to start session:', error);
+      console.error("[PreviewSessionList] Failed to start session:", error);
       throw error;
     }
   };
 
   const handleStopSession = async (sessionId: string) => {
     try {
-      await window.scaffa.preview.stopSession({ sessionId });
-      console.log('[PreviewSessionList] Stopped session:', sessionId);
+      await window.skaffa.preview.stopSession({ sessionId });
+      console.log("[PreviewSessionList] Stopped session:", sessionId);
     } catch (error) {
-      console.error('[PreviewSessionList] Failed to stop session:', error);
+      console.error("[PreviewSessionList] Failed to stop session:", error);
     }
   };
 
   // Get status label and color
   const getStatusInfo = (state: string) => {
     switch (state) {
-      case 'creating':
-        return { label: 'Starting', color: 'text-warning' };
-      case 'ready':
-        return { label: 'Ready', color: 'text-success' };
-      case 'error':
-        return { label: 'Error', color: 'text-danger' };
-      case 'stopped':
-        return { label: 'Stopped', color: 'text-fg-subtle' };
+      case "creating":
+        return { label: "Starting", color: "text-warning" };
+      case "ready":
+        return { label: "Ready", color: "text-success" };
+      case "error":
+        return { label: "Error", color: "text-danger" };
+      case "stopped":
+        return { label: "Stopped", color: "text-fg-subtle" };
       default:
-        return { label: 'Unknown', color: 'text-fg-subtle' };
+        return { label: "Unknown", color: "text-fg-subtle" };
     }
   };
 
@@ -95,8 +95,8 @@ export const PreviewSessionList = () => {
             <div
               style={{
                 height: `${rowVirtualizer.getTotalSize()}px`,
-                width: '100%',
-                position: 'relative',
+                width: "100%",
+                position: "relative",
               }}
             >
               {rowVirtualizer.getVirtualItems().map((virtualRow) => {
@@ -107,10 +107,10 @@ export const PreviewSessionList = () => {
                     key={session.sessionId}
                     className="flex items-center justify-between border-b border-subtle px-3 text-xs"
                     style={{
-                      position: 'absolute',
+                      position: "absolute",
                       top: 0,
                       left: 0,
-                      width: '100%',
+                      width: "100%",
                       height: `${virtualRow.size}px`,
                       transform: `translateY(${virtualRow.start}px)`,
                     }}
@@ -127,10 +127,12 @@ export const PreviewSessionList = () => {
                       )}
                     </div>
                     <div className="flex items-center gap-2">
-                      <span className={`text-xs font-medium ${statusInfo.color}`}>
+                      <span
+                        className={`text-xs font-medium ${statusInfo.color}`}
+                      >
                         {statusInfo.label}
                       </span>
-                      {session.state === 'ready' && (
+                      {session.state === "ready" && (
                         <button
                           onClick={() => handleStopSession(session.sessionId)}
                           className="px-2 py-0.5 text-xs text-fg-subtle hover:bg-hover hover:text-fg"

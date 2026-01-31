@@ -3,8 +3,12 @@
 // ─────────────────────────────────────────────────────────────────────────────
 // Maintains a local copy of the project graph, synchronized with main via IPC.
 
-import { create } from 'zustand';
-import type { GraphSnapshot, GraphPatch, GraphNode } from '../../shared/index.js';
+import { create } from "zustand";
+import type {
+  GraphSnapshot,
+  GraphPatch,
+  GraphNode,
+} from "../../shared/index.js";
 
 interface GraphState {
   snapshot: GraphSnapshot | null;
@@ -36,17 +40,17 @@ export const useGraphStore = create<GraphState>((set, get) => ({
 
     try {
       // Fetch initial snapshot
-      const snapshot = await window.scaffa.graph.getSnapshot({});
-      console.log('[GraphStore] Initialized with snapshot:', snapshot);
+      const snapshot = await window.skaffa.graph.getSnapshot({});
+      console.log("[GraphStore] Initialized with snapshot:", snapshot);
       set({ snapshot, isLoading: false, isInitialized: true });
 
       // Subscribe to patches
-      window.scaffa.graph.onPatch((patch) => {
-        console.log('[GraphStore] Received patch:', patch);
+      window.skaffa.graph.onPatch((patch) => {
+        console.log("[GraphStore] Received patch:", patch);
         get().applyPatch(patch);
       });
     } catch (error) {
-      console.error('[GraphStore] Failed to initialize:', error);
+      console.error("[GraphStore] Failed to initialize:", error);
       set({ isLoading: false });
     }
   },
@@ -57,11 +61,11 @@ export const useGraphStore = create<GraphState>((set, get) => ({
   refresh: async () => {
     set({ isLoading: true });
     try {
-      const snapshot = await window.scaffa.graph.getSnapshot({});
-      console.log('[GraphStore] Refreshed snapshot:', snapshot);
+      const snapshot = await window.skaffa.graph.getSnapshot({});
+      console.log("[GraphStore] Refreshed snapshot:", snapshot);
       set({ snapshot, isLoading: false });
     } catch (error) {
-      console.error('[GraphStore] Failed to refresh:', error);
+      console.error("[GraphStore] Failed to refresh:", error);
       set({ isLoading: false });
     }
   },
@@ -73,14 +77,14 @@ export const useGraphStore = create<GraphState>((set, get) => ({
   applyPatch: (patch: GraphPatch) => {
     const current = get().snapshot;
     if (!current) {
-      console.warn('[GraphStore] Cannot apply patch: no snapshot loaded');
+      console.warn("[GraphStore] Cannot apply patch: no snapshot loaded");
       return;
     }
 
     // Ignore patches with revision <= current revision (duplicate/out-of-order)
     if (patch.revision <= current.revision) {
       console.log(
-        `[GraphStore] Ignoring patch with revision ${patch.revision} (current: ${current.revision})`
+        `[GraphStore] Ignoring patch with revision ${patch.revision} (current: ${current.revision})`,
       );
       return;
     }
@@ -100,25 +104,25 @@ export const useGraphStore = create<GraphState>((set, get) => ({
     // Apply patch operations
     for (const op of patch.ops) {
       switch (op.op) {
-        case 'upsertNode': {
+        case "upsertNode": {
           const key = makeNodeKey(op.node);
           nodes.set(key, op.node);
           break;
         }
 
-        case 'removeNode': {
+        case "removeNode": {
           const key = makeNodeKey(op.node);
           nodes.delete(key);
           break;
         }
 
-        case 'upsertEdge': {
+        case "upsertEdge": {
           const key = JSON.stringify(op.edge);
           edges.add(key);
           break;
         }
 
-        case 'removeEdge': {
+        case "removeEdge": {
           const key = JSON.stringify(op.edge);
           edges.delete(key);
           break;
@@ -128,14 +132,14 @@ export const useGraphStore = create<GraphState>((set, get) => ({
 
     // Create new snapshot
     const newSnapshot: GraphSnapshot = {
-      schemaVersion: 'v0',
+      schemaVersion: "v0",
       revision: patch.revision,
       nodes: Array.from(nodes.values()),
       edges: Array.from(edges).map((e) => JSON.parse(e)),
     };
 
     console.log(
-      `[GraphStore] Applied patch revision ${patch.revision} (${patch.ops.length} ops)`
+      `[GraphStore] Applied patch revision ${patch.revision} (${patch.ops.length} ops)`,
     );
     set({ snapshot: newSnapshot });
   },
@@ -153,16 +157,16 @@ export const useGraphStore = create<GraphState>((set, get) => ({
  */
 function makeNodeKey(
   node:
-    | { kind: 'route'; id: string }
-    | { kind: 'componentType'; id: string }
-    | { kind: 'instance'; sessionId: string; instanceId: string }
+    | { kind: "route"; id: string }
+    | { kind: "componentType"; id: string }
+    | { kind: "instance"; sessionId: string; instanceId: string },
 ): string {
   switch (node.kind) {
-    case 'route':
+    case "route":
       return `route:${node.id}`;
-    case 'componentType':
+    case "componentType":
       return `componentType:${node.id}`;
-    case 'instance':
+    case "instance":
       return `instance:${node.sessionId}:${node.instanceId}`;
   }
 }

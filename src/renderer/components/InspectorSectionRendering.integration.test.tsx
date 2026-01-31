@@ -1,12 +1,24 @@
 /**
  * @vitest-environment jsdom
  */
-import { describe, it, expect, vi, beforeEach, afterEach, beforeAll, afterAll } from 'vitest';
-import { render, screen, waitFor } from '@testing-library/react';
-import { InspectorPanel } from './InspectorPanel';
-import { useInspectorStore } from '../state/inspectorStore';
-import type { ComponentRegistry, InstanceDescriptor } from '../../shared/index.js';
-import type { InspectorSectionContribution } from '../../shared/inspector-sections.js';
+import {
+  describe,
+  it,
+  expect,
+  vi,
+  beforeEach,
+  afterEach,
+  beforeAll,
+  afterAll,
+} from "vitest";
+import { render, screen, waitFor } from "@testing-library/react";
+import { InspectorPanel } from "./InspectorPanel";
+import { useInspectorStore } from "../state/inspectorStore";
+import type {
+  ComponentRegistry,
+  InstanceDescriptor,
+} from "../../shared/index.js";
+import type { InspectorSectionContribution } from "../../shared/inspector-sections.js";
 
 /**
  * Integration tests for inspector section initialization and rendering workflow.
@@ -15,18 +27,18 @@ import type { InspectorSectionContribution } from '../../shared/inspector-sectio
  *
  * Store.initialize() → IPC fetch → State update → Component render → Sections visible
  *
- * This is Scaffa-specific UI behavior driven by registry and IPC state that AI agents
+ * This is Skaffa-specific UI behavior driven by registry and IPC state that AI agents
  * and developers need visibility into.
  */
 
 // Mock the inspector store
-vi.mock('../state/inspectorStore', () => ({
+vi.mock("../state/inspectorStore", () => ({
   useInspectorStore: vi.fn(),
 }));
 
-// Mock window.scaffa API
+// Mock window.skaffa API
 const mockGetSections = vi.fn();
-const scaffaApi = {
+const skaffaApi = {
   overrides: {
     set: vi.fn(),
     clear: vi.fn(),
@@ -36,20 +48,20 @@ const scaffaApi = {
   },
 };
 
-describe('Inspector Section Rendering Workflow (Integration)', () => {
+describe("Inspector Section Rendering Workflow (Integration)", () => {
   let warnSpy: ReturnType<typeof vi.spyOn> | null = null;
 
   beforeAll(() => {
-    (globalThis.window as any).scaffa = scaffaApi;
+    (globalThis.window as any).skaffa = skaffaApi;
   });
 
   afterAll(() => {
-    delete (globalThis.window as any).scaffa;
+    delete (globalThis.window as any).skaffa;
   });
 
   beforeEach(() => {
     vi.clearAllMocks();
-    warnSpy = vi.spyOn(console, 'warn').mockImplementation(() => {});
+    warnSpy = vi.spyOn(console, "warn").mockImplementation(() => {});
   });
 
   afterEach(() => {
@@ -62,24 +74,24 @@ describe('Inspector Section Rendering Workflow (Integration)', () => {
    *
    * This tests the critical initialization sequence:
    * 1. InspectorStore.initialize() is called
-   * 2. Store fetches sections from main via window.scaffa.inspector.getSections()
+   * 2. Store fetches sections from main via window.skaffa.inspector.getSections()
    * 3. Store updates state with sections
    * 4. InspectorPanel reads state and renders sections
    */
-  it('should render extension sections after store initialization', async () => {
+  it("should render extension sections after store initialization", async () => {
     const mockInstance: InstanceDescriptor = {
-      sessionId: 'session-1' as any,
-      instanceId: 'instance-1' as any,
-      componentTypeId: 'ui.button' as any,
-      instanceLocator: { type: 'instancePath', path: '/app/button[0]' },
-      displayName: 'Submit Button',
+      sessionId: "session-1" as any,
+      instanceId: "instance-1" as any,
+      componentTypeId: "ui.button" as any,
+      instanceLocator: { type: "instancePath", path: "/app/button[0]" },
+      displayName: "Submit Button",
     } as any;
 
     const mockRegistry: ComponentRegistry = {
-      schemaVersion: 'v0',
+      schemaVersion: "v0",
       components: {
-        'ui.button': {
-          displayName: 'Button',
+        "ui.button": {
+          displayName: "Button",
           props: {},
         },
       },
@@ -88,20 +100,20 @@ describe('Inspector Section Rendering Workflow (Integration)', () => {
     // STEP 1: Store has loaded inspector sections
     const mockSections: InspectorSectionContribution[] = [
       {
-        id: 'ext-1.custom-props' as any,
-        title: 'Custom Properties',
+        id: "ext-1.custom-props" as any,
+        title: "Custom Properties",
         order: 1000,
-        extensionId: 'ext-1',
-        componentPath: 'src/inspector/CustomPropsSection.tsx',
-        componentExport: 'default',
+        extensionId: "ext-1",
+        componentPath: "src/inspector/CustomPropsSection.tsx",
+        componentExport: "default",
       },
       {
-        id: 'ext-2.diagnostics' as any,
-        title: 'Diagnostics',
+        id: "ext-2.diagnostics" as any,
+        title: "Diagnostics",
         order: 2000,
-        extensionId: 'ext-2',
-        componentPath: 'src/inspector/DiagnosticsSection.tsx',
-        componentExport: 'default',
+        extensionId: "ext-2",
+        componentPath: "src/inspector/DiagnosticsSection.tsx",
+        componentExport: "default",
       },
     ];
 
@@ -125,7 +137,9 @@ describe('Inspector Section Rendering Workflow (Integration)', () => {
     expect(screen.getByText(/Loading Diagnostics/)).toBeInTheDocument();
 
     await waitFor(() => {
-      expect(screen.getAllByText(/Failed to load extension section/)).toHaveLength(2);
+      expect(
+        screen.getAllByText(/Failed to load extension section/),
+      ).toHaveLength(2);
     });
   });
 
@@ -135,19 +149,19 @@ describe('Inspector Section Rendering Workflow (Integration)', () => {
    * This tests the baseline: when no extensions contribute sections,
    * no section loading states should appear.
    */
-  it('should not render extension sections area when no sections are registered', () => {
+  it("should not render extension sections area when no sections are registered", () => {
     const mockInstance: InstanceDescriptor = {
-      sessionId: 'session-1' as any,
-      instanceId: 'instance-1' as any,
-      componentTypeId: 'ui.button' as any,
-      instanceLocator: { type: 'instancePath', path: '/app/button[0]' },
+      sessionId: "session-1" as any,
+      instanceId: "instance-1" as any,
+      componentTypeId: "ui.button" as any,
+      instanceLocator: { type: "instancePath", path: "/app/button[0]" },
     } as any;
 
     const mockRegistry: ComponentRegistry = {
-      schemaVersion: 'v0',
+      schemaVersion: "v0",
       components: {
-        'ui.button': {
-          displayName: 'Button',
+        "ui.button": {
+          displayName: "Button",
           props: {},
         },
       },
@@ -171,7 +185,9 @@ describe('Inspector Section Rendering Workflow (Integration)', () => {
     expect(screen.queryByText(/Loading/)).not.toBeInTheDocument();
 
     // VERIFY: No error states for sections
-    expect(screen.queryByText(/Failed to load extension section/)).not.toBeInTheDocument();
+    expect(
+      screen.queryByText(/Failed to load extension section/),
+    ).not.toBeInTheDocument();
   });
 
   /**
@@ -180,15 +196,15 @@ describe('Inspector Section Rendering Workflow (Integration)', () => {
    * This documents the conditional rendering: extension sections only appear
    * when an instance is selected AND a registry entry exists.
    */
-  it('should not render extension sections when no instance is selected', () => {
+  it("should not render extension sections when no instance is selected", () => {
     const mockSections: InspectorSectionContribution[] = [
       {
-        id: 'ext-1.props' as any,
-        title: 'Properties',
+        id: "ext-1.props" as any,
+        title: "Properties",
         order: 1000,
-        extensionId: 'ext-1',
-        componentPath: 'src/props.tsx',
-        componentExport: 'default',
+        extensionId: "ext-1",
+        componentPath: "src/props.tsx",
+        componentExport: "default",
       },
     ];
 
@@ -207,7 +223,7 @@ describe('Inspector Section Rendering Workflow (Integration)', () => {
     render(<InspectorPanel />);
 
     // VERIFY: No instance selected message shown
-    expect(screen.getByText('No instance selected')).toBeInTheDocument();
+    expect(screen.getByText("No instance selected")).toBeInTheDocument();
 
     // VERIFY: Extension sections not rendered (no loading state)
     expect(screen.queryByText(/Loading Properties/)).not.toBeInTheDocument();
@@ -219,27 +235,27 @@ describe('Inspector Section Rendering Workflow (Integration)', () => {
    * This documents another conditional: extension sections only render
    * when a selected instance exists.
    */
-  it('should not render extension sections when registry entry is missing', async () => {
+  it("should not render extension sections when registry entry is missing", async () => {
     const mockInstance: InstanceDescriptor = {
-      sessionId: 'session-1' as any,
-      instanceId: 'instance-1' as any,
-      componentTypeId: 'ui.unknown' as any,
-      instanceLocator: { type: 'instancePath', path: '/app/unknown[0]' },
+      sessionId: "session-1" as any,
+      instanceId: "instance-1" as any,
+      componentTypeId: "ui.unknown" as any,
+      instanceLocator: { type: "instancePath", path: "/app/unknown[0]" },
     } as any;
 
     const mockRegistry: ComponentRegistry = {
-      schemaVersion: 'v0',
+      schemaVersion: "v0",
       components: {}, // No entry for ui.unknown
     };
 
     const mockSections: InspectorSectionContribution[] = [
       {
-        id: 'ext-1.props' as any,
-        title: 'Properties',
+        id: "ext-1.props" as any,
+        title: "Properties",
         order: 1000,
-        extensionId: 'ext-1',
-        componentPath: 'src/props.tsx',
-        componentExport: 'default',
+        extensionId: "ext-1",
+        componentPath: "src/props.tsx",
+        componentExport: "default",
       },
     ];
 
@@ -258,14 +274,16 @@ describe('Inspector Section Rendering Workflow (Integration)', () => {
     render(<InspectorPanel />);
 
     // VERIFY: Missing registry warning shown
-    expect(screen.getByText('Missing Registry Entry')).toBeInTheDocument();
+    expect(screen.getByText("Missing Registry Entry")).toBeInTheDocument();
 
     // VERIFY: Extension sections ARE rendered since we have a selectedInstance
     // (the registryEntry is optional for extension sections now)
     expect(screen.getByText(/Loading Properties/)).toBeInTheDocument();
 
     await waitFor(() => {
-      expect(screen.getByText(/Failed to load extension section/)).toBeInTheDocument();
+      expect(
+        screen.getByText(/Failed to load extension section/),
+      ).toBeInTheDocument();
     });
   });
 
@@ -274,19 +292,19 @@ describe('Inspector Section Rendering Workflow (Integration)', () => {
    *
    * This tests the loading state during IPC fetch.
    */
-  it('should handle loading state during section fetch', () => {
+  it("should handle loading state during section fetch", () => {
     const mockInstance: InstanceDescriptor = {
-      sessionId: 'session-1' as any,
-      instanceId: 'instance-1' as any,
-      componentTypeId: 'ui.button' as any,
-      instanceLocator: { type: 'instancePath', path: '/app/button[0]' },
+      sessionId: "session-1" as any,
+      instanceId: "instance-1" as any,
+      componentTypeId: "ui.button" as any,
+      instanceLocator: { type: "instancePath", path: "/app/button[0]" },
     } as any;
 
     const mockRegistry: ComponentRegistry = {
-      schemaVersion: 'v0',
+      schemaVersion: "v0",
       components: {
-        'ui.button': {
-          displayName: 'Button',
+        "ui.button": {
+          displayName: "Button",
           props: {},
         },
       },
@@ -307,7 +325,7 @@ describe('Inspector Section Rendering Workflow (Integration)', () => {
     render(<InspectorPanel />);
 
     // VERIFY: Inspector still renders (no crash)
-    expect(screen.getByText('Inspector')).toBeInTheDocument();
+    expect(screen.getByText("Inspector")).toBeInTheDocument();
 
     // VERIFY: No sections rendered during loading (no loading states visible)
     expect(screen.queryByText(/Loading/)).not.toBeInTheDocument();

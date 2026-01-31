@@ -1,23 +1,23 @@
-# Scaffa Save-to-Disk Protocol (v0)
+# Skaffa Save-to-Disk Protocol (v0)
 
 > **Status:** Draft / v0 shape  
-> **Audience:** Scaffa core contributors, React adapter authors, and extension authors  
+> **Audience:** Skaffa core contributors, React adapter authors, and extension authors  
 > **Goal:** Define the canonical contract for validating draft overrides and promoting them into working-tree code edits (“Save”), including UX expectations and cross-process responsibilities.
 
 ## Agent TL;DR
 
 - Source of truth for: **draft override validation**, **promotion to code**, **atomic Save semantics**, and **revert-on-failure UX**.
 - Owns: how renderer schedules validation (blur + 7s idle), how the extension host returns promotability results, and how main applies edits transactionally.
-- In v0, “Save to Disk” is implemented by **framework-specific extensions** (starting with React) and orchestrated by Scaffa core.
+- In v0, “Save to Disk” is implemented by **framework-specific extensions** (starting with React) and orchestrated by Skaffa core.
 
 Related:
 - [Architecture Plan](./index.md)
-- [Scaffa Inspector UX Rules & Semantics](./scaffa_inspector_ux_semantics.md)
-- [Scaffa Override Model + Persistence](./scaffa_override_model.md)
-- [IPC Boundaries + Key Sequence Diagrams](./scaffa_ipc_boundaries_and_sequences.md)
-- [Scaffa Extension API – v0 Sketch](./scaffa_extension_api.md)
-- [Scaffa Workspace Edit Protocol](./scaffa_workspace_edit_protocol.md)
-- [Scaffa Runtime Adapter Contract](./scaffa_runtime_adapter_contract.md)
+- [Skaffa Inspector UX Rules & Semantics](./skaffa_inspector_ux_semantics.md)
+- [Skaffa Override Model + Persistence](./skaffa_override_model.md)
+- [IPC Boundaries + Key Sequence Diagrams](./skaffa_ipc_boundaries_and_sequences.md)
+- [Skaffa Extension API – v0 Sketch](./skaffa_extension_api.md)
+- [Skaffa Workspace Edit Protocol](./skaffa_workspace_edit_protocol.md)
+- [Skaffa Runtime Adapter Contract](./skaffa_runtime_adapter_contract.md)
 
 ---
 
@@ -61,7 +61,7 @@ Validation is required because not all runtime changes can be mapped to code edi
 
 - Owns authoritative draft override store (and persistence if enabled).
 - Routes validation and promotion requests to the extension host.
-- Applies workspace file edits transactionally via a write capability (see `WorkspaceAPI.applyEdits` and `docs/scaffa_workspace_edit_protocol.md`).
+- Applies workspace file edits transactionally via a write capability (see `WorkspaceAPI.applyEdits` and `docs/skaffa_workspace_edit_protocol.md`).
 - Broadcasts save/validation results back to the renderer.
 
 ### 2.3 Extension Host (Framework Save Logic)
@@ -146,7 +146,7 @@ Implementation guideline:
 
 If validation fails for a draft override:
 
-- Scaffa MUST clear that draft override (runtime reverts to baseline).
+- Skaffa MUST clear that draft override (runtime reverts to baseline).
 - The Inspector field MUST enter an **error state** and require re-entry.
 - The UI SHOULD show:
   - a concise failure reason
@@ -232,4 +232,4 @@ Sidecars are an implementation detail behind main-owned capabilities:
 - Main may service `WorkspaceAPI` calls via a workspace sidecar for large workspaces.
 - Save-to-disk ownership boundaries do not change: main still applies edits transactionally, and the extension host still produces a promotion plan.
 
-See: [Scaffa Sidecar Process](./scaffa_sidecar_process.md)
+See: [Skaffa Sidecar Process](./skaffa_sidecar_process.md)

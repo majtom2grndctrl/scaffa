@@ -1,19 +1,19 @@
-# Scaffa Project Graph Schema + Patch Protocol (v0)
+# Skaffa Project Graph Schema + Patch Protocol (v0)
 
 > **Status:** Draft / v0 shape  
-> **Audience:** Scaffa core contributors and adapter/extension authors  
+> **Audience:** Skaffa core contributors and adapter/extension authors  
 > **Goal:** Define the canonical Project Graph entities, ID strategy, and patch/update semantics used across the extension API boundary.
 
 Related:
 - [Architecture Plan](./index.md)
-- [Scaffa Extension API – v0 Sketch](./scaffa_extension_api.md)
-- [Scaffa Preview Session Protocol](./scaffa_preview_session_protocol.md)
+- [Skaffa Extension API – v0 Sketch](./skaffa_extension_api.md)
+- [Skaffa Preview Session Protocol](./skaffa_preview_session_protocol.md)
 
 ---
 
 ## 1. Purpose
 
-Scaffa maintains a **framework-agnostic Project Graph** as canonical truth about the workspace and (optionally) about runtime instance state.
+Skaffa maintains a **framework-agnostic Project Graph** as canonical truth about the workspace and (optionally) about runtime instance state.
 
 The graph must support:
 - building UI surfaces (Routes, Component Tree, Inspector context)
@@ -130,7 +130,7 @@ When joining or matching RouteIds:
 `InstanceId` is only guaranteed stable within a session; stability across reloads is adapter-dependent.
 
 If stability cannot be guaranteed, consumers MUST tolerate orphaning:
-- overrides may fail to apply (see `docs/scaffa_override_model.md`)
+- overrides may fail to apply (see `docs/skaffa_override_model.md`)
 - instance graph nodes may churn on reload
 
 ### 3.4 Schema Versioning

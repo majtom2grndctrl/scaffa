@@ -1,5 +1,5 @@
 import { Link } from "react-router-dom";
-import { Box, Row, Stack } from "@scaffa/layout-primitives-react";
+import { Box, Row, Stack } from "@skaffa/layout-primitives-react";
 import { Cpu, TrendingUp } from "lucide-react";
 
 import { Badge } from "@/components/ui/badge";
@@ -100,7 +100,7 @@ export function ModelsPage() {
                     <Badge
                       className={cn(
                         "rounded-full text-[0.65rem]",
-                        statusClass[model.status]
+                        statusClass[model.status],
                       )}
                     >
                       {model.status}

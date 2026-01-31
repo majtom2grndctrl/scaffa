@@ -23,13 +23,13 @@ Component registry for [shadcn/ui](https://ui.shadcn.com/) components.
 
 ### Enable the Module
 
-In your `scaffa.config.js`:
+In your `skaffa.config.js`:
 
 ```js
 export default {
   modules: [
     // Enable the shadcn/ui registry
-    { id: 'shadcn-ui-registry', package: '@scaffa/shadcn-ui-registry' },
+    { id: 'shadcn-ui-registry', package: '@skaffa/shadcn-ui-registry' },
   ],
 };
 ```
@@ -37,7 +37,7 @@ export default {
 ### Implementation Hints
 
 This registry uses `kind: "file"` implementation hints pointing to the conventional shadcn layout.
-If `app/src/components/ui` exists (Scaffa demo structure), it uses that; otherwise it falls back to
+If `app/src/components/ui` exists (Skaffa demo structure), it uses that; otherwise it falls back to
 `src/components/ui`:
 
 ```
@@ -57,15 +57,15 @@ If your project uses a different structure, override the file paths in your proj
 
 ### Project Overrides
 
-You can customize registry entries in `scaffa.config.js`.
+You can customize registry entries in `skaffa.config.js`.
 
-**Note:** The override syntax shown below is illustrative and represents the intended v0 API. The exact `scaffa.config.js` structure is pending finalization.
+**Note:** The override syntax shown below is illustrative and represents the intended v0 API. The exact `skaffa.config.js` structure is pending finalization.
 
 #### Example: Change File Paths
 
 ```js
 export default {
-  modules: [{ id: 'shadcn-ui-registry', package: '@scaffa/shadcn-ui-registry' }],
+  modules: [{ id: 'shadcn-ui-registry', package: '@skaffa/shadcn-ui-registry' }],
 
   registry: {
     overrides: {
@@ -86,7 +86,7 @@ export default {
 
 ```js
 export default {
-  modules: [{ id: 'shadcn-ui-registry', package: '@scaffa/shadcn-ui-registry' }],
+  modules: [{ id: 'shadcn-ui-registry', package: '@skaffa/shadcn-ui-registry' }],
 
   registry: {
     overrides: {
@@ -107,7 +107,7 @@ export default {
 
 ```js
 export default {
-  modules: [{ id: 'shadcn-ui-registry', package: '@scaffa/shadcn-ui-registry' }],
+  modules: [{ id: 'shadcn-ui-registry', package: '@skaffa/shadcn-ui-registry' }],
 
   registry: {
     overrides: {
@@ -135,6 +135,6 @@ The registry's `implementation` hints assume the standard shadcn file layout. If
 This module includes a starter set of core components. To add more shadcn/ui components (e.g., Tabs, Accordion, DropdownMenu):
 
 1. **Option A:** Fork this module and add additional entries to the `components` object
-2. **Option B:** Create a project-local registry contribution in your `scaffa.config.js`
+2. **Option B:** Create a project-local registry contribution in your `skaffa.config.js`
 
-See `docs/scaffa_component_registry_schema.md` for the full registry schema.
+See `docs/skaffa_component_registry_schema.md` for the full registry schema.

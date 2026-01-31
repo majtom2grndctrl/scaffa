@@ -15,7 +15,7 @@ const mockOverrideSet = vi.fn();
 const mockOverrideClear = vi.fn();
 
 globalThis.window = {
-  scaffa: {
+  skaffa: {
     overrides: {
       set: mockOverrideSet,
       clear: mockOverrideClear,

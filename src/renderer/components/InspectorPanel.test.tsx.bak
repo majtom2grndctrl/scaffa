@@ -12,9 +12,9 @@ vi.mock('../state/inspectorStore', () => ({
   useInspectorStore: vi.fn(),
 }));
 
-// Mock window.scaffa API
+// Mock window.skaffa API
 globalThis.window = {
-  scaffa: {
+  skaffa: {
     overrides: {
       set: vi.fn(),
       clear: vi.fn(),

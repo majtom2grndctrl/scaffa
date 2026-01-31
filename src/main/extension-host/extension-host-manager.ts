@@ -24,7 +24,7 @@ import type {
   InspectorSectionRegisteredMessage,
 } from '../../extension-host/ipc-protocol.js';
 import type { ComponentRegistry } from '../../shared/index.js';
-import type { ScaffaConfig } from '../../shared/config.js';
+import type { SkaffaConfig } from '../../shared/config.js';
 import type { DraftOverride, SavePlan } from '../../shared/save.js';
 import { registryManager } from '../registry/registry-manager.js';
 import { applyGraphPatch, applyGraphSnapshot } from '../ipc/graph.js';
@@ -58,7 +58,7 @@ export class ExtensionHostManager {
   private restartCount = 0;
   private readonly maxRestarts = 5;
   private workspacePath: string | null = null;
-  private config: ScaffaConfig | null = null;
+  private config: SkaffaConfig | null = null;
   private moduleActivationStatuses: Map<string, ModuleActivationStatus> = new Map();
   private pendingPromotions = new Map<
     string,
@@ -68,7 +68,7 @@ export class ExtensionHostManager {
   /**
    * Start the extension host process.
    */
-  async start(workspacePath: string | null, config: ScaffaConfig): Promise<void> {
+  async start(workspacePath: string | null, config: SkaffaConfig): Promise<void> {
     if (this.process) {
       console.warn('[ExtHostManager] Extension host already running');
       return;
@@ -446,7 +446,7 @@ export class ExtensionHostManager {
   /**
    * Notify extension host of config change.
    */
-  updateConfig(config: ScaffaConfig): void {
+  updateConfig(config: SkaffaConfig): void {
     this.config = config;
 
     if (!this.isReady) {
@@ -470,7 +470,7 @@ export class ExtensionHostManager {
   /**
    * Restart the extension host with a new workspace + config.
    */
-  async restart(workspacePath: string | null, config: ScaffaConfig): Promise<void> {
+  async restart(workspacePath: string | null, config: SkaffaConfig): Promise<void> {
     await this.stopInternal();
     this.clearModuleActivationStatuses();
     inspectorSectionRegistry.clear();

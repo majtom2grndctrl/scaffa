@@ -1,9 +1,9 @@
-import { z } from 'zod';
+import { z } from "zod";
 
 // ─────────────────────────────────────────────────────────────────────────────
 // Workspace Edit Types (v0)
 // ─────────────────────────────────────────────────────────────────────────────
-// See: docs/scaffa_workspace_edit_protocol.md
+// See: docs/skaffa_workspace_edit_protocol.md
 
 export const TextRangeSchema = z
   .object({
@@ -11,7 +11,7 @@ export const TextRangeSchema = z
     end: z.number().int().nonnegative(),
   })
   .refine((range) => range.end >= range.start, {
-    message: 'TextRange end must be >= start',
+    message: "TextRange end must be >= start",
   });
 
 export type TextRange = z.infer<typeof TextRangeSchema>;
@@ -23,21 +23,21 @@ export const TextEditSchema = z.object({
 
 export type TextEdit = z.infer<typeof TextEditSchema>;
 
-export const FileEditSchema = z.discriminatedUnion('kind', [
+export const FileEditSchema = z.discriminatedUnion("kind", [
   z.object({
-    kind: z.literal('text'),
+    kind: z.literal("text"),
     filePath: z.string(),
     expectedSha256: z.string().optional(),
     edits: z.array(TextEditSchema),
   }),
   z.object({
-    kind: z.literal('create'),
+    kind: z.literal("create"),
     filePath: z.string(),
     contents: z.string(),
     overwrite: z.boolean().optional(),
   }),
   z.object({
-    kind: z.literal('delete'),
+    kind: z.literal("delete"),
     filePath: z.string(),
     allowMissing: z.boolean().optional(),
   }),
@@ -45,7 +45,7 @@ export const FileEditSchema = z.discriminatedUnion('kind', [
 
 export type FileEdit = z.infer<typeof FileEditSchema>;
 
-export const ApplyEditsResultSchema = z.discriminatedUnion('ok', [
+export const ApplyEditsResultSchema = z.discriminatedUnion("ok", [
   z.object({
     ok: z.literal(true),
     applied: z.array(z.object({ filePath: z.string() })),
@@ -54,11 +54,11 @@ export const ApplyEditsResultSchema = z.discriminatedUnion('ok', [
     ok: z.literal(false),
     error: z.object({
       code: z.enum([
-        'conflict',
-        'notFound',
-        'permissionDenied',
-        'invalidEdit',
-        'ioError',
+        "conflict",
+        "notFound",
+        "permissionDenied",
+        "invalidEdit",
+        "ioError",
       ]),
       filePath: z.string(),
       message: z.string(),

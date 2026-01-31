@@ -6,7 +6,7 @@
 
 import type { ComponentRegistry } from '../shared/index.js';
 import type { GraphPatch } from '../shared/project-graph.js';
-import type { ScaffaConfig } from '../shared/config.js';
+import type { SkaffaConfig } from '../shared/config.js';
 import type { DraftOverride, SavePlan } from '../shared/save.js';
 import type {
   PreviewLauncherDescriptor,
@@ -27,7 +27,7 @@ import type { InspectorSectionContribution } from '../shared/inspector-sections.
 export interface InitMessage {
   type: 'init';
   workspacePath: string | null;
-  config: ScaffaConfig;
+  config: SkaffaConfig;
 }
 
 /**
@@ -35,7 +35,7 @@ export interface InitMessage {
  */
 export interface ConfigChangedMessage {
   type: 'config-changed';
-  config: ScaffaConfig;
+  config: SkaffaConfig;
 }
 
 /**

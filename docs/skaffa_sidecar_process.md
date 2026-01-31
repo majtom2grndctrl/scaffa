@@ -1,26 +1,26 @@
-# Scaffa Sidecar Process (Planned)
+# Skaffa Sidecar Process (Planned)
 
 > **Status:** Draft / planned  
-> **Audience:** Scaffa core contributors  
-> **Goal:** Define how Scaffa runs auxiliary “sidecar” processes (starting with a Rust workspace sidecar) for file-heavy and compute-heavy operations, while keeping multi-process ownership boundaries intact.
+> **Audience:** Skaffa core contributors  
+> **Goal:** Define how Skaffa runs auxiliary “sidecar” processes (starting with a Rust workspace sidecar) for file-heavy and compute-heavy operations, while keeping multi-process ownership boundaries intact.
 
 Related:
 - [Architecture Plan](./index.md)
-- [IPC Boundaries + Key Sequence Diagrams](./scaffa_ipc_boundaries_and_sequences.md)
-- [Scaffa Extension API – v0 Sketch](./scaffa_extension_api.md)
-- [Scaffa Save-to-Disk Protocol](./scaffa_save_to_disk_protocol.md)
+- [IPC Boundaries + Key Sequence Diagrams](./skaffa_ipc_boundaries_and_sequences.md)
+- [Skaffa Extension API – v0 Sketch](./skaffa_extension_api.md)
+- [Skaffa Save-to-Disk Protocol](./skaffa_save_to_disk_protocol.md)
 
 ---
 
 ## 1. Why Sidecars
 
-Some Scaffa features require operations that are expensive in large workspaces:
+Some Skaffa features require operations that are expensive in large workspaces:
 - scanning many files
 - fast repeated reads/searches
 - parsing and building incremental indexes
 - computing “plans” (e.g. save promotion plans) that may touch multiple files
 
-Sidecars allow Scaffa to:
+Sidecars allow Skaffa to:
 - keep the Electron/Node processes responsive
 - isolate heavy compute and file access behind a small, typed API
 - use languages/tooling better suited to large-file workloads (Rust)
@@ -33,7 +33,7 @@ Sidecars are **services**, not authorities.
 
 1) **Main owns the workspace write capability**
 - Sidecar MUST NOT write to workspace files.
-- All writes remain in main and use transactional edits (`docs/scaffa_workspace_edit_protocol.md`).
+- All writes remain in main and use transactional edits (`docs/skaffa_workspace_edit_protocol.md`).
 
 2) **Renderer never talks to sidecars directly**
 - Renderer talks only to preload → main (capabilities).
@@ -143,4 +143,3 @@ Save-to-disk remains:
 Sidecar integration is an implementation detail behind main-owned capabilities:
 - `WorkspaceAPI.readFile/watch/search` can be serviced efficiently via sidecar
 - heavier “analysis” calls can be added later without giving extensions direct filesystem access
-

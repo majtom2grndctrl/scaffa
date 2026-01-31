@@ -1,5 +1,5 @@
 // ─────────────────────────────────────────────────────────────────────────────
-// Scaffa Shared Protocol Types (v0)
+// Skaffa Shared Protocol Types (v0)
 // ─────────────────────────────────────────────────────────────────────────────
 // Single source of truth for types shared across main/preload/renderer/ext-host.
 

@@ -1,7 +1,7 @@
 {
-  "name": "@scaffa/sample-graph-producer",
+  "name": "@skaffa/sample-graph-producer",
   "version": "0.1.0",
   "type": "module",
   "main": "index.js",
-  "description": "Sample graph producer module for Scaffa v0 development"
+  "description": "Sample graph producer module for Skaffa v0 development"
 }

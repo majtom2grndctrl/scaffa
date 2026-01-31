@@ -1,6 +1,6 @@
-import { describe, it, expect } from 'vitest';
-import * as fs from 'node:fs/promises';
-import * as path from 'node:path';
+import { describe, it, expect } from "vitest";
+import * as fs from "node:fs/promises";
+import * as path from "node:path";
 
 /**
  * Demo Workspace Structure Validation
@@ -8,20 +8,20 @@ import * as path from 'node:path';
  * Purpose: Validate that the demo workspace is correctly configured for
  * package resolution and config loading.
  *
- * Why this matters (Scaffa-specific behavior):
- * - scaffa.config.js imports from @scaffa/config package
+ * Why this matters (Skaffa-specific behavior):
+ * - skaffa.config.js imports from @skaffa/config package
  * - Package must be resolvable via pnpm workspace + vendored tarballs
  * - Missing pnpm-workspace.yaml breaks config loading with "Cannot find package" error
  *
  * This documents a critical cross-boundary interaction:
  * workspace structure → package resolution → config loading → extension activation
  */
-describe('Demo Workspace Structure', () => {
+describe("Demo Workspace Structure", () => {
   const demoRoot = path.resolve(__dirname);
 
-  describe('workspace configuration', () => {
-    it('should have pnpm-workspace.yaml defining workspace packages', async () => {
-      const workspacePath = path.join(demoRoot, 'pnpm-workspace.yaml');
+  describe("workspace configuration", () => {
+    it("should have pnpm-workspace.yaml defining workspace packages", async () => {
+      const workspacePath = path.join(demoRoot, "pnpm-workspace.yaml");
 
       // Check file exists
       const exists = await fs
@@ -32,25 +32,25 @@ describe('Demo Workspace Structure', () => {
       expect(exists).toBe(true);
 
       // Validate content includes required packages
-      const content = await fs.readFile(workspacePath, 'utf-8');
-      expect(content).toContain('packages:');
-      expect(content).toContain('app'); // Should include app subproject
+      const content = await fs.readFile(workspacePath, "utf-8");
+      expect(content).toContain("packages:");
+      expect(content).toContain("app"); // Should include app subproject
     });
 
-    it('should have package.json with vendored @scaffa/* extension packages', async () => {
-      const packageJsonPath = path.join(demoRoot, 'package.json');
-      const content = await fs.readFile(packageJsonPath, 'utf-8');
+    it("should have package.json with vendored @skaffa/* extension packages", async () => {
+      const packageJsonPath = path.join(demoRoot, "package.json");
+      const content = await fs.readFile(packageJsonPath, "utf-8");
       const pkg = JSON.parse(content);
 
       // Verify devDependencies exist
       expect(pkg.devDependencies).toBeDefined();
 
-      // Verify all required @scaffa packages are declared
+      // Verify all required @skaffa packages are declared
       const requiredPackages = [
-        '@scaffa/config',
-        '@scaffa/layout-registry',
-        '@scaffa/react-router-graph-producer',
-        '@scaffa/shadcn-ui-registry',
+        "@skaffa/config",
+        "@skaffa/layout-registry",
+        "@skaffa/react-router-graph-producer",
+        "@skaffa/shadcn-ui-registry",
       ];
 
       for (const packageName of requiredPackages) {
@@ -61,9 +61,9 @@ describe('Demo Workspace Structure', () => {
     });
   });
 
-  describe('vendored extension packages', () => {
-    it('should have all required extension tarballs in vendor/', async () => {
-      const vendorPath = path.join(demoRoot, 'vendor');
+  describe("vendored extension packages", () => {
+    it("should have all required extension tarballs in vendor/", async () => {
+      const vendorPath = path.join(demoRoot, "vendor");
 
       // Check vendor directory exists
       const vendorExists = await fs
@@ -77,10 +77,10 @@ describe('Demo Workspace Structure', () => {
 
       // Verify required tarballs exist
       const requiredTarballs = [
-        'scaffa-config-0.1.0.tgz',
-        'scaffa-layout-registry-0.1.0.tgz',
-        'scaffa-react-router-graph-producer-0.1.0.tgz',
-        'scaffa-shadcn-ui-registry-0.1.0.tgz',
+        "skaffa-config-0.1.0.tgz",
+        "skaffa-layout-registry-0.1.0.tgz",
+        "skaffa-react-router-graph-producer-0.1.0.tgz",
+        "skaffa-shadcn-ui-registry-0.1.0.tgz",
       ];
 
       for (const tarball of requiredTarballs) {
@@ -89,36 +89,36 @@ describe('Demo Workspace Structure', () => {
     });
   });
 
-  describe('config loading integration', () => {
-    it('should successfully import scaffa.config.js with @scaffa/config package', async () => {
-      const configPath = path.join(demoRoot, 'scaffa.config.js');
+  describe("config loading integration", () => {
+    it("should successfully import skaffa.config.js with @skaffa/config package", async () => {
+      const configPath = path.join(demoRoot, "skaffa.config.js");
 
       // This tests the full package resolution chain:
-      // 1. Node module resolution finds @scaffa/config
+      // 1. Node module resolution finds @skaffa/config
       // 2. pnpm resolves it via workspace + vendored tarball
-      // 3. defineScaffaConfig function is available
+      // 3. defineSkaffaConfig function is available
       // 4. Config exports valid default
       let configModule;
       try {
         configModule = await import(configPath);
       } catch (err: any) {
         throw new Error(
-          `Failed to load demo/scaffa.config.js. ` +
-            `This usually means @scaffa/config package is not resolvable. ` +
+          `Failed to load demo/skaffa.config.js. ` +
+            `This usually means @skaffa/config package is not resolvable. ` +
             `Ensure pnpm install has been run in demo/ workspace. ` +
-            `Original error: ${err.message}`
+            `Original error: ${err.message}`,
         );
       }
 
       // Validate config structure
       expect(configModule.default).toBeDefined();
-      expect(configModule.default.schemaVersion).toBe('v0');
+      expect(configModule.default.schemaVersion).toBe("v0");
       expect(configModule.default.modules).toBeDefined();
       expect(Array.isArray(configModule.default.modules)).toBe(true);
     });
 
-    it('should have valid module declarations in config', async () => {
-      const configPath = path.join(demoRoot, 'scaffa.config.js');
+    it("should have valid module declarations in config", async () => {
+      const configPath = path.join(demoRoot, "skaffa.config.js");
       const configModule = await import(configPath);
       const config = configModule.default;
 
@@ -126,19 +126,19 @@ describe('Demo Workspace Structure', () => {
       const moduleIds = config.modules.map((m: any) => m.id);
 
       // Workspace-local modules (path-based)
-      expect(moduleIds).toContain('demo-module');
-      expect(moduleIds).toContain('demo-graph-producer');
-      expect(moduleIds).toContain('vite-launcher');
-      expect(moduleIds).toContain('demo-save-adapter');
+      expect(moduleIds).toContain("demo-module");
+      expect(moduleIds).toContain("demo-graph-producer");
+      expect(moduleIds).toContain("vite-launcher");
+      expect(moduleIds).toContain("demo-save-adapter");
 
       // Vendored package modules (package-based)
-      expect(moduleIds).toContain('shadcn-ui-registry');
-      expect(moduleIds).toContain('layout-registry');
-      expect(moduleIds).toContain('react-router-graph-producer');
+      expect(moduleIds).toContain("shadcn-ui-registry");
+      expect(moduleIds).toContain("layout-registry");
+      expect(moduleIds).toContain("react-router-graph-producer");
     });
 
-    it('should have valid preview configuration', async () => {
-      const configPath = path.join(demoRoot, 'scaffa.config.js');
+    it("should have valid preview configuration", async () => {
+      const configPath = path.join(demoRoot, "skaffa.config.js");
       const configModule = await import(configPath);
       const config = configModule.default;
 
@@ -150,9 +150,9 @@ describe('Demo Workspace Structure', () => {
     });
   });
 
-  describe('workspace-local extension modules', () => {
-    it('should have all workspace-local extension modules as files', async () => {
-      const extensionsPath = path.join(demoRoot, 'extensions');
+  describe("workspace-local extension modules", () => {
+    it("should have all workspace-local extension modules as files", async () => {
+      const extensionsPath = path.join(demoRoot, "extensions");
 
       // Check extensions directory exists
       const exists = await fs
@@ -163,10 +163,10 @@ describe('Demo Workspace Structure', () => {
 
       // Verify workspace-local modules exist
       const localModules = [
-        'demo-module/index.js',
-        'demo-graph-producer/index.js',
-        'vite-launcher/index.js',
-        'demo-save-adapter/index.js',
+        "demo-module/index.js",
+        "demo-graph-producer/index.js",
+        "vite-launcher/index.js",
+        "demo-save-adapter/index.js",
       ];
 
       for (const modulePath of localModules) {

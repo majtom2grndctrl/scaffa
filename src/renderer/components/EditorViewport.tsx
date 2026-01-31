@@ -1,5 +1,5 @@
-import { useEffect, useRef } from 'react';
-import { useSessionStore } from '../state/sessionStore';
+import { useEffect, useRef } from "react";
+import { useSessionStore } from "../state/sessionStore";
 
 /**
  * EditorViewport: Measures and reports the preview viewport bounds to the main process.
@@ -14,7 +14,9 @@ export const EditorViewport = () => {
   const sessions = useSessionStore((state) => state.sessions);
 
   // v0 policy: First app session that reaches ready state
-  const activeSession = sessions.find((s) => s.type === 'app' && s.state === 'ready');
+  const activeSession = sessions.find(
+    (s) => s.type === "app" && s.state === "ready",
+  );
 
   useEffect(() => {
     if (!containerRef.current || !activeSession) {
@@ -29,7 +31,7 @@ export const EditorViewport = () => {
       const rect = containerRef.current.getBoundingClientRect();
 
       // Send bounds to main process
-      window.scaffa.preview
+      window.skaffa.preview
         .setViewport({
           sessionId: activeSession.sessionId,
           bounds: {
@@ -40,7 +42,10 @@ export const EditorViewport = () => {
           },
         })
         .catch((error) => {
-          console.error('[EditorViewport] Failed to set viewport bounds:', error);
+          console.error(
+            "[EditorViewport] Failed to set viewport bounds:",
+            error,
+          );
         });
     };
 
@@ -55,18 +60,21 @@ export const EditorViewport = () => {
     resizeObserver.observe(containerRef.current);
 
     // Also listen for window resize (for DPI changes, window movement, etc.)
-    window.addEventListener('resize', updateViewportBounds);
+    window.addEventListener("resize", updateViewportBounds);
 
     return () => {
       resizeObserver.disconnect();
-      window.removeEventListener('resize', updateViewportBounds);
+      window.removeEventListener("resize", updateViewportBounds);
     };
   }, [activeSession]);
 
   if (!activeSession) {
     return (
       <div className="flex h-full items-center justify-center bg-surface-card p-6 text-center text-sm text-fg-muted">
-        <p>No preview session active. Start an app session to see your application here.</p>
+        <p>
+          No preview session active. Start an app session to see your
+          application here.
+        </p>
       </div>
     );
   }

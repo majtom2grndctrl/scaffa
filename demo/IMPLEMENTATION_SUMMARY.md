@@ -1,12 +1,12 @@
 # Demo Workspace Implementation Summary
 
-> **Ticket:** scaffa-diq - Create demo workspace for v0 walkthrough
+> **Ticket:** skaffa-diq - Create demo workspace for v0 walkthrough
 > **Status:** Complete ✅
 > **Date:** 2026-01-11
 
 ## Overview
 
-Successfully created a complete demo workspace that validates the Scaffa v0 end-to-end journey, including:
+Successfully created a complete demo workspace that validates the Skaffa v0 end-to-end journey, including:
 
 - Component registry with editable prop metadata
 - Graph producer emitting routes and component types
@@ -21,11 +21,11 @@ Successfully created a complete demo workspace that validates the Scaffa v0 end-
 
 ```
 demo/
-├── scaffa.config.js              # Workspace configuration
+├── skaffa.config.js              # Workspace configuration
 ├── README.md                     # User documentation
 ├── TESTING.md                    # Comprehensive test checklist
 ├── IMPLEMENTATION_SUMMARY.md     # This file
-└── .scaffa/
+└── .skaffa/
     └── .gitkeep                  # Override persistence directory
 ```
 
@@ -62,7 +62,7 @@ demo/extensions/demo-graph-producer/
 ```
 demo/app/
 ├── src/
-│   ├── main.tsx                  # Production entry (no Scaffa deps)
+│   ├── main.tsx                  # Production entry (no Skaffa deps)
 │   ├── App.tsx                   # Preview entry (router + UI)
 │   ├── routes.tsx                # React Router route definitions
 │   ├── data/
@@ -83,38 +83,38 @@ demo/app/
 ```
 
 **Features:**
-- Uses `@scaffa/react-runtime-adapter` in managed previews (harness-injected)
-- `ScaffaProvider` is injected by the managed preview harness (not in app code)
-- Components are wrapped at export time by the Vite launcher (ScaffaInstanceBoundary)
-- Overrides apply via instrumentation; app code stays Scaffa-free
+- Uses `@skaffa/react-runtime-adapter` in managed previews (harness-injected)
+- `SkaffaProvider` is injected by the managed preview harness (not in app code)
+- Components are wrapped at export time by the Vite launcher (SkaffaInstanceBoundary)
+- Overrides apply via instrumentation; app code stays Skaffa-free
 - Multi-route ModelOps console with navigation
 - Uses shadcn/ui components and layout primitives for a realistic UI surface
 
 ## Architecture Compliance
 
-### Follows Scaffa Architectural Contracts
+### Follows Skaffa Architectural Contracts
 
-✅ **Component Registry Schema** (`docs/scaffa_component_registry_schema.md`)
+✅ **Component Registry Schema** (`docs/skaffa_component_registry_schema.md`)
 - Stable component type IDs (`ui.*`, `layout.*`, plus demo components)
 - Proper prop exposure (editable, inspectOnly)
 - Control definitions (string, select, multiline)
 - Grouping and ordering metadata
 
-✅ **Runtime Adapter Contract** (`docs/scaffa_runtime_adapter_contract.md`)
-- Harness injects ScaffaProvider for adapter initialization
-- ScaffaInstanceBoundary provides instance identity + componentTypeId
+✅ **Runtime Adapter Contract** (`docs/skaffa_runtime_adapter_contract.md`)
+- Harness injects SkaffaProvider for adapter initialization
+- SkaffaInstanceBoundary provides instance identity + componentTypeId
 - Overrides apply in the boundary; no app-side hook required
 - Click-to-select capability via DOM annotations
 
-✅ **Preview Session Protocol** (`docs/scaffa_preview_session_protocol.md`)
+✅ **Preview Session Protocol** (`docs/skaffa_preview_session_protocol.md`)
 - App session type supported
 - Runtime adapter handshake on load
 - Selection and override message protocols
 
-✅ **Override Model** (`docs/scaffa_override_model.md`)
+✅ **Override Model** (`docs/skaffa_override_model.md`)
 - Non-destructive prop overrides
 - JSON-serializable values only
-- Persistence to `.scaffa/overrides.v0.json`
+- Persistence to `.skaffa/overrides.v0.json`
 - Reset/clear operations
 
 ✅ **Extension Context API** (`src/extension-host/extension-context.ts`)
@@ -134,11 +134,11 @@ demo/app/
 - shadcn/ui dependencies (Radix UI, lucide-react, class-variance-authority)
 
 ### Internal Dependencies
-- `@scaffa/react-runtime-adapter` (preview-time harness import, not in app code)
-- `@scaffa/config` (workspace config helper, installed from `demo/vendor/`)
-- `@scaffa/layout-primitives-react` (runtime dependency exception for the demo app, installed from `demo/vendor/`)
-- Workspace extension modules (`@scaffa/shadcn-ui-registry`, `@scaffa/layout-registry`, `@scaffa/react-router-graph-producer`) installed from local tarballs in `demo/vendor/`
-- Scaffa core types (`src/shared/`, `src/extension-host/`)
+- `@skaffa/react-runtime-adapter` (preview-time harness import, not in app code)
+- `@skaffa/config` (workspace config helper, installed from `demo/vendor/`)
+- `@skaffa/layout-primitives-react` (runtime dependency exception for the demo app, installed from `demo/vendor/`)
+- Workspace extension modules (`@skaffa/shadcn-ui-registry`, `@skaffa/layout-registry`, `@skaffa/react-router-graph-producer`) installed from local tarballs in `demo/vendor/`
+- Skaffa core types (`src/shared/`, `src/extension-host/`)
 
 ## Testing Instructions
 
@@ -148,14 +148,14 @@ See `demo/TESTING.md` for comprehensive testing checklist.
 1. `pnpm install` (root)
 2. `pnpm build` (root)
 3. `pnpm demo:refresh-extensions` (packs modules + installs demo/app deps)
-4. `pnpm dev` (start Scaffa)
+4. `pnpm dev` (start Skaffa)
 5. Launcher → Open Workspace → Select `demo/`
 6. Start app preview (managed launcher starts Vite automatically)
 7. Click components, edit in Inspector, verify live updates
 
 ## Success Criteria Met
 
-✅ `pnpm dev` starts Scaffa
+✅ `pnpm dev` starts Skaffa
 ✅ Open demo workspace from Launcher
 ✅ Registry shows shadcn/ui + layout component metadata
 ✅ Start app preview session
@@ -163,7 +163,7 @@ See `demo/TESTING.md` for comprehensive testing checklist.
 ✅ Click UI components → Inspector shows props
 ✅ Edit props → Preview updates immediately
 ✅ Reset override → Preview returns to baseline
-✅ `demo/.scaffa/overrides.v0.json` persists changes
+✅ `demo/.skaffa/overrides.v0.json` persists changes
 ✅ Reopening workspace restores overrides
 
 ## Known Limitations / Future Work
@@ -174,7 +174,7 @@ See `demo/TESTING.md` for comprehensive testing checklist.
 
 3. **Advanced Controls**: Demo uses basic controls (string, select). Future demos could show color, number, slot editing.
 
-4. **Layout Primitives Packaging**: Demo installs `@scaffa/layout-primitives-react` from a local tarball in `demo/vendor/`; swap to a published version if you move the app outside this repo.
+4. **Layout Primitives Packaging**: Demo installs `@skaffa/layout-primitives-react` from a local tarball in `demo/vendor/`; swap to a published version if you move the app outside this repo.
 
 5. **Orphaned Overrides**: Demo doesn't explicitly test override orphaning (when instance identity changes). This is a known edge case.
 
@@ -187,9 +187,9 @@ This demo workspace completes **Epic 7iq.7** prerequisites and enables:
 ## References
 
 - Architecture Plan: `/docs/index.md`
-- Runtime Adapter Contract: `/docs/scaffa_runtime_adapter_contract.md`
-- Component Registry Schema: `/docs/scaffa_component_registry_schema.md`
-- Inspector UX Semantics: `/docs/scaffa_inspector_ux_semantics.md`
-- Preview Session Protocol: `/docs/scaffa_preview_session_protocol.md`
-- Override Model: `/docs/scaffa_override_model.md`
-- Project Graph Schema: `/docs/scaffa_project_graph_schema.md`
+- Runtime Adapter Contract: `/docs/skaffa_runtime_adapter_contract.md`
+- Component Registry Schema: `/docs/skaffa_component_registry_schema.md`
+- Inspector UX Semantics: `/docs/skaffa_inspector_ux_semantics.md`
+- Preview Session Protocol: `/docs/skaffa_preview_session_protocol.md`
+- Override Model: `/docs/skaffa_override_model.md`
+- Project Graph Schema: `/docs/skaffa_project_graph_schema.md`

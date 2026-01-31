@@ -13,7 +13,7 @@
       "Bash(pnpm build:electron:*)",
       "Bash(bd sync:*)",
       "Bash(bd list:*)",
-      "Bash(pnpm --filter @scaffa/demo-app build:*)",
+      "Bash(pnpm --filter @skaffa/demo-app build:*)",
       "Bash(pnpm typecheck:*)",
       "Bash(pnpm test:*)",
       "Bash(pnpm run typecheck:*)",

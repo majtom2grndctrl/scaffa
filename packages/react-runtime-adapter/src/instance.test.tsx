@@ -1,12 +1,12 @@
 /**
  * @vitest-environment jsdom
  */
-import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { render, screen, act, waitFor } from '@testing-library/react';
-import React from 'react';
-import { ScaffaInstanceBoundary } from './instance';
-import { ScaffaProvider } from './provider';
-import type { ScaffaAdapterConfig } from './types';
+import { describe, it, expect, vi, beforeEach } from "vitest";
+import { render, screen, act, waitFor } from "@testing-library/react";
+import React from "react";
+import { SkaffaInstanceBoundary } from "./instance";
+import { SkaffaProvider } from "./provider";
+import type { SkaffaAdapterConfig } from "./types";
 
 // ─────────────────────────────────────────────────────────────────────────────
 // Test Component
@@ -14,7 +14,7 @@ import type { ScaffaAdapterConfig } from './types';
 
 interface TestComponentProps {
   label: string;
-  variant: 'primary' | 'secondary';
+  variant: "primary" | "secondary";
   style?: { color: string; fontSize: number };
   items?: Array<{ name: string; value: number }>;
 }
@@ -67,70 +67,79 @@ function createMockTransport() {
 // Tests
 // ─────────────────────────────────────────────────────────────────────────────
 
-describe('ScaffaInstanceBoundary - Override Application', () => {
+describe("SkaffaInstanceBoundary - Override Application", () => {
   let mockTransport: ReturnType<typeof createMockTransport>;
 
   beforeEach(() => {
     mockTransport = createMockTransport();
-    (window as any).scaffaRuntimeTransport = mockTransport;
+    (window as any).skaffaRuntimeTransport = mockTransport;
   });
 
-  const config: ScaffaAdapterConfig = {
-    adapterId: 'react-test',
-    adapterVersion: '0.1.0',
+  const config: SkaffaAdapterConfig = {
+    adapterId: "react-test",
+    adapterVersion: "0.1.0",
     debug: false,
   };
 
-  async function renderWithAdapter(Component: React.ComponentType<any>, props: any) {
+  async function renderWithAdapter(
+    Component: React.ComponentType<any>,
+    props: any,
+  ) {
     let result: ReturnType<typeof render> | undefined;
     await act(async () => {
       result = render(
-        <ScaffaProvider config={config}>
+        <SkaffaProvider config={config}>
           <Component {...props} />
-        </ScaffaProvider>
+        </SkaffaProvider>,
       );
     });
     return result as ReturnType<typeof render>;
   }
 
-  it('renders wrapped component with original props when no overrides', async () => {
-    const WrappedComponent = ScaffaInstanceBoundary(TestComponent, 'test.component');
+  it("renders wrapped component with original props when no overrides", async () => {
+    const WrappedComponent = SkaffaInstanceBoundary(
+      TestComponent,
+      "test.component",
+    );
 
     await renderWithAdapter(WrappedComponent, {
-      label: 'Original Label',
-      variant: 'primary',
+      label: "Original Label",
+      variant: "primary",
     });
 
-    expect(screen.getByTestId('label')).toHaveTextContent('Original Label');
-    expect(screen.getByTestId('variant')).toHaveTextContent('primary');
+    expect(screen.getByTestId("label")).toHaveTextContent("Original Label");
+    expect(screen.getByTestId("variant")).toHaveTextContent("primary");
   });
 
-  it('applies simple prop override (/variant)', async () => {
-    const WrappedComponent = ScaffaInstanceBoundary(TestComponent, 'test.component');
+  it("applies simple prop override (/variant)", async () => {
+    const WrappedComponent = SkaffaInstanceBoundary(
+      TestComponent,
+      "test.component",
+    );
 
     await renderWithAdapter(WrappedComponent, {
-      label: 'Test',
-      variant: 'primary',
+      label: "Test",
+      variant: "primary",
     });
 
     // Initial render
-    expect(screen.getByTestId('variant')).toHaveTextContent('primary');
+    expect(screen.getByTestId("variant")).toHaveTextContent("primary");
 
     // Get the instance ID from the DOM
-    const instanceElement = screen.getByTestId('test-component').parentElement;
-    const instanceId = instanceElement?.getAttribute('data-scaffa-instance-id');
+    const instanceElement = screen.getByTestId("test-component").parentElement;
+    const instanceId = instanceElement?.getAttribute("data-skaffa-instance-id");
     expect(instanceId).toBeTruthy();
 
     // Simulate host applying override
     await act(async () => {
       mockTransport.simulateCommand({
-        type: 'host.applyOverrides',
+        type: "host.applyOverrides",
         ops: [
           {
-            op: 'set',
+            op: "set",
             instanceId,
-            path: '/variant',
-            value: 'secondary',
+            path: "/variant",
+            value: "secondary",
           },
         ],
       });
@@ -138,36 +147,39 @@ describe('ScaffaInstanceBoundary - Override Application', () => {
 
     // Wait for re-render
     await waitFor(() => {
-      expect(screen.getByTestId('variant')).toHaveTextContent('secondary');
+      expect(screen.getByTestId("variant")).toHaveTextContent("secondary");
     });
   });
 
-  it('applies nested prop override (/style/color)', async () => {
-    const WrappedComponent = ScaffaInstanceBoundary(TestComponent, 'test.component');
+  it("applies nested prop override (/style/color)", async () => {
+    const WrappedComponent = SkaffaInstanceBoundary(
+      TestComponent,
+      "test.component",
+    );
 
     await renderWithAdapter(WrappedComponent, {
-      label: 'Test',
-      variant: 'primary',
-      style: { color: 'red', fontSize: 14 },
+      label: "Test",
+      variant: "primary",
+      style: { color: "red", fontSize: 14 },
     });
 
     // Initial render
-    expect(screen.getByTestId('style')).toHaveTextContent('red,14');
+    expect(screen.getByTestId("style")).toHaveTextContent("red,14");
 
     // Get the instance ID
-    const instanceElement = screen.getByTestId('test-component').parentElement;
-    const instanceId = instanceElement?.getAttribute('data-scaffa-instance-id');
+    const instanceElement = screen.getByTestId("test-component").parentElement;
+    const instanceId = instanceElement?.getAttribute("data-skaffa-instance-id");
 
     // Apply nested override
     await act(async () => {
       mockTransport.simulateCommand({
-        type: 'host.applyOverrides',
+        type: "host.applyOverrides",
         ops: [
           {
-            op: 'set',
+            op: "set",
             instanceId,
-            path: '/style/color',
-            value: 'blue',
+            path: "/style/color",
+            value: "blue",
           },
         ],
       });
@@ -175,38 +187,41 @@ describe('ScaffaInstanceBoundary - Override Application', () => {
 
     // Verify override applied
     await waitFor(() => {
-      expect(screen.getByTestId('style')).toHaveTextContent('blue,14');
+      expect(screen.getByTestId("style")).toHaveTextContent("blue,14");
     });
   });
 
-  it('applies array index override (/items/0/value)', async () => {
-    const WrappedComponent = ScaffaInstanceBoundary(TestComponent, 'test.component');
+  it("applies array index override (/items/0/value)", async () => {
+    const WrappedComponent = SkaffaInstanceBoundary(
+      TestComponent,
+      "test.component",
+    );
 
     await renderWithAdapter(WrappedComponent, {
-      label: 'Test',
-      variant: 'primary',
+      label: "Test",
+      variant: "primary",
       items: [
-        { name: 'First', value: 100 },
-        { name: 'Second', value: 200 },
+        { name: "First", value: 100 },
+        { name: "Second", value: 200 },
       ],
     });
 
     // Initial render
-    expect(screen.getByTestId('item-0')).toHaveTextContent('First:100');
+    expect(screen.getByTestId("item-0")).toHaveTextContent("First:100");
 
     // Get the instance ID
-    const instanceElement = screen.getByTestId('test-component').parentElement;
-    const instanceId = instanceElement?.getAttribute('data-scaffa-instance-id');
+    const instanceElement = screen.getByTestId("test-component").parentElement;
+    const instanceId = instanceElement?.getAttribute("data-skaffa-instance-id");
 
     // Apply array index override
     await act(async () => {
       mockTransport.simulateCommand({
-        type: 'host.applyOverrides',
+        type: "host.applyOverrides",
         ops: [
           {
-            op: 'set',
+            op: "set",
             instanceId,
-            path: '/items/0/value',
+            path: "/items/0/value",
             value: 999,
           },
         ],
@@ -215,50 +230,53 @@ describe('ScaffaInstanceBoundary - Override Application', () => {
 
     // Verify override applied
     await waitFor(() => {
-      expect(screen.getByTestId('item-0')).toHaveTextContent('First:999');
+      expect(screen.getByTestId("item-0")).toHaveTextContent("First:999");
     });
   });
 
-  it('applies multiple overrides simultaneously', async () => {
-    const WrappedComponent = ScaffaInstanceBoundary(TestComponent, 'test.component');
+  it("applies multiple overrides simultaneously", async () => {
+    const WrappedComponent = SkaffaInstanceBoundary(
+      TestComponent,
+      "test.component",
+    );
 
     await renderWithAdapter(WrappedComponent, {
-      label: 'Test',
-      variant: 'primary',
-      style: { color: 'red', fontSize: 14 },
+      label: "Test",
+      variant: "primary",
+      style: { color: "red", fontSize: 14 },
     });
 
     // Initial render
-    expect(screen.getByTestId('label')).toHaveTextContent('Test');
-    expect(screen.getByTestId('variant')).toHaveTextContent('primary');
-    expect(screen.getByTestId('style')).toHaveTextContent('red,14');
+    expect(screen.getByTestId("label")).toHaveTextContent("Test");
+    expect(screen.getByTestId("variant")).toHaveTextContent("primary");
+    expect(screen.getByTestId("style")).toHaveTextContent("red,14");
 
     // Get the instance ID
-    const instanceElement = screen.getByTestId('test-component').parentElement;
-    const instanceId = instanceElement?.getAttribute('data-scaffa-instance-id');
+    const instanceElement = screen.getByTestId("test-component").parentElement;
+    const instanceId = instanceElement?.getAttribute("data-skaffa-instance-id");
 
     // Apply multiple overrides
     await act(async () => {
       mockTransport.simulateCommand({
-        type: 'host.applyOverrides',
+        type: "host.applyOverrides",
         ops: [
           {
-            op: 'set',
+            op: "set",
             instanceId,
-            path: '/label',
-            value: 'Overridden Label',
+            path: "/label",
+            value: "Overridden Label",
           },
           {
-            op: 'set',
+            op: "set",
             instanceId,
-            path: '/variant',
-            value: 'secondary',
+            path: "/variant",
+            value: "secondary",
           },
           {
-            op: 'set',
+            op: "set",
             instanceId,
-            path: '/style/color',
-            value: 'green',
+            path: "/style/color",
+            value: "green",
           },
         ],
       });
@@ -266,67 +284,78 @@ describe('ScaffaInstanceBoundary - Override Application', () => {
 
     // Verify all overrides applied
     await waitFor(() => {
-      expect(screen.getByTestId('label')).toHaveTextContent('Overridden Label');
-      expect(screen.getByTestId('variant')).toHaveTextContent('secondary');
-      expect(screen.getByTestId('style')).toHaveTextContent('green,14');
+      expect(screen.getByTestId("label")).toHaveTextContent("Overridden Label");
+      expect(screen.getByTestId("variant")).toHaveTextContent("secondary");
+      expect(screen.getByTestId("style")).toHaveTextContent("green,14");
     });
   });
 
-  it('attaches data attributes for selection', async () => {
-    const WrappedComponent = ScaffaInstanceBoundary(TestComponent, 'test.component');
+  it("attaches data attributes for selection", async () => {
+    const WrappedComponent = SkaffaInstanceBoundary(
+      TestComponent,
+      "test.component",
+    );
 
     await renderWithAdapter(WrappedComponent, {
-      label: 'Test',
-      variant: 'primary',
+      label: "Test",
+      variant: "primary",
     });
 
-    const instanceElement = screen.getByTestId('test-component').parentElement;
+    const instanceElement = screen.getByTestId("test-component").parentElement;
 
     // Verify data attributes
-    expect(instanceElement?.hasAttribute('data-scaffa-instance-id')).toBe(true);
-    expect(instanceElement?.getAttribute('data-scaffa-type-id')).toBe('test.component');
+    expect(instanceElement?.hasAttribute("data-skaffa-instance-id")).toBe(true);
+    expect(instanceElement?.getAttribute("data-skaffa-type-id")).toBe(
+      "test.component",
+    );
   });
 
-  it('registers instance with adapter on mount', async () => {
-    const WrappedComponent = ScaffaInstanceBoundary(TestComponent, 'test.component');
+  it("registers instance with adapter on mount", async () => {
+    const WrappedComponent = SkaffaInstanceBoundary(
+      TestComponent,
+      "test.component",
+    );
 
     await renderWithAdapter(WrappedComponent, {
-      label: 'Test',
-      variant: 'primary',
+      label: "Test",
+      variant: "primary",
     });
 
     // Verify runtime.ready was sent
     expect(mockTransport.sendToHost).toHaveBeenCalledWith(
       expect.objectContaining({
-        type: 'runtime.ready',
-        adapterId: 'react-test',
-      })
+        type: "runtime.ready",
+        adapterId: "react-test",
+      }),
     );
   });
 
-  it('creates intermediate objects for nested paths that do not exist', async () => {
-    const WrappedComponent = ScaffaInstanceBoundary(TestComponent, 'test.component');
+  it("creates intermediate objects for nested paths that do not exist", async () => {
+    const WrappedComponent = SkaffaInstanceBoundary(
+      TestComponent,
+      "test.component",
+    );
 
     await renderWithAdapter(WrappedComponent, {
-      label: 'Test',
-      variant: 'primary',
+      label: "Test",
+      variant: "primary",
       // Note: style is undefined initially
     });
 
     // Get the instance ID
-    const instanceElement = screen.getByTestId('test-component').parentElement;
-    const instanceId = instanceElement?.getAttribute('data-scaffa-instance-id');
+    const instanceElement = screen.getByTestId("test-component").parentElement;
+    const instanceId = instanceElement?.getAttribute("data-skaffa-instance-id");
 
     // Apply nested override to non-existent path
     await act(async () => {
       mockTransport.simulateCommand({
-        type: 'host.applyOverrides',
+        type: "host.applyOverrides",
         ops: [
           {
-            op: 'set',
+            op: "set",
             instanceId,
-            path: '/style/color',
-            value: 'purple',
+            path: "/style/color",
+            value: "purple",
           },
         ],
       });
@@ -334,8 +363,8 @@ describe('ScaffaInstanceBoundary - Override Application', () => {
 
     // Verify intermediate object was created and override applied
     await waitFor(() => {
-      expect(screen.getByTestId('style')).toBeInTheDocument();
-      expect(screen.getByTestId('style')).toHaveTextContent('purple');
+      expect(screen.getByTestId("style")).toBeInTheDocument();
+      expect(screen.getByTestId("style")).toHaveTextContent("purple");
     });
   });
 });

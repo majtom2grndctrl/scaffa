@@ -6,10 +6,10 @@ import tailwindcss from '@tailwindcss/vite';
 // Demo App Vite Configuration
 // 
 // ARCHITECTURE NOTE:
-// This is the production Vite config. When Scaffa runs preview sessions,
+// This is the production Vite config. When Skaffa runs preview sessions,
 // the vite-launcher merges its own config (harness plugin) with this one.
 // 
-// No Scaffa-specific configuration needed here - the harness handles everything.
+// No Skaffa-specific configuration needed here - the harness handles everything.
 
 export default defineConfig({
   plugins: [react(), tailwindcss()],

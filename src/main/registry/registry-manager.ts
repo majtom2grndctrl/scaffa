@@ -1,4 +1,4 @@
-import type { ComponentRegistry, ScaffaConfig } from '../../shared/index.js';
+import type { ComponentRegistry, SkaffaConfig } from '../../shared/index.js';
 import { composeRegistry, getEmptyRegistry } from './registry-composer.js';
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -16,7 +16,7 @@ class RegistryManager {
    * @param moduleRegistries - Registries from loaded modules (in order)
    * @param config - Current project configuration
    */
-  updateRegistry(moduleRegistries: ComponentRegistry[], config: ScaffaConfig): void {
+  updateRegistry(moduleRegistries: ComponentRegistry[], config: SkaffaConfig): void {
     this.moduleRegistries = moduleRegistries;
     this.effectiveRegistry = composeRegistry(moduleRegistries, config);
     console.log('[Registry] Registry updated');
@@ -33,7 +33,7 @@ class RegistryManager {
    * Recompose the registry with the current module registries and new config.
    * Called when config changes without changing modules.
    */
-  recomposeWithConfig(config: ScaffaConfig): void {
+  recomposeWithConfig(config: SkaffaConfig): void {
     this.effectiveRegistry = composeRegistry(this.moduleRegistries, config);
     console.log('[Registry] Registry recomposed with new config');
   }

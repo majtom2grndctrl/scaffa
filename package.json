@@ -1,5 +1,5 @@
 {
-  "name": "scaffa",
+  "name": "skaffa",
   "version": "0.1.0",
   "private": true,
   "type": "module",
@@ -14,7 +14,7 @@
     "build:renderer": "pnpm -C src/renderer build",
     "build:electron": "node scripts/build-electron.mjs",
     "preview": "pnpm -C src/renderer preview",
-    "demo:pack-extensions": "pnpm build:modules && pnpm -C packages/config pack --pack-destination ../../demo/vendor && pnpm -C extensions/layout/packages/layout-primitives-react build && pnpm -C extensions/layout/packages/layout-primitives-react pack --pack-destination ../../../../demo/vendor && pnpm -C extensions/shadcn-ui-registry pack --pack-destination ../../demo/vendor && pnpm -C extensions/layout pack --pack-destination ../../demo/vendor && pnpm -C extensions/react-router-graph-producer pack --pack-destination ../../demo/vendor",
+    "demo:pack-extensions": "pnpm build:modules && pnpm -C packages/config pack --pack-destination ../../demo/vendor && pnpm -C packages/react-runtime-adapter pack --pack-destination ../../demo/vendor && pnpm -C extensions/layout/packages/layout-primitives-react pack --pack-destination ../../../../demo/vendor && pnpm -C extensions/shadcn-ui-registry pack --pack-destination ../../demo/vendor && pnpm -C extensions/layout pack --pack-destination ../../demo/vendor && pnpm -C extensions/react-router-graph-producer pack --pack-destination ../../demo/vendor",
     "demo:refresh-extensions": "pnpm demo:pack-extensions && pnpm -C demo install && pnpm -C demo/app install",
     "test": "vitest",
     "test:ui": "vitest --ui",

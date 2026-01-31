@@ -1,22 +1,22 @@
-import React from 'react';
-import ReactDOM from 'react-dom/client';
-import { ScaffaProvider } from '@scaffa/react-runtime-adapter';
-import { App } from './App';
-import './index.css';
+import React from "react";
+import ReactDOM from "react-dom/client";
+import { SkaffaProvider } from "@skaffa/react-runtime-adapter";
+import { App } from "./App";
+import "./index.css";
 
-const root = document.getElementById('root');
-if (!root) throw new Error('Root element not found');
+const root = document.getElementById("root");
+if (!root) throw new Error("Root element not found");
 
 ReactDOM.createRoot(root).render(
   <React.StrictMode>
-    <ScaffaProvider
+    <SkaffaProvider
       config={{
-        adapterId: 'react',
-        adapterVersion: '0.1.0',
+        adapterId: "react",
+        adapterVersion: "0.1.0",
         debug: true,
       }}
     >
       <App />
-    </ScaffaProvider>
-  </React.StrictMode>
+    </SkaffaProvider>
+  </React.StrictMode>,
 );

@@ -1,21 +1,21 @@
-import { describe, it, expect, vi } from 'vitest';
-import type { ScaffaConfig } from '../shared/config.js';
-import { ModuleLoader } from './module-loader.js';
+import { describe, it, expect, vi } from "vitest";
+import type { SkaffaConfig } from "../shared/config.js";
+import { ModuleLoader } from "./module-loader.js";
 
-describe('Extension Host Activation', () => {
-  it('should load and activate a valid extension module', async () => {
+describe("Extension Host Activation", () => {
+  it("should load and activate a valid extension module", async () => {
     // Mock process.send
     const mockSend = vi.fn();
     const originalSend = process.send;
     process.send = mockSend as any;
 
     // Create a config pointing to a local fixture module
-    const config: ScaffaConfig = {
-      schemaVersion: 'v0',
+    const config: SkaffaConfig = {
+      schemaVersion: "v0",
       modules: [
         {
-          id: 'test-extension',
-          path: 'src/extension-host/__fixtures__/test-extension.ts',
+          id: "test-extension",
+          path: "src/extension-host/__fixtures__/test-extension.ts",
         },
       ],
     };
@@ -37,38 +37,48 @@ describe('Extension Host Activation', () => {
 
       // Check for registry contribution from the fixture module
       const messages = mockSend.mock.calls.map((call) => call[0]);
-      const registryMessage = messages.find((msg: any) => msg.type === 'registry-contribution');
+      const registryMessage = messages.find(
+        (msg: any) => msg.type === "registry-contribution",
+      );
       expect(registryMessage).toBeDefined();
-      expect(registryMessage?.registries?.[0]?.components).toHaveProperty('test.component');
+      expect(registryMessage?.registries?.[0]?.components).toHaveProperty(
+        "test.component",
+      );
     } finally {
       // Cleanup
       process.send = originalSend;
     }
   });
 
-  it('should handle module load failures gracefully', async () => {
-    const errorSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
+  it("should handle module load failures gracefully", async () => {
+    const errorSpy = vi.spyOn(console, "error").mockImplementation(() => {});
     const mockSend = vi.fn();
     const originalSend = process.send;
     process.send = mockSend as any;
 
-    const config: ScaffaConfig = {
-      schemaVersion: 'v0',
+    const config: SkaffaConfig = {
+      schemaVersion: "v0",
       modules: [
         {
-          id: 'nonexistent-module',
-          path: 'does/not/exist.ts',
+          id: "nonexistent-module",
+          path: "does/not/exist.ts",
         },
       ],
     };
 
-    const loader = new ModuleLoader('/Users/dhiester/Projects/Personal/scaffa', config);
+    const loader = new ModuleLoader(
+      "/Users/dhiester/Projects/Personal/skaffa",
+      config,
+    );
 
     await loader.loadAndActivateModules();
 
     // Should have sent failure status
     const messages = mockSend.mock.calls.map((call) => call[0]);
-    const failureMessage = messages.find((msg: any) => msg.type === 'module-activation-status' && msg.status === 'failed');
+    const failureMessage = messages.find(
+      (msg: any) =>
+        msg.type === "module-activation-status" && msg.status === "failed",
+    );
 
     expect(failureMessage).toBeDefined();
     expect(failureMessage?.error).toBeDefined();
@@ -77,34 +87,36 @@ describe('Extension Host Activation', () => {
     errorSpy.mockRestore();
   });
 
-  it('should support workspace config with extensions/*/module pattern', () => {
-    const config: ScaffaConfig = {
-      schemaVersion: 'v0',
+  it("should support workspace config with extensions/*/module pattern", () => {
+    const config: SkaffaConfig = {
+      schemaVersion: "v0",
       modules: [
         {
-          id: 'mui-registry',
-          path: 'extensions/mui-registry/module/index.ts',
+          id: "mui-registry",
+          path: "extensions/mui-registry/module/index.ts",
         },
       ],
     };
 
     // Verify config structure matches expected pattern
     expect(config.modules).toHaveLength(1);
-    expect(config.modules?.[0].path).toMatch(/^extensions\/[^/]+\/module\/index\.ts$/);
+    expect(config.modules?.[0].path).toMatch(
+      /^extensions\/[^/]+\/module\/index\.ts$/,
+    );
   });
 
-  it('should reject path traversal attempts', async () => {
-    const errorSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
+  it("should reject path traversal attempts", async () => {
+    const errorSpy = vi.spyOn(console, "error").mockImplementation(() => {});
     const mockSend = vi.fn();
     const originalSend = process.send;
     process.send = mockSend as any;
 
-    const config: ScaffaConfig = {
-      schemaVersion: 'v0',
+    const config: SkaffaConfig = {
+      schemaVersion: "v0",
       modules: [
         {
-          id: 'malicious-module',
-          path: '../../../etc/passwd',
+          id: "malicious-module",
+          path: "../../../etc/passwd",
         },
       ],
     };
@@ -116,36 +128,39 @@ describe('Extension Host Activation', () => {
     // Should have failed with path resolution error
     const messages = mockSend.mock.calls.map((call) => call[0]);
     const failureMessage = messages.find(
-      (msg: any) => msg.type === 'module-activation-status' && msg.status === 'failed'
+      (msg: any) =>
+        msg.type === "module-activation-status" && msg.status === "failed",
     );
 
     expect(failureMessage).toBeDefined();
-    expect(failureMessage?.error?.message).toContain('Cannot resolve module path');
+    expect(failureMessage?.error?.message).toContain(
+      "Cannot resolve module path",
+    );
 
     // Should have logged security warning
     expect(errorSpy).toHaveBeenCalledWith(
-      expect.stringContaining('Module path escapes workspace')
+      expect.stringContaining("Module path escapes workspace"),
     );
 
     process.send = originalSend;
     errorSpy.mockRestore();
   });
 
-  it('should allow workspace-anchored prefixes within workspace', async () => {
+  it("should allow workspace-anchored prefixes within workspace", async () => {
     const mockSend = vi.fn();
     const originalSend = process.send;
     process.send = mockSend as any;
 
-    const config: ScaffaConfig = {
-      schemaVersion: 'v0',
+    const config: SkaffaConfig = {
+      schemaVersion: "v0",
       modules: [
         {
-          id: 'test-module-at',
-          path: '@/extensions/sample-module/index.js',
+          id: "test-module-at",
+          path: "@/extensions/sample-module/index.js",
         },
         {
-          id: 'test-module-workspace',
-          path: 'workspace:/extensions/sample-module/index.js',
+          id: "test-module-workspace",
+          path: "workspace:/extensions/sample-module/index.js",
         },
       ],
     };
@@ -158,13 +173,14 @@ describe('Extension Host Activation', () => {
 
     const messages = mockSend.mock.calls.map((call) => call[0]);
     const failures = messages.filter(
-      (msg: any) => msg.type === 'module-activation-status' && msg.status === 'failed'
+      (msg: any) =>
+        msg.type === "module-activation-status" && msg.status === "failed",
     );
 
     // Both should fail due to file not found, not path validation
     expect(failures).toHaveLength(2);
     failures.forEach((msg: any) => {
-      expect(msg.error.message).not.toContain('Cannot resolve module path');
+      expect(msg.error.message).not.toContain("Cannot resolve module path");
     });
 
     process.send = originalSend;

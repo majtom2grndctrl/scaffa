@@ -1,12 +1,12 @@
-# Scaffa Visual Language (v0)
+# Skaffa Visual Language (v0)
 
 > **Status:** Living document  
-> **Audience:** Scaffa core contributors and extension/module authors  
-> **Goal:** Define Scaffa’s default look/feel so new UI ships consistent, sleek, and utilitarian across light/dark mode.
+> **Audience:** Skaffa core contributors and extension/module authors  
+> **Goal:** Define Skaffa’s default look/feel so new UI ships consistent, sleek, and utilitarian across light/dark mode.
 
 Related:
 - [Architecture Plan](../index.md)
-- [Scaffa Semantic Color Utilities](./colors.md)
+- [Skaffa Semantic Color Utilities](./colors.md)
 
 ---
 
@@ -23,7 +23,7 @@ Related:
 
 ## 2) Surfaces (Workspace “Gray World”)
 
-Scaffa is a design + development tool; the chrome should feel like an IDE.
+Skaffa is a design + development tool; the chrome should feel like an IDE.
 
 **Rule:** The main workspace is always a *shade of gray*:
 - Light mode: **very light gray** surfaces (not pure white).
@@ -92,7 +92,7 @@ Heuristics:
 
 ## 6) Workbench Layout (Docked IDE Model)
 
-Scaffa’s default layout is a docked workbench:
+Skaffa’s default layout is a docked workbench:
 
 - **Left sidebar:** files + routes (project navigation)
 - **Center workspace:** preview/canvas and primary editing surface
@@ -108,6 +108,6 @@ Layout guidance:
 
 ## 7) Mode Behavior (Light/Dark)
 
-- Light/dark mode must be supported everywhere (Scaffa already adapts today).
+- Light/dark mode must be supported everywhere (Skaffa already adapts today).
 - UI should use **semantic tokens** (not raw grays) so mode changes don’t require per-component redesign.
 - Only use mode-specific classes as a last resort; prefer variables/tokens in `src/renderer/styles.css`.

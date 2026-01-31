@@ -6,27 +6,27 @@
  *
  *   Extension Host (process.send) → Main Process (handleMessage) → registryManager
  *
- * This is a critical Scaffa workflow that must work correctly for the Inspector
+ * This is a critical Skaffa workflow that must work correctly for the Inspector
  * to have access to component metadata.
  *
  * Symptoms when this breaks:
  * - "[InspectorStore] Loaded registry: undefined"
  * - Inspector shows no component types or editable props
  */
-import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
-import type { ComponentRegistry } from '../../shared/index.js';
-import type { ScaffaConfig } from '../../shared/config.js';
+import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
+import type { ComponentRegistry } from "../../shared/index.js";
+import type { SkaffaConfig } from "../../shared/config.js";
 import type {
   RegistryContributionMessage,
   ExtHostToMainMessage,
-} from '../../extension-host/ipc-protocol.js';
+} from "../../extension-host/ipc-protocol.js";
 
 // ─────────────────────────────────────────────────────────────────────────────
 // Mock Setup
 // ─────────────────────────────────────────────────────────────────────────────
 
 // Mock child_process to avoid actually forking processes
-vi.mock('node:child_process', () => ({
+vi.mock("node:child_process", () => ({
   fork: vi.fn(() => ({
     on: vi.fn(),
     send: vi.fn(),
@@ -38,7 +38,7 @@ vi.mock('node:child_process', () => ({
 }));
 
 // Mock electron
-vi.mock('electron', () => ({
+vi.mock("electron", () => ({
   ipcMain: {
     handle: vi.fn(),
   },
@@ -47,40 +47,40 @@ vi.mock('electron', () => ({
   },
 }));
 
-describe('Extension Host → Main Process Registry Flow', () => {
-  const mockConfig: ScaffaConfig = {
-    schemaVersion: 'v0',
+describe("Extension Host → Main Process Registry Flow", () => {
+  const mockConfig: SkaffaConfig = {
+    schemaVersion: "v0",
     preview: {
-      entry: './src/App.tsx',
+      entry: "./src/App.tsx",
       styles: [],
     },
     modules: [],
   };
 
   const mockModuleRegistry: ComponentRegistry = {
-    schemaVersion: 'v0',
+    schemaVersion: "v0",
     components: {
-      'demo.button': {
-        displayName: 'Demo Button',
+      "demo.button": {
+        displayName: "Demo Button",
         props: {
           label: {
-            propName: 'label',
-            exposure: { kind: 'editable', control: { kind: 'string' } },
+            propName: "label",
+            exposure: { kind: "editable", control: { kind: "string" } },
           },
         },
       },
-    } as ComponentRegistry['components'],
+    } as ComponentRegistry["components"],
   };
 
   // Fresh import the modules for each test to avoid state leakage
-  let registryManager: typeof import('./registry-manager.js').registryManager;
+  let registryManager: typeof import("./registry-manager.js").registryManager;
 
   beforeEach(async () => {
     vi.resetModules();
     vi.clearAllMocks();
 
     // Fresh imports
-    const registryManagerModule = await import('./registry-manager.js');
+    const registryManagerModule = await import("./registry-manager.js");
     registryManager = registryManagerModule.registryManager;
   });
 
@@ -92,7 +92,7 @@ describe('Extension Host → Main Process Registry Flow', () => {
   // Test: Simulate ExtensionHostManager.handleRegistryContribution
   // ─────────────────────────────────────────────────────────────────────────
 
-  describe('handleRegistryContribution simulation', () => {
+  describe("handleRegistryContribution simulation", () => {
     /**
      * This test simulates exactly what ExtensionHostManager.handleRegistryContribution
      * does when it receives a registry-contribution message from the extension host.
@@ -113,21 +113,27 @@ describe('Extension Host → Main Process Registry Flow', () => {
      * }
      * ```
      */
-    it('should update registryManager when registry-contribution message is received', () => {
+    it("should update registryManager when registry-contribution message is received", () => {
       // Create the message that extension host would send
       const message: RegistryContributionMessage = {
-        type: 'registry-contribution',
+        type: "registry-contribution",
         registries: [mockModuleRegistry],
       };
 
       // Simulate what handleRegistryContribution does
-      console.log(`[Test] Received ${message.registries.length} registry contribution(s)`);
+      console.log(
+        `[Test] Received ${message.registries.length} registry contribution(s)`,
+      );
       registryManager.updateRegistry(message.registries, mockConfig);
 
       // VERIFY: Registry is now populated
       const effective = registryManager.getEffectiveRegistry();
       expect(Object.keys(effective.components)).toHaveLength(1);
-      expect(effective.components['demo.button' as keyof typeof effective.components]).toBeDefined();
+      expect(
+        effective.components[
+          "demo.button" as keyof typeof effective.components
+        ],
+      ).toBeDefined();
     });
 
     /**
@@ -137,9 +143,9 @@ describe('Extension Host → Main Process Registry Flow', () => {
      * - Extension host sends contribution before workspace is fully initialized
      * - There's a race condition during startup
      */
-    it('should handle missing config gracefully (simulating race condition)', () => {
+    it("should handle missing config gracefully (simulating race condition)", () => {
       const message: RegistryContributionMessage = {
-        type: 'registry-contribution',
+        type: "registry-contribution",
         registries: [mockModuleRegistry],
       };
 
@@ -152,9 +158,9 @@ describe('Extension Host → Main Process Registry Flow', () => {
     /**
      * Edge case: What if extension host sends empty registries array?
      */
-    it('should handle empty registries array', () => {
+    it("should handle empty registries array", () => {
       const message: RegistryContributionMessage = {
-        type: 'registry-contribution',
+        type: "registry-contribution",
         registries: [],
       };
 
@@ -168,29 +174,29 @@ describe('Extension Host → Main Process Registry Flow', () => {
     /**
      * Multiple registry contributions should be merged
      */
-    it('should merge multiple registry contributions', () => {
+    it("should merge multiple registry contributions", () => {
       const firstRegistry: ComponentRegistry = {
-        schemaVersion: 'v0',
+        schemaVersion: "v0",
         components: {
-          'demo.button': {
-            displayName: 'Demo Button',
+          "demo.button": {
+            displayName: "Demo Button",
             props: {},
           },
-        } as ComponentRegistry['components'],
+        } as ComponentRegistry["components"],
       };
 
       const secondRegistry: ComponentRegistry = {
-        schemaVersion: 'v0',
+        schemaVersion: "v0",
         components: {
-          'demo.card': {
-            displayName: 'Demo Card',
+          "demo.card": {
+            displayName: "Demo Card",
             props: {},
           },
-        } as ComponentRegistry['components'],
+        } as ComponentRegistry["components"],
       };
 
       const message: RegistryContributionMessage = {
-        type: 'registry-contribution',
+        type: "registry-contribution",
         registries: [firstRegistry, secondRegistry],
       };
 
@@ -198,8 +204,14 @@ describe('Extension Host → Main Process Registry Flow', () => {
 
       const effective = registryManager.getEffectiveRegistry();
       expect(Object.keys(effective.components)).toHaveLength(2);
-      expect(effective.components['demo.button' as keyof typeof effective.components]).toBeDefined();
-      expect(effective.components['demo.card' as keyof typeof effective.components]).toBeDefined();
+      expect(
+        effective.components[
+          "demo.button" as keyof typeof effective.components
+        ],
+      ).toBeDefined();
+      expect(
+        effective.components["demo.card" as keyof typeof effective.components],
+      ).toBeDefined();
     });
   });
 
@@ -207,20 +219,25 @@ describe('Extension Host → Main Process Registry Flow', () => {
   // Test: Complete message dispatch simulation
   // ─────────────────────────────────────────────────────────────────────────
 
-  describe('handleMessage dispatch simulation', () => {
+  describe("handleMessage dispatch simulation", () => {
     /**
      * This test simulates the complete message handler dispatch.
      *
      * The actual method at extension-host-manager.ts:178-244 switches on message.type
      * and routes to the appropriate handler.
      */
-    it('should route registry-contribution message to handler', () => {
+    it("should route registry-contribution message to handler", () => {
       // Simulate the handleMessage switch statement
-      const handleMessage = (message: ExtHostToMainMessage, config: ScaffaConfig | null) => {
+      const handleMessage = (
+        message: ExtHostToMainMessage,
+        config: SkaffaConfig | null,
+      ) => {
         switch (message.type) {
-          case 'registry-contribution':
+          case "registry-contribution":
             if (!config) {
-              console.error('[Test] No config available for registry composition');
+              console.error(
+                "[Test] No config available for registry composition",
+              );
               return false;
             }
             registryManager.updateRegistry(message.registries, config);
@@ -231,7 +248,7 @@ describe('Extension Host → Main Process Registry Flow', () => {
       };
 
       const message: ExtHostToMainMessage = {
-        type: 'registry-contribution',
+        type: "registry-contribution",
         registries: [mockModuleRegistry],
       };
 
@@ -245,10 +262,10 @@ describe('Extension Host → Main Process Registry Flow', () => {
     /**
      * Verify that non-registry messages don't affect the registry
      */
-    it('should not affect registry for non-registry messages', () => {
+    it("should not affect registry for non-registry messages", () => {
       // Simulate receiving a 'ready' message
       const message: ExtHostToMainMessage = {
-        type: 'ready',
+        type: "ready",
       };
 
       // Registry should remain empty (no contribution received)
@@ -261,14 +278,14 @@ describe('Extension Host → Main Process Registry Flow', () => {
   // Test: Verify IPC response shape for renderer
   // ─────────────────────────────────────────────────────────────────────────
 
-  describe('IPC Response Shape Verification', () => {
+  describe("IPC Response Shape Verification", () => {
     /**
      * The InspectorStore expects: { registry: ComponentRegistry }
      *
      * If the response shape is wrong (e.g., just ComponentRegistry without wrapper),
      * the store will get undefined for response.registry.
      */
-    it('should produce correct response shape for registry:get IPC call', () => {
+    it("should produce correct response shape for registry:get IPC call", () => {
       // Setup: contribute a registry
       registryManager.updateRegistry([mockModuleRegistry], mockConfig);
 
@@ -278,16 +295,16 @@ describe('Extension Host → Main Process Registry Flow', () => {
       };
 
       // CRITICAL: Verify response has 'registry' property
-      expect(ipcResponse).toHaveProperty('registry');
+      expect(ipcResponse).toHaveProperty("registry");
       expect(ipcResponse.registry).not.toBeUndefined();
-      expect(ipcResponse.registry).toHaveProperty('schemaVersion');
-      expect(ipcResponse.registry).toHaveProperty('components');
+      expect(ipcResponse.registry).toHaveProperty("schemaVersion");
+      expect(ipcResponse.registry).toHaveProperty("components");
     });
 
     /**
      * Edge case: Verify response shape even when registry is empty
      */
-    it('should produce correct response shape even when registry is empty', () => {
+    it("should produce correct response shape even when registry is empty", () => {
       // No contributions made - registry is empty
 
       const ipcResponse = {
@@ -295,9 +312,9 @@ describe('Extension Host → Main Process Registry Flow', () => {
       };
 
       // CRITICAL: Even with no contributions, registry should be defined (empty, not undefined)
-      expect(ipcResponse).toHaveProperty('registry');
+      expect(ipcResponse).toHaveProperty("registry");
       expect(ipcResponse.registry).not.toBeUndefined();
-      expect(ipcResponse.registry.schemaVersion).toBe('v0');
+      expect(ipcResponse.registry.schemaVersion).toBe("v0");
       expect(Object.keys(ipcResponse.registry.components)).toHaveLength(0);
     });
   });
@@ -306,7 +323,7 @@ describe('Extension Host → Main Process Registry Flow', () => {
   // Test: Timing and Race Conditions
   // ─────────────────────────────────────────────────────────────────────────
 
-  describe('Timing and Race Conditions', () => {
+  describe("Timing and Race Conditions", () => {
     /**
      * CRITICAL TEST: Renderer requests registry before extension host contributes
      *
@@ -314,7 +331,7 @@ describe('Extension Host → Main Process Registry Flow', () => {
      * The renderer might be calling registry.get() before the extension host
      * has finished loading modules and sending registry-contribution.
      */
-    it('should document behavior when registry requested before contributions', () => {
+    it("should document behavior when registry requested before contributions", () => {
       // Step 1: Renderer requests registry BEFORE any contributions
       const earlyResponse = registryManager.getEffectiveRegistry();
 
@@ -341,14 +358,14 @@ describe('Extension Host → Main Process Registry Flow', () => {
     /**
      * Document the expected startup sequence
      */
-    it('should document expected startup sequence', () => {
+    it("should document expected startup sequence", () => {
       // This test documents the expected sequence for registry loading:
 
       // 1. Main process starts extension host
       // 2. Extension host loads modules and collects registry contributions
       // 3. Extension host sends registry-contribution message
       // 4. Main process receives message and calls registryManager.updateRegistry
-      // 5. Renderer calls window.scaffa.registry.get()
+      // 5. Renderer calls window.skaffa.registry.get()
       // 6. Main process IPC handler calls registryManager.getEffectiveRegistry()
       // 7. Renderer receives populated registry
 

@@ -1,6 +1,6 @@
-# Scaffa Semantic Color Utilities (Tailwind)
+# Skaffa Semantic Color Utilities (Tailwind)
 
-**Goal:** Define a *semantic* color system for Scaffa’s UI using Tailwind utility classes, so components never hard-code raw color primitives. Semantics must support light/dark mode and future theming.
+**Goal:** Define a *semantic* color system for Skaffa’s UI using Tailwind utility classes, so components never hard-code raw color primitives. Semantics must support light/dark mode and future theming.
 
 **Base scale assumption (default theme):** One neutral/gray scale with 11 steps:
 
@@ -8,7 +8,7 @@
 
 **Important:** In this system, **lower numbers are darker**, `500` is mid-range.
 
-**User override:** Scaffa exposes a **Theme Schema** that lets users replace these *primitive scale values* with their own color scale(s) (e.g., different neutral ramps, brand accents, high-contrast variants). **Semantic utility classes do not change**—only the primitive values they resolve to change.
+**User override:** Skaffa exposes a **Theme Schema** that lets users replace these *primitive scale values* with their own color scale(s) (e.g., different neutral ramps, brand accents, high-contrast variants). **Semantic utility classes do not change**—only the primitive values they resolve to change.
 
 ---
 
@@ -18,7 +18,7 @@
 2. Semantic tokens map to *primitive color values* via CSS variables.
 3. **Users can override primitive values** (via a Theme Schema) without changing any UI markup.
 
-**Invariant:** The semantic utility class names are stable API for Scaffa’s UI.
+**Invariant:** The semantic utility class names are stable API for Skaffa’s UI.
 
 ---
 
@@ -127,7 +127,7 @@ Shadows aren’t color utilities, but they are part of “layer semantics.”
 
 ## 3) Default Neutral Mapping (Light/Dark)
 
-This section defines Scaffa’s **default** mapping from semantic tokens → neutral primitives. Users may override the primitives (and/or the mapping) via the Theme Schema.
+This section defines Skaffa’s **default** mapping from semantic tokens → neutral primitives. Users may override the primitives (and/or the mapping) via the Theme Schema.
 
 > Reminder: **lower = darker** in our default scale.
 
@@ -300,7 +300,7 @@ This section records resolved decisions so they are not re-litigated implicitly.
 
 ### 6.2 Semantic stability
 
-* Semantic utility class names are **stable API** for Scaffa UI.
+* Semantic utility class names are **stable API** for Skaffa UI.
 * Themes may override primitives and mappings, but **never rename semantics**.
 
 ### 6.3 Accent & status hues

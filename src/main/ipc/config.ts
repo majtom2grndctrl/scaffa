@@ -1,8 +1,8 @@
 import { ipcMain } from 'electron';
 import { z } from 'zod';
 import {
-  ScaffaConfigSchema,
-  type ScaffaConfig,
+  SkaffaConfigSchema,
+  type SkaffaConfig,
 } from '../../shared/index.js';
 import { validated } from './validation.js';
 import { configManager } from '../config/config-manager.js';
@@ -22,7 +22,7 @@ export type GetConfigRequest = z.infer<typeof GetConfigRequestSchema>;
  * Response with current config and load status.
  */
 export const GetConfigResponseSchema = z.object({
-  config: ScaffaConfigSchema,
+  config: SkaffaConfigSchema,
   loadError: z
     .object({
       code: z.enum(['NOT_FOUND', 'INVALID_SYNTAX', 'VALIDATION_ERROR', 'UNKNOWN_ERROR']),

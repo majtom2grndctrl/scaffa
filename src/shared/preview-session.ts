@@ -1,56 +1,59 @@
-import { z } from 'zod';
-import { JsonValueSchema, SourceRefSchema } from './common.js';
+import { z } from "zod";
+import { JsonValueSchema, SourceRefSchema } from "./common.js";
 
 // ─────────────────────────────────────────────────────────────────────────────
 // Preview Session Protocol (v0)
 // ─────────────────────────────────────────────────────────────────────────────
-// See: docs/scaffa_preview_session_protocol.md
+// See: docs/skaffa_preview_session_protocol.md
 
-export const PreviewSessionIdSchema = z.string().brand('PreviewSessionId');
+export const PreviewSessionIdSchema = z.string().brand("PreviewSessionId");
 export type PreviewSessionId = z.infer<typeof PreviewSessionIdSchema>;
 
-export const PreviewSessionTypeSchema = z.enum(['app', 'component', 'variant']);
+export const PreviewSessionTypeSchema = z.enum(["app", "component", "variant"]);
 export type PreviewSessionType = z.infer<typeof PreviewSessionTypeSchema>;
 
-export const PreviewSessionTargetSchema = z.discriminatedUnion('type', [
-  z.object({
-    type: z.literal('app'),
-    url: z.string().url().optional(),
-    launcherId: z.string().optional(),
-    launcherOptions: z.record(z.unknown()).optional(),
-  }),
-  z.object({
-    type: z.literal('component'),
-    componentTypeId: z.string(),
-    harnessUrl: z.string().url().optional(),
-  }),
-  z.object({
-    type: z.literal('variant'),
-    variantId: z.string(),
-  }),
-]).refine(
-  (data) => {
-    // For app sessions, either url or launcherId must be provided (but not both)
-    if (data.type === 'app') {
-      return (data.url && !data.launcherId) || (!data.url && data.launcherId);
-    }
-    return true;
-  },
-  {
-    message: 'App sessions must have either url (attached) or launcherId (managed), not both',
-  }
-);
+export const PreviewSessionTargetSchema = z
+  .discriminatedUnion("type", [
+    z.object({
+      type: z.literal("app"),
+      url: z.string().url().optional(),
+      launcherId: z.string().optional(),
+      launcherOptions: z.record(z.unknown()).optional(),
+    }),
+    z.object({
+      type: z.literal("component"),
+      componentTypeId: z.string(),
+      harnessUrl: z.string().url().optional(),
+    }),
+    z.object({
+      type: z.literal("variant"),
+      variantId: z.string(),
+    }),
+  ])
+  .refine(
+    (data) => {
+      // For app sessions, either url or launcherId must be provided (but not both)
+      if (data.type === "app") {
+        return (data.url && !data.launcherId) || (!data.url && data.launcherId);
+      }
+      return true;
+    },
+    {
+      message:
+        "App sessions must have either url (attached) or launcherId (managed), not both",
+    },
+  );
 
 export type PreviewSessionTarget = z.infer<typeof PreviewSessionTargetSchema>;
 
 export const PreviewSessionStateSchema = z.enum([
-  'creating',
-  'loading',
-  'ready',
-  'reloading',
-  'stopped',
-  'disposed',
-  'error',
+  "creating",
+  "loading",
+  "ready",
+  "reloading",
+  "stopped",
+  "disposed",
+  "error",
 ]);
 
 export type PreviewSessionState = z.infer<typeof PreviewSessionStateSchema>;
@@ -59,10 +62,10 @@ export type PreviewSessionState = z.infer<typeof PreviewSessionStateSchema>;
 // Instance Descriptor (Selection)
 // ─────────────────────────────────────────────────────────────────────────────
 
-export const InstanceIdSchema = z.string().brand('InstanceId');
+export const InstanceIdSchema = z.string().brand("InstanceId");
 export type InstanceId = z.infer<typeof InstanceIdSchema>;
 
-export const ComponentTypeIdSchema = z.string().brand('ComponentTypeId');
+export const ComponentTypeIdSchema = z.string().brand("ComponentTypeId");
 export type ComponentTypeId = z.infer<typeof ComponentTypeIdSchema>;
 
 export const InstanceDescriptorSchema = z.object({
@@ -123,7 +126,7 @@ export type SelectionChangedEvent = z.infer<typeof SelectionChangedEventSchema>;
 // Preview Launchers (Managed Sessions)
 // ─────────────────────────────────────────────────────────────────────────────
 
-export const PreviewLauncherIdSchema = z.string().brand('PreviewLauncherId');
+export const PreviewLauncherIdSchema = z.string().brand("PreviewLauncherId");
 export type PreviewLauncherId = z.infer<typeof PreviewLauncherIdSchema>;
 
 /**
@@ -131,7 +134,9 @@ export type PreviewLauncherId = z.infer<typeof PreviewLauncherIdSchema>;
  * Extensible per-launcher configuration (e.g. port, environment variables).
  */
 export const PreviewLauncherOptionsSchema = z.record(z.unknown());
-export type PreviewLauncherOptions = z.infer<typeof PreviewLauncherOptionsSchema>;
+export type PreviewLauncherOptions = z.infer<
+  typeof PreviewLauncherOptionsSchema
+>;
 
 /**
  * Result of starting a managed preview.
@@ -157,7 +162,7 @@ export const PreviewLogEntrySchema = z.object({
   /**
    * Log level.
    */
-  level: z.enum(['info', 'warn', 'error', 'debug']),
+  level: z.enum(["info", "warn", "error", "debug"]),
 
   /**
    * Log message.
@@ -197,4 +202,6 @@ export const PreviewLauncherDescriptorSchema = z.object({
   supportedSessionTypes: z.array(PreviewSessionTypeSchema),
 });
 
-export type PreviewLauncherDescriptor = z.infer<typeof PreviewLauncherDescriptorSchema>;
+export type PreviewLauncherDescriptor = z.infer<
+  typeof PreviewLauncherDescriptorSchema
+>;

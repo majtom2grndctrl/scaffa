@@ -1,11 +1,11 @@
-# @scaffa/layout-primitives-react
+# @skaffa/layout-primitives-react
 
 React layout component library mirroring Figma auto-layout primitives. Built with CSS Modules and a consistent spacing system.
 
 ## Installation
 
 ```bash
-pnpm add @scaffa/layout-primitives-react
+pnpm add @skaffa/layout-primitives-react
 ```
 
 ## Usage
@@ -13,8 +13,8 @@ pnpm add @scaffa/layout-primitives-react
 ### Importing Components
 
 ```tsx
-import { Box, Row, Stack } from '@scaffa/layout-primitives-react';
-import '@scaffa/layout-primitives-react/tokens.css';
+import { Box, Row, Stack } from '@skaffa/layout-primitives-react';
+import '@skaffa/layout-primitives-react/tokens.css';
 ```
 
 ### Basic Examples

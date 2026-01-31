@@ -1,10 +1,10 @@
 // ─────────────────────────────────────────────────────────────────────────────
-// Scaffa Instance Boundary (v0)
+// Skaffa Instance Boundary (v0)
 // ─────────────────────────────────────────────────────────────────────────────
 
-import React, { useEffect, useId } from 'react';
-import { useScaffaContext } from './provider.js';
-import { applyOverride } from './overrides.js';
+import React, { useEffect, useId } from "react";
+import { useSkaffaContext } from "./provider.js";
+import { applyOverride } from "./overrides.js";
 
 /**
  * Higher-order component for registry-driven instrumentation.
@@ -14,23 +14,24 @@ import { applyOverride } from './overrides.js';
  * component exports that match registry implementation hints.
  *
  * The adapter owns instanceId generation; this HOC provides the typeId
- * and applies overrides directly without requiring app code to use useScaffaInstance.
- * See: docs/scaffa_harness_model.md (5.6), docs/scaffa_runtime_adapter_integration_guide.md (2.2.2)
+ * and applies overrides directly without requiring app code to use useSkaffaInstance.
+ * See: docs/skaffa_harness_model.md (5.6), docs/skaffa_runtime_adapter_integration_guide.md (2.2.2)
  *
  * @param WrappedComponent - The original component to wrap
  * @param componentTypeId - The registry type ID for this component
  * @returns A wrapped component with instrumentation and override application
  */
-export function ScaffaInstanceBoundary<P extends object>(
+export function SkaffaInstanceBoundary<P extends object>(
   WrappedComponent: React.ComponentType<P>,
-  componentTypeId: string
+  componentTypeId: string,
 ): React.FC<P> {
-  const displayName = WrappedComponent.displayName || WrappedComponent.name || 'Component';
+  const displayName =
+    WrappedComponent.displayName || WrappedComponent.name || "Component";
 
   const BoundaryComponent: React.FC<P> = (props) => {
-    const { adapter, overrideVersion } = useScaffaContext();
+    const { adapter, overrideVersion } = useSkaffaContext();
     const reactId = useId();
-    const instanceId = `inst_${reactId.replace(/:/g, '_')}`;
+    const instanceId = `inst_${reactId.replace(/:/g, "_")}`;
 
     useEffect(() => {
       // Register instance with adapter
@@ -62,13 +63,16 @@ export function ScaffaInstanceBoundary<P extends object>(
     }, [adapter, instanceId, props, overrideVersion]);
 
     return (
-      <div data-scaffa-instance-id={instanceId} data-scaffa-type-id={componentTypeId}>
+      <div
+        data-skaffa-instance-id={instanceId}
+        data-skaffa-type-id={componentTypeId}
+      >
         <WrappedComponent {...effectiveProps} />
       </div>
     );
   };
 
-  BoundaryComponent.displayName = `ScaffaInstanceBoundary(${displayName})`;
+  BoundaryComponent.displayName = `SkaffaInstanceBoundary(${displayName})`;
 
   return BoundaryComponent;
 }
